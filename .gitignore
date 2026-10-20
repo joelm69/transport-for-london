@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Local data and temporary files
+data/
+*.csv
+*.jsonl
+*.parquet
+*.log
+tmp/
+
+# Editors and operating systems
+.DS_Store
+.vscode/
+.idea/
+
+# Test and build artifacts
+dist/
+build/
+*.egg-info/

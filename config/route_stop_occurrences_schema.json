@@ -1,0 +1,14 @@
+[
+  {"name": "collection_run_id", "type": "STRING"},
+  {"name": "line_id", "type": "STRING"},
+  {"name": "direction", "type": "STRING"},
+  {"name": "branch_id", "type": "STRING"},
+  {"name": "sequence_number", "type": "INT64"},
+  {"name": "stop_order", "type": "INT64"},
+  {"name": "stop_id", "type": "STRING"},
+  {"name": "stop_name", "type": "STRING"},
+  {"name": "latitude", "type": "FLOAT64"},
+  {"name": "longitude", "type": "FLOAT64"},
+  {"name": "stop_letter", "type": "STRING"},
+  {"name": "parent_id", "type": "STRING"}
+]

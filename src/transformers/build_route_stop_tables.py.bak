@@ -1,0 +1,201 @@
+
+import csv
+import json
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+RUN_ID = "20261016T202642305170Z"
+
+INPUT_FILE = (
+    PROJECT_ROOT
+    / "data/raw/bus_route_sequences_runs"
+    / "date=2026-10-16"
+    / f"run_id={RUN_ID}"
+    / "bus_route_sequences.jsonl"
+)
+
+OUTPUT_DIR = PROJECT_ROOT / "data/processed" / f"run_id={RUN_ID}"
+
+ROUTE_STOP_FILE = OUTPUT_DIR / "route_stop_occurrences.csv"
+UNIQUE_STOPS_FILE = OUTPUT_DIR / "unique_bus_stops.csv"
+
+ROUTE_STOP_FIELDS = [
+    "collection_run_id",
+    "line_id",
+    "direction",
+    "branch_id",
+    "sequence_number",
+    "stop_order",
+    "stop_id",
+    "stop_name",
+    "latitude",
+    "longitude",
+    "stop_letter",
+    "parent_id",
+]
+
+STOP_FIELDS = [
+    "stop_id",
+    "stop_name",
+    "latitude",
+    "longitude",
+    "stop_letter",
+    "parent_id",
+]
+
+
+def main():
+    if not INPUT_FILE.is_file():
+        raise FileNotFoundError(f"Input file not found: {INPUT_FILE}")
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    route_stop_rows = []
+    unique_stops = {}
+
+    expected_run_id = RUN_ID
+    expected_pairs = set()
+    actual_pairs = set()
+    seen_pairs = set()
+
+    with INPUT_FILE.open(encoding="utf-8") as file:
+        for line_number, line in enumerate(file, 1):
+            if not line.strip():
+                continue
+
+            record = json.loads(line)
+
+            if record.get("collection_run_id") != expected_run_id:
+                raise ValueError(
+                    f"Unexpected run ID on input line {line_number}"
+                )
+
+            line_id = str(record["line_id"])
+            direction = str(record["direction"]).lower()
+            pair = (line_id, direction)
+
+            if pair in seen_pairs:
+                raise ValueError(f"Duplicate line-direction pair: {pair}")
+
+            seen_pairs.add(pair)
+            actual_pairs.add(pair)
+
+            response = record.get("response") or {}
+            sequences = response.get("stopPointSequences") or []
+
+            for sequence_number, sequence in enumerate(sequences, 1):
+                stops = sequence.get("stopPoint") or []
+
+                for stop_order, stop in enumerate(stops, 1):
+                    stop_id = str(stop.get("id") or "").strip()
+
+                    if not stop_id:
+                        raise ValueError(
+                            f"Missing stop ID in record {pair}, "
+                            f"sequence {sequence_number}, position {stop_order}"
+                        )
+
+                    stop_name = stop.get("name")
+                    latitude = stop.get("lat")
+                    longitude = stop.get("lon")
+                    stop_letter = stop.get("stopLetter")
+                    parent_id = stop.get("parentId")
+
+                    route_stop_rows.append({
+                        "collection_run_id": expected_run_id,
+                        "line_id": line_id,
+                        "direction": direction,
+                        "branch_id": sequence.get("branchId"),
+                        "sequence_number": sequence_number,
+                        "stop_order": stop_order,
+                        "stop_id": stop_id,
+                        "stop_name": stop_name,
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "stop_letter": stop_letter,
+                        "parent_id": parent_id,
+                    })
+
+                    stop_dimension_row = {
+                        "stop_id": stop_id,
+                        "stop_name": stop_name,
+                        "latitude": latitude,
+                        "longitude": longitude,
+                        "stop_letter": stop_letter,
+                        "parent_id": parent_id,
+                    }
+
+                    if stop_id not in unique_stops:
+                        unique_stops[stop_id] = stop_dimension_row
+                    else:
+                        existing = unique_stops[stop_id]
+
+                        # Flag conflicting non-null values rather than
+                        # silently overwriting the first observation.
+                        for field in STOP_FIELDS[1:]:
+                            old_value = existing.get(field)
+                            new_value = stop_dimension_row.get(field)
+
+                            if (
+                                old_value is not None
+                                and new_value is not None
+                                and old_value != new_value
+                            ):
+                                raise ValueError(
+                                    f"Conflicting {field} for stop {stop_id}: "
+                                    f"{old_value!r} vs {new_value!r}"
+                                )
+
+                            if old_value is None and new_value is not None:
+                                existing[field] = new_value
+
+    if len(seen_pairs) != 1343:
+        raise ValueError(
+            f"Expected 1343 line-direction pairs; found {len(seen_pairs)}"
+        )
+
+    if len(route_stop_rows) != 56062:
+        raise ValueError(
+            f"Expected 56062 stop occurrences; found {len(route_stop_rows)}"
+        )
+
+    # Write temporary files first, so a failed validation or write does not
+    # leave a half-written final CSV.
+    temporary_route_file = ROUTE_STOP_FILE.with_suffix(".csv.tmp")
+    temporary_stops_file = UNIQUE_STOPS_FILE.with_suffix(".csv.tmp")
+
+    try:
+        with temporary_route_file.open(
+            "w", newline="", encoding="utf-8"
+        ) as file:
+            writer = csv.DictWriter(file, fieldnames=ROUTE_STOP_FIELDS)
+            writer.writeheader()
+            writer.writerows(route_stop_rows)
+
+        with temporary_stops_file.open(
+            "w", newline="", encoding="utf-8"
+        ) as file:
+            writer = csv.DictWriter(file, fieldnames=STOP_FIELDS)
+            writer.writeheader()
+            writer.writerows(
+                unique_stops[key] for key in sorted(unique_stops)
+            )
+
+        temporary_route_file.replace(ROUTE_STOP_FILE)
+        temporary_stops_file.replace(UNIQUE_STOPS_FILE)
+
+    finally:
+        temporary_route_file.unlink(missing_ok=True)
+        temporary_stops_file.unlink(missing_ok=True)
+
+    print("TRANSFORMATION COMPLETE")
+    print(f"Line-direction pairs: {len(seen_pairs)}")
+    print(f"Stop occurrences: {len(route_stop_rows)}")
+    print(f"Unique stop IDs: {len(unique_stops)}")
+    print(f"Route-stop table: {ROUTE_STOP_FILE}")
+    print(f"Unique-stop table: {UNIQUE_STOPS_FILE}")
+
+
+if __name__ == "__main__":
+    main()

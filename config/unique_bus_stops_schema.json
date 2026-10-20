@@ -1,0 +1,8 @@
+[
+  {"name": "stop_id", "type": "STRING"},
+  {"name": "stop_name", "type": "STRING"},
+  {"name": "latitude", "type": "FLOAT64"},
+  {"name": "longitude", "type": "FLOAT64"},
+  {"name": "stop_letter", "type": "STRING"},
+  {"name": "parent_id", "type": "STRING"}
+]
