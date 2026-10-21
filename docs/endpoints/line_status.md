@@ -1,6 +1,6 @@
 # Endpoint analysis card — Line status (all rail modes)
 
-Status: steps 1–4 complete · step 5 (hot/cold use) pending
+Status: complete (2026-10-21) — ready for collector implementation
 
 | | |
 |---|---|
@@ -170,4 +170,65 @@ Reliability must treat 10 Good Service and 18 No Issues as good, and exclude 20 
 
 ## 5. Hot and cold use
 
-*Pending.*
+### Hot path (live)
+
+**Streamlit live board** — calls TfL directly, cached 30 s.
+
+| Shows | From |
+|---|---|
+| Coloured row per line (green good, amber delays, red suspended/closed) | `statusSeverity` |
+| Disruption reason | `reason` |
+| "Disrupted for 1 h 12 min" | now − `fromDate` (event time) |
+| Mode filter | `modeName` |
+
+**MCP live tool** (Cloud Run, calls TfL directly): `get_line_status(line | mode)`.
+
+### Cold path (daily, BigQuery → Sheet → Tableau)
+
+| Table | Grain | Key columns | Rows/year |
+|---|---|---|---|
+| `daily_line_reliability` | line × day | observed in-service minutes, good minutes, `reliability_pct`, incident count, disrupted minutes by severity | ~7,300 |
+| `line_incidents` | incident | `incident_key`, line, start (`fromDate`), end (first `RESOLVED`), duration, censored, worst severity, cause category, text-update count | a few thousand |
+| `line_hourly_profile` | line × weekday × hour | disruption minutes, observed minutes | 3,360 (fixed) |
+
+Sheet cell budget: aggregate hourly data to weekday × hour so the published table has a fixed size;
+full hourly detail stays in BigQuery.
+
+### Metric definitions (shared by Tableau and MCP)
+
+| Metric | Definition |
+|---|---|
+| In-service observed minutes | Minutes covered by coverage records, excluding status 20 (Service Closed) |
+| Good minutes | In-service observed minutes with status 10 (Good Service) or 18 (No Issues) |
+| `reliability_pct` | Good minutes ÷ in-service observed minutes |
+| Incident duration | First `RESOLVED` observation − `fromDate` (end precision ~±30 s) |
+| Censored incident | Still open when collection stopped; true duration is at least the observed duration |
+
+`fromDate` gives true start times even for incidents that began while the VM was off (captured by
+`BASELINE`), so collection gaps affect end times only — handled as censoring.
+
+### Cause categories
+
+First version: keyword rules on `reason` — signal → Signal failure; track → Track fault;
+ill / customer → Customer incident; train fault → Train fault; staff → Staff shortage; else Other.
+Measure the share of Other before considering a text classifier.
+
+### MCP and RAG
+
+| Question | MCP tool (numbers) | RAG (context) |
+|---|---|---|
+| Which line was least reliable last week? | `get_reliability(period)` | `reliability_pct` definition |
+| How long do signal failures usually last? | `incident_durations(cause)` | What censoring means for the answer |
+| Why was the Jubilee line bad on Tuesday? | `list_incidents(line, date)` | Incident reason texts |
+| Is the Overground worse at weekends? | `compare_reliability(weekday, weekend)` | Sampling-design caveat |
+
+### Business questions and methods (draft)
+
+| Business question | Method |
+|---|---|
+| Which lines are least reliable, and when? | Descriptive statistics, seasonality heatmap |
+| What causes disruptions, and how long do they last? | Survival analysis (censored durations) |
+| Is weekend service worse than weekdays? | Hypothesis testing |
+| Is reliability improving or worsening? | Trend analysis (rolling averages) |
+| Was today unusually bad? | Anomaly detection on daily incident counts |
+| How often do incidents escalate (e.g. Minor → Severe)? | Descriptive statistics over `UPDATE` records |

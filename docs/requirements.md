@@ -54,7 +54,7 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 
 | # | Endpoint | Refresh (measured) | Use | Card |
 |---|---|---|---|---|
-| 1 | `/Line/Mode/{modes}/Status` (all rail modes) | 30 s, event-driven | Live status; reliability KPI | [ ] |
+| 1 | `/Line/Mode/{modes}/Status` (all rail modes) | 30 s, event-driven | Live status; reliability KPI | [x] [card](endpoints/line_status.md) |
 | 2 | `/Line/Mode/{modes}/Disruption`, `/StopPoint/Mode/{modes}/Disruption` | 30 s | Disruption causes and durations | [ ] |
 | 3 | `/Mode/{mode}/Arrivals` | 30 s | Waits and headways | [ ] |
 | 4 | `/BikePoint` | 30 s, snapshot (store changes only) | Live map; empty/full docks | [ ] |
