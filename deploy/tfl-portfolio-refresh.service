@@ -1,0 +1,12 @@
+# Refreshes the portfolio serving table (tfl_portfolio.line_disruption_hourly) once.
+# Triggered hourly by tfl-portfolio-refresh.timer. Logs: journalctl -u tfl-portfolio-refresh
+[Unit]
+Description=Refresh the TfL portfolio serving table in BigQuery
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/bin/sh -c '/usr/bin/bq query --use_legacy_sql=false --project_id=transport-for-london-511318 --location=US --format=none < analytics/line_status/03_portfolio_serving.sql'

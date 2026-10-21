@@ -1,0 +1,14 @@
+# Runs the portfolio refresh at 5 minutes past every hour, after the collector has
+# published the previous hour's batches. Persistent=true catches up a missed run after
+# downtime. Install alongside the .service file:
+#   sudo cp deploy/tfl-portfolio-refresh.* /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now tfl-portfolio-refresh.timer
+[Unit]
+Description=Hourly refresh of the TfL portfolio serving table
+
+[Timer]
+OnCalendar=*-*-* *:05:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
