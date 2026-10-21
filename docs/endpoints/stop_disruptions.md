@@ -1,6 +1,6 @@
 # Endpoint analysis card — Stop disruptions (rail modes)
 
-Status: steps 1–3 complete · steps 4–5 (data-quality rules, hot/cold use) pending
+Status: steps 1–4 complete · step 5 (hot/cold use) pending
 
 | | |
 |---|---|
@@ -61,7 +61,7 @@ is part of `disruption_key`; deduplicating on (station, description) would delet
 |---|---|---|
 | `fromDate` | Event time (TfL-reported start) | Unchanged for all 55 matched disruptions across both calls |
 | `toDate`, PlannedWork | Planned end date; usable | Real dates (Nov 2026 – May 2027) |
-| `toDate`, RealTime | Stored as `to_date_raw`, **never used** | Rolling placeholder: moved 23:58 → 00:00 between calls ~2 min apart (≈ call time + 3 h) |
+| `toDate`, RealTime | Stored as `to_date_raw` with `to_date_kind`; **never used** in fingerprints or metrics | Mixed meaning (step 4, all 36 RealTime records): rolling call time + 3 h (2 records, moved 23:58 → 00:00 between calls), end of service day 00:29 UTC (most), or a real future date (a few) |
 | Record order | Ignored | Shuffled between calls with identical content |
 
 ## 3. Storage layout and retention
@@ -113,7 +113,56 @@ line status collector so a failure in one cannot stop the other.
 
 ## 4. Data-quality rules
 
-*Pending.*
+Twelve candidate rules were tested against both calls of 2026-10-21. Same principle as line status:
+validation gates the processed zone, never raw.
+
+| Level | Action |
+|---|---|
+| ERROR | No change records from this poll; raw kept; coverage marks failure |
+| Record excluded | The record cannot be identified; skipped and logged, rest of the poll processed |
+| WARN | Keep, flag, log |
+| CHECK | Consistency across polls, SQL in BigQuery |
+
+### Per poll
+
+| # | Rule | Level |
+|---|---|---|
+| P1 | HTTP 200 and body is a JSON array | ERROR |
+| P2 | At least one record | WARN |
+| P3 | `disruption_key` (station + type + fromDate) unique within the poll | ERROR (a clash means the identity design is broken) |
+
+### Per record
+
+| # | Rule | Level |
+|---|---|---|
+| D1 | `atcoCode`, `type`, `fromDate`, `description` present; `fromDate` parses as UTC | Record excluded + WARN |
+| D2 | `atcoCode` matches the NaPTAN pattern `\d{3}[0-9A-Z]{4,12}` | WARN |
+| D3 | `mode` is a known rail mode | WARN |
+| D4 | `type` and `appearance` are known values | WARN (TfL may add values) |
+| D5 | PlannedWork: `toDate` parses and is after `fromDate` | WARN |
+| D6 | `fromDate` ≤ call time + 5 min | WARN |
+| D7 | One `commonName` per `atcoCode` within the poll | WARN |
+
+Rejected: "description starts with the station name" (fails for "Step-free routes from Liverpool
+Street…", "BANK AND MONUMENT STATIONS…").
+
+### Across polls (BigQuery)
+
+| # | Check | Purpose |
+|---|---|---|
+| C1 | No duplicate `poll_id` | Idempotency |
+| C2 | Reprocessing raw produces identical change records | Deterministic logic |
+| C3 | Report gaps > 150 s between polls within a session | Coverage |
+| C4 | Every session starts with `BASELINE` records | On-demand correctness |
+| C5 | Disruptions open at session end are marked censored | Survival analysis |
+| C6 | Same station, type and description reappearing with a new `fromDate` | Detects TfL re-issuing a notice |
+| C7 | Batch record count and SHA-256 match the manifest | Archive integrity |
+| C8 | At least one raw response stored per covered hour | Verifies the checkpoint safety net |
+| C9 | Every content-hash change has a raw response stored | Verifies store-on-change never skips a change |
+| C10 | Share of RealTime `toDate` by kind (rolling / end of day / dated) | Measures the step-4 finding over time |
+
+C8 and C9 test the storage strategy itself: when less raw data is kept, checks must prove nothing
+important was lost.
 
 ## 5. Hot and cold use
 
