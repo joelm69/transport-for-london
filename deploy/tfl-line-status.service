@@ -1,0 +1,26 @@
+# systemd unit for the always-on line status collector on the GCE VM.
+# Install:  sudo cp deploy/tfl-line-status.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now tfl-line-status
+# Logs:     journalctl -u tfl-line-status -f
+[Unit]
+Description=TfL rail line status collector (writes to GCS)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/home/joelmathooko/tfl-pipeline/.venv/bin/python -m src.collectors.line_status --forever --window continuous --lake gcs
+Environment=PYTHONUNBUFFERED=1
+# Restart after crashes or network failures, but not in a tight loop.
+Restart=always
+RestartSec=30
+# SIGTERM lets the collector finish its poll and publish open batches.
+KillSignal=SIGTERM
+TimeoutStopSec=90
+# Protect the 1 GB e2-micro from a runaway process.
+MemoryMax=300M
+
+[Install]
+WantedBy=multi-user.target

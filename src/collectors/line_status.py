@@ -10,6 +10,7 @@ Design: docs/endpoints/line_status.md. Each poll:
 Usage:
     python -m src.collectors.line_status --minutes 10 --window manual
     python -m src.collectors.line_status --polls 3 --lake gcs
+    python -m src.collectors.line_status --forever --window continuous --lake gcs
 """
 
 import argparse
@@ -198,6 +199,8 @@ def main(argv=None):
     limit = parser.add_mutually_exclusive_group()
     limit.add_argument("--minutes", type=float, help="Stop after this many minutes")
     limit.add_argument("--polls", type=int, help="Stop after this many polls")
+    limit.add_argument("--forever", action="store_true",
+                       help="Run until stopped (SIGTERM/SIGINT), e.g. as a systemd service")
     parser.add_argument("--interval", type=float, help="Seconds between polls (default from config)")
     parser.add_argument("--window", default="manual",
                         help="collection_window label, e.g. fixed_evening_peak, visitor, manual")
@@ -223,7 +226,10 @@ def main(argv=None):
     signal.signal(signal.SIGINT, request_stop)
 
     interval = args.interval or config["poll_interval_seconds"]
-    max_polls = args.polls if args.polls else (None if args.minutes else 10)
+    if args.forever or args.minutes:
+        max_polls = None
+    else:
+        max_polls = args.polls or 10
     deadline = time.monotonic() + args.minutes * 60 if args.minutes else None
 
     logger.info("Collecting line status to %r every %ss (window=%s)", lake, interval, args.window)
