@@ -7,6 +7,7 @@ Streamlit reruns this script on every interaction, so the TfL call is
 cached for 30 s (TfL's own max-age) and shared by all visitors.
 """
 
+import base64
 import json
 import sys
 from datetime import datetime, timezone
@@ -22,6 +23,7 @@ from src.clients.tfl import TflClient, TflError  # noqa: E402
 from src.presentation.line_board import MODE_NAMES, board_rows, summary  # noqa: E402
 
 CONFIG = json.loads((PROJECT_ROOT / "config" / "line_status.json").read_text(encoding="utf-8"))
+COVER_IMAGE = PROJECT_ROOT / "assets" / "transport_for_london_cover_page.jpeg"
 REFRESH_SECONDS = 30
 LEVEL_STYLE = {
     "stopped": ("red", "🔴"),
@@ -60,6 +62,21 @@ def render_disruption(row):
         if row["reason"]:
             st.caption(row["reason"])
 
+
+@st.cache_data
+def cover_banner_html(path):
+    """Fixed-height banner that crops instead of stretching the small image."""
+    encoded = base64.b64encode(Path(path).read_bytes()).decode("ascii")
+    return (
+        f'<img src="data:image/jpeg;base64,{encoded}" '
+        'alt="Red London bus passing the Houses of Parliament and Big Ben" '
+        'style="width:100%;height:220px;object-fit:cover;object-position:center 60%;'
+        'border-radius:0.75rem;margin-bottom:0.5rem;">'
+    )
+
+
+if COVER_IMAGE.is_file():
+    st.markdown(cover_banner_html(str(COVER_IMAGE)), unsafe_allow_html=True)
 
 st.title("🚇 London Rail — Live Status")
 st.caption(
