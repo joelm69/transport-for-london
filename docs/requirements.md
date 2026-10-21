@@ -24,7 +24,7 @@ Last reviewed: 2026-10-21
 
 ## 1. Data presentation
 
-- [~] Streamlit: live and near-real-time transport data — rail line status board (`app/streamlit_app.py`), runs locally; not yet deployed
+- [x] Streamlit: live rail line status — public on the portfolio case study (joeldataportfolio.streamlit.app/transport_for_london, logic vendored in the portfolio's `tfl_live/`); standalone board in `app/streamlit_app.py`
 - [ ] Streamlit + MCP: AI-powered queries about current TfL conditions
 - [ ] Tableau Public: historical analytics, data science, KPIs and trends
 - [ ] Google Sheets: temporary bridge for Tableau Public publishing
