@@ -35,3 +35,5 @@ tmp/
 dist/
 build/
 *.egg-info/
+# TfL Tube map: licensed for personal use only, never publish
+assets/map_legend.gif
