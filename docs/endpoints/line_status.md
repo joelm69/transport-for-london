@@ -1,6 +1,6 @@
 # Endpoint analysis card — Line status (all rail modes)
 
-Status: steps 1–3 complete · steps 4–5 (data-quality rules, hot/cold use) pending
+Status: steps 1–4 complete · step 5 (hot/cold use) pending
 
 | | |
 |---|---|
@@ -106,7 +106,67 @@ changes, bounded by coverage, so KPIs only count observed time.
 
 ## 4. Data-quality rules
 
-*Pending.*
+Rules were tested against the two calls of 2026-10-21 before being adopted.
+
+**Principle:** validation gates the processed zone, never raw. Raw is always stored; an ERROR means no
+change records from that poll and the coverage record marks it failed. Fixing a rule later means
+reprocessing raw, with no history lost.
+
+| Level | Action |
+|---|---|
+| ERROR | Structurally broken: no change records from this poll; raw kept; coverage marks failure |
+| WARN | Unusual but possibly legitimate: keep, flag, log, review |
+| CHECK | Consistency across polls: SQL in BigQuery |
+
+Reference: TfL severity codes 0–20 (`/Line/Meta/Severity`), identical for all rail modes on
+2026-10-21. Refresh daily; treat as reference data.
+
+### Per poll
+
+| # | Rule | Level |
+|---|---|---|
+| P1 | HTTP 200 and body is a JSON array | ERROR |
+| P2 | All 20 expected line IDs present, no duplicates | ERROR if missing/duplicate · WARN for unknown extra ID |
+| P3 | Every line has at least one status | ERROR |
+
+### Per status
+
+| # | Rule | Level |
+|---|---|---|
+| S1 | `statusSeverity` is in TfL's severity list for the mode | WARN (TfL may add codes) |
+| S2 | `statusSeverityDescription` matches the code | WARN |
+| S3 | If `status.lineId` is present, it equals `line.id` (Good Service omits it) | ERROR |
+| S4 | Not Good Service → non-empty `reason` | WARN |
+| S5 | Not Good Service → ≥ 1 validity period with parseable UTC `fromDate`; otherwise `incident_key` is null and the record is flagged | WARN |
+| S6 | `validityPeriods[0].isNow` is true | WARN |
+| S7 | `fromDate` ≤ `collected_at_utc` + 5 min | WARN |
+| S8 | Good Service → empty `reason` and no validity periods | WARN |
+
+Rejected candidates: "reason starts with the line name" (fails for tram "London Tramlink" and the
+Elizabeth line); "`status.lineId` always equals `line.id`" (Good Service omits `lineId`).
+
+### Across polls (BigQuery)
+
+| # | Check | Purpose |
+|---|---|---|
+| C1 | No duplicate `poll_id` | Idempotency |
+| C2 | Reprocessing raw produces identical change records | Deterministic logic |
+| C3 | Report gaps > 90 s between polls within a session | Coverage for KPIs |
+| C4 | Every session starts with `BASELINE` records | On-demand correctness |
+| C5 | Incidents open at session end are marked censored | Survival analysis |
+| C6 | `fromDate` never changes within an `incident_key` | Verifies the step-2 assumption |
+| C7 | Batch record count and SHA-256 match the manifest before promotion from `tmp/` to `raw/` | Archive integrity |
+
+### Where rules run
+
+- P and S rules: Python validator at collection time
+- C rules: SQL in BigQuery
+- All rules: pytest, using the saved responses of 2026-10-21 as fixtures
+
+### Note for metric definitions
+
+Reliability must treat 10 Good Service and 18 No Issues as good, and exclude 20 Service Closed
+(overnight closures) from the denominator; otherwise every night counts as a failure.
 
 ## 5. Hot and cold use
 
