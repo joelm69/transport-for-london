@@ -35,7 +35,7 @@ Last reviewed: 2026-10-21
 
 - [~] Integrate and test all relevant TfL API endpoints — 71/84 pass (sweep 2026-10-20); freshness measured
 - [~] Use Python for ingestion, validation and transformation — bus reference collectors, transformers, validators exist
-- [ ] Shared TfL client: timeouts, retries with backoff, rate-limit handling, safe error messages
+- [x] Shared TfL client (`src/clients/tfl.py`): timeouts, retries with backoff and jitter, `Retry-After`, safe error messages — 25 unit tests
 - [ ] Live endpoint registry (`config/live_endpoints.yaml`)
 - [ ] Use Kafka for event-streaming workflows
 - [ ] Use Airflow to orchestrate and schedule pipelines
@@ -43,7 +43,7 @@ Last reviewed: 2026-10-21
 - [~] Use BigQuery for analytical queries and transformations — `route_coverage` view exists
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
 - [~] Automated data-quality checks — snapshot validators exist
-- [ ] Unit tests (pytest, mocked responses, no network)
+- [~] Unit tests (pytest, mocked responses, no network) — client covered; run with `.venv/bin/python -m pytest`
 
 ### Endpoint analysis card (completed for each endpoint before its collector is written)
 
@@ -185,7 +185,7 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 - [~] Least-privilege IAM permissions — VM service account cannot write logs; Streamlit account to be created
 - [~] Store API keys and secrets securely — `.env` locally, Secret Manager on GCP
 - [ ] Logging and monitoring
-- [ ] Handle API failures, retries and rate limits (shared client)
+- [~] Handle API failures, retries and rate limits — shared client done; existing collectors not yet migrated to it (shared client)
 - [~] Prevent duplicate records and overlapping pipeline runs — create-only writes; no run locking yet
 - [~] Test endpoints and pipeline components independently — endpoint sweep done; no unit tests yet
 - [ ] Restrict the firewall: SSH via IAP only, remove the open RDP rule
