@@ -74,7 +74,9 @@ bounded AS (
         session_end
       ),
       session_end
-    ) AS period_end
+    ) AS period_end,
+    LAG(state_class) OVER (PARTITION BY line_id, session_no ORDER BY period_start) AS previous_class,
+    LEAD(state_class) OVER (PARTITION BY line_id, session_no ORDER BY period_start) AS next_class
   FROM in_session
 )
 SELECT
@@ -103,9 +105,12 @@ SELECT
     ELSE 'Other'
   END AS cause_category,
   incident_keys,
-  -- Debounce: a state lasting under 60 s (a single poll) is treated as flapping and not
-  -- counted as disruption (check C8). Raw changes keep every flip.
-  TIMESTAMP_DIFF(period_end, period_start, SECOND) < 60 AS is_flap
+  -- Debounce (check C8): a flap is a brief switch to a DIFFERENT state and back, e.g.
+  -- Good -> Severe Delays (30 s) -> Good. A short period inside an ongoing disruption
+  -- (TfL editing its message) is not a flap. Raw changes keep every flip.
+  TIMESTAMP_DIFF(period_end, period_start, SECOND) < 60
+    AND next_class IS NOT NULL AND next_class != state_class
+    AND (previous_class IS NULL OR previous_class != state_class) AS is_flap
 FROM bounded
 WHERE period_end > period_start;
 
