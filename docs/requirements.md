@@ -43,7 +43,7 @@ Last reviewed: 2026-10-21
 - [x] Use BigQuery for analytical queries and transformations — line status external tables and views (`analytics/line_status/`), hourly serving table `tfl_portfolio.line_disruption_hourly` refreshed by a systemd timer on the VM
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
 - [~] Automated data-quality checks — snapshot validators exist
-- [~] Unit tests (pytest, mocked responses, no network) — client and line status covered (63 tests); run with `.venv/bin/python -m pytest`
+- [~] Unit tests (pytest, mocked responses, no network) — client, line status and stop disruptions covered (100 tests); run with `.venv/bin/python -m pytest`
 
 ### Endpoint analysis card (completed for each endpoint before its collector is written)
 

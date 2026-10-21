@@ -1,6 +1,6 @@
 # Endpoint analysis card — Stop disruptions (rail modes)
 
-Status: complete (2026-10-22) — ready for collector implementation
+Status: complete (2026-10-22) · collector live: `src/collectors/stop_disruptions.py`, systemd service `tfl-stop-disruptions` (since 2026-10-21 21:12 UTC)
 
 | | |
 |---|---|
@@ -216,3 +216,10 @@ RAG over notice descriptions answers "what is happening at Bank?"; MCP tools ret
   rail station locations.
 - **Station → line links:** `concernedLines` appeared on 1 of 63 records; linking notices to lines
   needs rail route sequences, as already built for buses.
+
+## Findings from the first live run (2026-10-21 21:11 UTC)
+
+- Store-on-change works: after the baseline, identical polls stored no raw copy (equal content hash).
+- `to_date_kind` across 63 notices: 50 end of service day, 11 planned, 2 rolling.
+- **47 of 63 station notices (75 %) concern accessibility** (lifts, step-free access, escalators),
+  e.g. "Vauxhall: reduced escalator service". Accessibility is the dominant theme of this feed.
