@@ -169,9 +169,9 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 
 - [ ] Target $0 spend where feasible (Kafka/Airflow VM time is the main cost)
 - [ ] Use lightweight cloud resources (Cloud Run for MCP; VM sized for Kafka/Airflow — confirm cost first)
-- [~] Stop the GCP VM between jobs — done manually; automatic shutdown not built
+- [x] Always-on collection on a free-tier e2-micro VM (changed 2026-10-21 from stopping the VM between jobs); Kafka/Airflow will need a temporary resize or a second on-demand VM
 - [x] Verify that the VM is stopped after use — checked 2026-10-21
-- [ ] Monitor costs and configure a budget alert
+- [x] Budget alert: "TfL 10$ budget" (50% / 90% / 100%) on the TfL project; expected cost ~$4/month (external IP)
 - [ ] Minimise unnecessary API polling, storage and data transfer (change-only storage for snapshot feeds)
 
 ### VM start-up (decision pending)
@@ -182,10 +182,10 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 
 ## 7. Security and reliability
 
-- [~] Least-privilege IAM permissions — VM service account cannot write logs; Streamlit account to be created
+- [~] Least-privilege IAM — `tfl-pipeline-sa` has bucket objectAdmin, secret accessor and log writer only; consider narrowing objectAdmin (which can delete history) to create + read
 - [~] Store API keys and secrets securely — `.env` locally, Secret Manager on GCP
-- [ ] Logging and monitoring
+- [~] Logging and monitoring — collector logs to the systemd journal (`journalctl -u tfl-line-status`); VM service account can write to Cloud Logging; no alerting yet
 - [~] Handle API failures, retries and rate limits — shared client done; existing collectors not yet migrated to it (shared client)
 - [~] Prevent duplicate records and overlapping pipeline runs — create-only writes; no run locking yet
 - [~] Test endpoints and pipeline components independently — endpoint sweep done; no unit tests yet
-- [ ] Restrict the firewall: SSH via IAP only, remove the open RDP rule
+- [x] Firewall: SSH only from Google IAP (35.235.240.0/20); open RDP rule removed
