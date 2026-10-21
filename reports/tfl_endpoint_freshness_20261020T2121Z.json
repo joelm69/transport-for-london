@@ -1,0 +1,2565 @@
+{
+  "generated_at_utc": "2026-10-20T21:21:33.204950+00:00",
+  "rounds": 4,
+  "minimum_gap_seconds": 60,
+  "endpoints": [
+    {
+      "path": "/BikePoint",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:22.658182+00:00",
+      "last_poll_utc": "2026-10-20T21:19:44.806775+00:00"
+    },
+    {
+      "path": "/Cabwise/search",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:27.452494+00:00",
+      "last_poll_utc": "2026-10-20T21:19:50.130346+00:00"
+    },
+    {
+      "path": "/Line/{ids}/Arrivals/{stopPointId}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:06.334734+00:00",
+      "last_poll_utc": "2026-10-20T21:20:24.703488+00:00"
+    },
+    {
+      "path": "/Mode/{mode}/Arrivals",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:08.409727+00:00",
+      "last_poll_utc": "2026-10-20T21:20:26.965338+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/Arrivals",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:14:17.183871+00:00",
+      "last_poll_utc": "2026-10-20T21:21:16.805407+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/ArrivalDepartures",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:14:18.200535+00:00",
+      "last_poll_utc": "2026-10-20T21:21:17.803422+00:00"
+    },
+    {
+      "path": "/StopPoint/Mode/{modes}/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:14:21.799554+00:00",
+      "last_poll_utc": "2026-10-20T21:21:21.059018+00:00"
+    },
+    {
+      "path": "/Vehicle/{ids}/Arrivals",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:14:34.580028+00:00",
+      "last_poll_utc": "2026-10-20T21:21:32.108345+00:00"
+    },
+    {
+      "path": "/Road/{ids}/Status",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 3,
+      "change_rate": 1.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:24.458782+00:00",
+      "last_poll_utc": "2026-10-20T21:20:41.691298+00:00"
+    },
+    {
+      "path": "/Journey/JourneyResults/{from}/to/{to}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 2,
+      "change_rate": 0.67,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:12:29.985161+00:00",
+      "last_poll_utc": "2026-10-20T21:19:52.866300+00:00"
+    },
+    {
+      "path": "/Place",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 2,
+      "change_rate": 0.67,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:19.091829+00:00",
+      "last_poll_utc": "2026-10-20T21:20:36.628931+00:00"
+    },
+    {
+      "path": "/StopPoint/Meta/Categories",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 2,
+      "change_rate": 0.67,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:37.933659+00:00",
+      "last_poll_utc": "2026-10-20T21:21:04.988091+00:00"
+    },
+    {
+      "path": "/StopPoint/Type/{types}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 2,
+      "change_rate": 0.67,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:44.171540+00:00",
+      "last_poll_utc": "2026-10-20T21:21:10.816631+00:00"
+    },
+    {
+      "path": "/StopPoint/Search",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 2,
+      "change_rate": 0.67,
+      "cache_max_age_seconds": 302400,
+      "first_poll_utc": "2026-10-20T21:14:28.444476+00:00",
+      "last_poll_utc": "2026-10-20T21:21:27.067948+00:00"
+    },
+    {
+      "path": "/Place/Type/{types}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 1,
+      "change_rate": 0.33,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:14.632492+00:00",
+      "last_poll_utc": "2026-10-20T21:20:32.857259+00:00"
+    },
+    {
+      "path": "/BikePoint/{id}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:25.397056+00:00",
+      "last_poll_utc": "2026-10-20T21:19:47.684433+00:00"
+    },
+    {
+      "path": "/Line/{ids}/Status",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:47.733749+00:00",
+      "last_poll_utc": "2026-10-20T21:20:06.309820+00:00"
+    },
+    {
+      "path": "/Line/Status/{severity}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:51.052778+00:00",
+      "last_poll_utc": "2026-10-20T21:20:08.396798+00:00"
+    },
+    {
+      "path": "/Line/Mode/{modes}/Status",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:12:57.364343+00:00",
+      "last_poll_utc": "2026-10-20T21:20:16.216165+00:00"
+    },
+    {
+      "path": "/Line/{ids}/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:02.804508+00:00",
+      "last_poll_utc": "2026-10-20T21:20:20.974334+00:00"
+    },
+    {
+      "path": "/Line/Mode/{modes}/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:04.932639+00:00",
+      "last_poll_utc": "2026-10-20T21:20:21.966227+00:00"
+    },
+    {
+      "path": "/Mode/ActiveServiceTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:07.432609+00:00",
+      "last_poll_utc": "2026-10-20T21:20:26.006843+00:00"
+    },
+    {
+      "path": "/Occupancy/BikePoints/{ids}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:13:11.107129+00:00",
+      "last_poll_utc": "2026-10-20T21:20:29.623050+00:00"
+    },
+    {
+      "path": "/StopPoint/{ids}/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 30,
+      "first_poll_utc": "2026-10-20T21:14:22.833971+00:00",
+      "last_poll_utc": "2026-10-20T21:21:22.088344+00:00"
+    },
+    {
+      "path": "/Road",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:22.226220+00:00",
+      "last_poll_utc": "2026-10-20T21:20:39.549045+00:00"
+    },
+    {
+      "path": "/Road/{ids}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:23.314821+00:00",
+      "last_poll_utc": "2026-10-20T21:20:40.523546+00:00"
+    },
+    {
+      "path": "/Road/{ids}/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:25.500824+00:00",
+      "last_poll_utc": "2026-10-20T21:20:42.826192+00:00"
+    },
+    {
+      "path": "/Road/all/Street/Disruption",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:26.847079+00:00",
+      "last_poll_utc": "2026-10-20T21:20:44.187275+00:00"
+    },
+    {
+      "path": "/Road/all/Disruption/{disruptionIds}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 150,
+      "first_poll_utc": "2026-10-20T21:13:28.333228+00:00",
+      "last_poll_utc": "2026-10-20T21:20:45.696630+00:00"
+    },
+    {
+      "path": "/AirQuality",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 1800,
+      "first_poll_utc": "2026-10-20T21:12:21.614636+00:00",
+      "last_poll_utc": "2026-10-20T21:19:43.858439+00:00"
+    },
+    {
+      "path": "/Place/{id}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 1800,
+      "first_poll_utc": "2026-10-20T21:13:18.106754+00:00",
+      "last_poll_utc": "2026-10-20T21:20:35.633415+00:00"
+    },
+    {
+      "path": "/Search",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 1800,
+      "first_poll_utc": "2026-10-20T21:13:31.986005+00:00",
+      "last_poll_utc": "2026-10-20T21:20:49.133609+00:00"
+    },
+    {
+      "path": "/Journey/Meta/Modes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:29.022693+00:00",
+      "last_poll_utc": "2026-10-20T21:19:51.833941+00:00"
+    },
+    {
+      "path": "/Line/Meta/Modes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:31.734306+00:00",
+      "last_poll_utc": "2026-10-20T21:19:55.211090+00:00"
+    },
+    {
+      "path": "/Line/Meta/Severity",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:32.785439+00:00",
+      "last_poll_utc": "2026-10-20T21:19:56.186123+00:00"
+    },
+    {
+      "path": "/Line/Meta/DisruptionCategories",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:33.905214+00:00",
+      "last_poll_utc": "2026-10-20T21:19:57.217755+00:00"
+    },
+    {
+      "path": "/Line/Meta/ServiceTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:34.901928+00:00",
+      "last_poll_utc": "2026-10-20T21:19:58.210104+00:00"
+    },
+    {
+      "path": "/Line/{ids}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:36.092325+00:00",
+      "last_poll_utc": "2026-10-20T21:19:59.281409+00:00"
+    },
+    {
+      "path": "/Line/Mode/{modes}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:37.092140+00:00",
+      "last_poll_utc": "2026-10-20T21:20:00.354319+00:00"
+    },
+    {
+      "path": "/Line/Route",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:38.254740+00:00",
+      "last_poll_utc": "2026-10-20T21:20:01.449875+00:00"
+    },
+    {
+      "path": "/Line/{ids}/Route",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:43.880381+00:00",
+      "last_poll_utc": "2026-10-20T21:20:03.251284+00:00"
+    },
+    {
+      "path": "/Line/Mode/{modes}/Route",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:44.984804+00:00",
+      "last_poll_utc": "2026-10-20T21:20:04.219349+00:00"
+    },
+    {
+      "path": "/Line/{id}/Route/Sequence/{direction}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:46.127023+00:00",
+      "last_poll_utc": "2026-10-20T21:20:05.324424+00:00"
+    },
+    {
+      "path": "/Line/Search/{query}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:49.968960+00:00",
+      "last_poll_utc": "2026-10-20T21:20:07.385708+00:00"
+    },
+    {
+      "path": "/Line/{id}/StopPoints",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:58.395313+00:00",
+      "last_poll_utc": "2026-10-20T21:20:17.362426+00:00"
+    },
+    {
+      "path": "/Line/{id}/Timetable/{fromStopPointId}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:12:59.723915+00:00",
+      "last_poll_utc": "2026-10-20T21:20:18.699458+00:00"
+    },
+    {
+      "path": "/Line/{id}/Timetable/{fromStopPointId}/to/{toStopPointId}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:00.785765+00:00",
+      "last_poll_utc": "2026-10-20T21:20:19.442412+00:00"
+    },
+    {
+      "path": "/Place/Meta/Categories",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:12.185967+00:00",
+      "last_poll_utc": "2026-10-20T21:20:30.956210+00:00"
+    },
+    {
+      "path": "/Place/Meta/PlaceTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:13.636037+00:00",
+      "last_poll_utc": "2026-10-20T21:20:31.932071+00:00"
+    },
+    {
+      "path": "/Place/{type}/At/{Lat}/{Lon}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:21.215626+00:00",
+      "last_poll_utc": "2026-10-20T21:20:38.582224+00:00"
+    },
+    {
+      "path": "/Road/Meta/Categories",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:29.595489+00:00",
+      "last_poll_utc": "2026-10-20T21:20:47.016801+00:00"
+    },
+    {
+      "path": "/Road/Meta/Severities",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:30.643164+00:00",
+      "last_poll_utc": "2026-10-20T21:20:48.071815+00:00"
+    },
+    {
+      "path": "/Search/BusSchedules",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:34.039223+00:00",
+      "last_poll_utc": "2026-10-20T21:20:50.454579+00:00"
+    },
+    {
+      "path": "/Search/Meta/SearchProviders",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:35.034973+00:00",
+      "last_poll_utc": "2026-10-20T21:21:01.933895+00:00"
+    },
+    {
+      "path": "/Search/Meta/Categories",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:36.167028+00:00",
+      "last_poll_utc": "2026-10-20T21:21:02.916023+00:00"
+    },
+    {
+      "path": "/Search/Meta/Sorts",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:36.985090+00:00",
+      "last_poll_utc": "2026-10-20T21:21:03.924040+00:00"
+    },
+    {
+      "path": "/StopPoint/Meta/StopTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:39.004162+00:00",
+      "last_poll_utc": "2026-10-20T21:21:06.075510+00:00"
+    },
+    {
+      "path": "/StopPoint/Meta/Modes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:40.761051+00:00",
+      "last_poll_utc": "2026-10-20T21:21:07.122541+00:00"
+    },
+    {
+      "path": "/StopPoint/{ids}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:41.783049+00:00",
+      "last_poll_utc": "2026-10-20T21:21:08.225307+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/placeTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:43.103483+00:00",
+      "last_poll_utc": "2026-10-20T21:21:09.591306+00:00"
+    },
+    {
+      "path": "/StopPoint/Type/{types}/page/{page}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:13:59.440509+00:00",
+      "last_poll_utc": "2026-10-20T21:21:13.254168+00:00"
+    },
+    {
+      "path": "/StopPoint/ServiceTypes",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:15.644796+00:00",
+      "last_poll_utc": "2026-10-20T21:21:15.764281+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/CanReachOnLine/{lineId}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:19.298484+00:00",
+      "last_poll_utc": "2026-10-20T21:21:18.843118+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/Route",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:20.648376+00:00",
+      "last_poll_utc": "2026-10-20T21:21:19.898998+00:00"
+    },
+    {
+      "path": "/StopPoint/{id}/DirectionTo/{toStopPointId}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:23.987164+00:00",
+      "last_poll_utc": "2026-10-20T21:21:23.115088+00:00"
+    },
+    {
+      "path": "/StopPoint",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:25.083831+00:00",
+      "last_poll_utc": "2026-10-20T21:21:24.506410+00:00"
+    },
+    {
+      "path": "/StopPoint/Sms/{id}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:29.554257+00:00",
+      "last_poll_utc": "2026-10-20T21:21:28.122528+00:00"
+    },
+    {
+      "path": "/StopPoint/{stopPointId}/TaxiRanks",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:32.287639+00:00",
+      "last_poll_utc": "2026-10-20T21:21:29.877202+00:00"
+    },
+    {
+      "path": "/StopPoint/{stopPointId}/CarParks",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 43200,
+      "first_poll_utc": "2026-10-20T21:14:33.529960+00:00",
+      "last_poll_utc": "2026-10-20T21:21:31.078468+00:00"
+    },
+    {
+      "path": "/BikePoint/Search",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 302400,
+      "first_poll_utc": "2026-10-20T21:12:26.476218+00:00",
+      "last_poll_utc": "2026-10-20T21:19:49.001984+00:00"
+    },
+    {
+      "path": "/StopPoint/Search/{query}",
+      "polls": 4,
+      "comparisons": 3,
+      "changes": 0,
+      "change_rate": 0.0,
+      "cache_max_age_seconds": 302400,
+      "first_poll_utc": "2026-10-20T21:14:27.228633+00:00",
+      "last_poll_utc": "2026-10-20T21:21:25.999013+00:00"
+    }
+  ],
+  "observations": {
+    "/AirQuality": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:21.614636+00:00",
+        "status": 200,
+        "hash": "78ef151e07416a66f165890ac2c565764b63ea3b42659538e3e5e6893eaa1636",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:35.862283+00:00",
+        "status": 200,
+        "hash": "78ef151e07416a66f165890ac2c565764b63ea3b42659538e3e5e6893eaa1636",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:21.839046+00:00",
+        "status": 200,
+        "hash": "78ef151e07416a66f165890ac2c565764b63ea3b42659538e3e5e6893eaa1636",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:43.858439+00:00",
+        "status": 200,
+        "hash": "78ef151e07416a66f165890ac2c565764b63ea3b42659538e3e5e6893eaa1636",
+        "max_age": 1800
+      }
+    ],
+    "/BikePoint": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:22.658182+00:00",
+        "status": 200,
+        "hash": "f2e345008b91f4656ea148f9335b15cc13a55857d2c0f7105b364ec959e9b68b",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:36.941410+00:00",
+        "status": 200,
+        "hash": "77b33ce6eda99fe094d65b734c141db3a34c9224316a6cb01e07be321dbfb0a6",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:39.628705+00:00",
+        "status": 200,
+        "hash": "a3d940debb8ba5ee4e2d2b26cf07e27dd2b2c89906d9589754008109c1a5a117",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:44.806775+00:00",
+        "status": 200,
+        "hash": "b832288f28e512e9a83c131abc41cea27e24b87590f47308c26327133ac89578",
+        "max_age": 30
+      }
+    ],
+    "/BikePoint/{id}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:25.397056+00:00",
+        "status": 200,
+        "hash": "5f890818b824f24182a4b946b6614367fc17e3b3f3f1b5ccc7c32124c8da88e7",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:39.758252+00:00",
+        "status": 200,
+        "hash": "5f890818b824f24182a4b946b6614367fc17e3b3f3f1b5ccc7c32124c8da88e7",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:43.016790+00:00",
+        "status": 200,
+        "hash": "5f890818b824f24182a4b946b6614367fc17e3b3f3f1b5ccc7c32124c8da88e7",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:47.684433+00:00",
+        "status": 200,
+        "hash": "5f890818b824f24182a4b946b6614367fc17e3b3f3f1b5ccc7c32124c8da88e7",
+        "max_age": 30
+      }
+    ],
+    "/BikePoint/Search": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:26.476218+00:00",
+        "status": 200,
+        "hash": "e988fac07f40c6cfbe6949b0da81a260b1d42862c1e9fe77023cf5335dc8e5b0",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:40.814178+00:00",
+        "status": 200,
+        "hash": "e988fac07f40c6cfbe6949b0da81a260b1d42862c1e9fe77023cf5335dc8e5b0",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:44.057715+00:00",
+        "status": 200,
+        "hash": "e988fac07f40c6cfbe6949b0da81a260b1d42862c1e9fe77023cf5335dc8e5b0",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:49.001984+00:00",
+        "status": 200,
+        "hash": "e988fac07f40c6cfbe6949b0da81a260b1d42862c1e9fe77023cf5335dc8e5b0",
+        "max_age": 302400
+      }
+    ],
+    "/Cabwise/search": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:27.452494+00:00",
+        "status": 200,
+        "hash": "7395e2695ffda73d0a9cecd7d2257d4b8b66c7f56003bc41b129e696d0e54ae1",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:41.879680+00:00",
+        "status": 200,
+        "hash": "f6e5272fdcc34639b28c05cc23211ae04f6321f01dd7cf7e456d888a9bb121fc",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:45.006359+00:00",
+        "status": 200,
+        "hash": "72d030670bf611cce71786b8c12a8d5384a24505c52818ab65fe7d7f29255350",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:50.130346+00:00",
+        "status": 200,
+        "hash": "a461d6c4f6e8397f891bb0217b61cef53f97c9d83c442cfafdee3eaeb8058089",
+        "max_age": 30
+      }
+    ],
+    "/Journey/Meta/Modes": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:29.022693+00:00",
+        "status": 200,
+        "hash": "5dcc9438b6c62f75c2fac5d4ece49733b97da1431042df40eb2cd51580048ebe",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:43.341864+00:00",
+        "status": 200,
+        "hash": "5dcc9438b6c62f75c2fac5d4ece49733b97da1431042df40eb2cd51580048ebe",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:47.001865+00:00",
+        "status": 200,
+        "hash": "5dcc9438b6c62f75c2fac5d4ece49733b97da1431042df40eb2cd51580048ebe",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:51.833941+00:00",
+        "status": 200,
+        "hash": "5dcc9438b6c62f75c2fac5d4ece49733b97da1431042df40eb2cd51580048ebe",
+        "max_age": 43200
+      }
+    ],
+    "/Journey/JourneyResults/{from}/to/{to}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:29.985161+00:00",
+        "status": 200,
+        "hash": "dc957548647e2dea034ca6a18411a69a73cc25ef3f36d29b14d79ec3558770ce",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:44.545701+00:00",
+        "status": 200,
+        "hash": "45a7f026d11dcce88a701805b69a4fd2ac30e9d7d6b03473966def421889018d",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:48.078239+00:00",
+        "status": 200,
+        "hash": "45a7f026d11dcce88a701805b69a4fd2ac30e9d7d6b03473966def421889018d",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:52.866300+00:00",
+        "status": 200,
+        "hash": "b9a502b89bc07fa94228cbe6a0ed71ef37fd291f4d03aeae87e173e9c1024bf8",
+        "max_age": 150
+      }
+    ],
+    "/Line/Meta/Modes": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:31.734306+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:46.429860+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:49.085008+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:55.211090+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Meta/Severity": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:32.785439+00:00",
+        "status": 200,
+        "hash": "b97b6aa4d254ae4acf08fe4e4975d4f73db5757c6686b925a2fe1335c2af7b5d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:47.490559+00:00",
+        "status": 200,
+        "hash": "b97b6aa4d254ae4acf08fe4e4975d4f73db5757c6686b925a2fe1335c2af7b5d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:50.084604+00:00",
+        "status": 200,
+        "hash": "b97b6aa4d254ae4acf08fe4e4975d4f73db5757c6686b925a2fe1335c2af7b5d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:56.186123+00:00",
+        "status": 200,
+        "hash": "b97b6aa4d254ae4acf08fe4e4975d4f73db5757c6686b925a2fe1335c2af7b5d",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Meta/DisruptionCategories": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:33.905214+00:00",
+        "status": 200,
+        "hash": "bf7186c944d5f67c0428d2f3f35f2413c4de9da59c36c224718e5389012e608b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:48.604660+00:00",
+        "status": 200,
+        "hash": "bf7186c944d5f67c0428d2f3f35f2413c4de9da59c36c224718e5389012e608b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:51.060993+00:00",
+        "status": 200,
+        "hash": "bf7186c944d5f67c0428d2f3f35f2413c4de9da59c36c224718e5389012e608b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:57.217755+00:00",
+        "status": 200,
+        "hash": "bf7186c944d5f67c0428d2f3f35f2413c4de9da59c36c224718e5389012e608b",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Meta/ServiceTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:34.901928+00:00",
+        "status": 200,
+        "hash": "a85c7195f2a370c71c7a3d6bb15b44110d8d9b99a86214ee12845a16f7150a66",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:49.550036+00:00",
+        "status": 200,
+        "hash": "a85c7195f2a370c71c7a3d6bb15b44110d8d9b99a86214ee12845a16f7150a66",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:51.993505+00:00",
+        "status": 200,
+        "hash": "a85c7195f2a370c71c7a3d6bb15b44110d8d9b99a86214ee12845a16f7150a66",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:58.210104+00:00",
+        "status": 200,
+        "hash": "a85c7195f2a370c71c7a3d6bb15b44110d8d9b99a86214ee12845a16f7150a66",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{ids}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:36.092325+00:00",
+        "status": 200,
+        "hash": "e3649ee51772867fc62ecea879fb3d235f0506ea885447c5b1b8249d1eed51e1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:50.758693+00:00",
+        "status": 200,
+        "hash": "e3649ee51772867fc62ecea879fb3d235f0506ea885447c5b1b8249d1eed51e1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:52.912373+00:00",
+        "status": 200,
+        "hash": "e3649ee51772867fc62ecea879fb3d235f0506ea885447c5b1b8249d1eed51e1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:59.281409+00:00",
+        "status": 200,
+        "hash": "e3649ee51772867fc62ecea879fb3d235f0506ea885447c5b1b8249d1eed51e1",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Mode/{modes}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:37.092140+00:00",
+        "status": 200,
+        "hash": "df9f30fd459e4ded9f4fd55509bc9ed833d6eac272536bd5c9f91178e1c9b2a7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:51.921416+00:00",
+        "status": 200,
+        "hash": "df9f30fd459e4ded9f4fd55509bc9ed833d6eac272536bd5c9f91178e1c9b2a7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:53.983916+00:00",
+        "status": 200,
+        "hash": "df9f30fd459e4ded9f4fd55509bc9ed833d6eac272536bd5c9f91178e1c9b2a7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:00.354319+00:00",
+        "status": 200,
+        "hash": "df9f30fd459e4ded9f4fd55509bc9ed833d6eac272536bd5c9f91178e1c9b2a7",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Route": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:38.254740+00:00",
+        "status": 200,
+        "hash": "d149a95dc2ae8f6f34f5d3abaa4d0c68e74995fc7abcc6cf7d911eed8598b7c9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:52.944486+00:00",
+        "status": 200,
+        "hash": "d149a95dc2ae8f6f34f5d3abaa4d0c68e74995fc7abcc6cf7d911eed8598b7c9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:55.002456+00:00",
+        "status": 200,
+        "hash": "d149a95dc2ae8f6f34f5d3abaa4d0c68e74995fc7abcc6cf7d911eed8598b7c9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:01.449875+00:00",
+        "status": 200,
+        "hash": "d149a95dc2ae8f6f34f5d3abaa4d0c68e74995fc7abcc6cf7d911eed8598b7c9",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{ids}/Route": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:43.880381+00:00",
+        "status": 200,
+        "hash": "e02bbeb324bd748237eecb56f02e8e83a332f1ff7be9240fe09b5dabca453ada",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:54.890304+00:00",
+        "status": 200,
+        "hash": "e02bbeb324bd748237eecb56f02e8e83a332f1ff7be9240fe09b5dabca453ada",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:56.943990+00:00",
+        "status": 200,
+        "hash": "e02bbeb324bd748237eecb56f02e8e83a332f1ff7be9240fe09b5dabca453ada",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:03.251284+00:00",
+        "status": 200,
+        "hash": "e02bbeb324bd748237eecb56f02e8e83a332f1ff7be9240fe09b5dabca453ada",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Mode/{modes}/Route": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:44.984804+00:00",
+        "status": 200,
+        "hash": "353598b55e3592acb491069e5b394bffa84b182bf1f11a699d5eb4ae69621dc9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:55.873022+00:00",
+        "status": 200,
+        "hash": "353598b55e3592acb491069e5b394bffa84b182bf1f11a699d5eb4ae69621dc9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:57.922378+00:00",
+        "status": 200,
+        "hash": "353598b55e3592acb491069e5b394bffa84b182bf1f11a699d5eb4ae69621dc9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:04.219349+00:00",
+        "status": 200,
+        "hash": "353598b55e3592acb491069e5b394bffa84b182bf1f11a699d5eb4ae69621dc9",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{id}/Route/Sequence/{direction}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:46.127023+00:00",
+        "status": 200,
+        "hash": "ff313de14ab7101b74825601b04370fd3021a99c1cc884320c7fea70a2e573e7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:56.945689+00:00",
+        "status": 200,
+        "hash": "ff313de14ab7101b74825601b04370fd3021a99c1cc884320c7fea70a2e573e7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:58.600166+00:00",
+        "status": 200,
+        "hash": "ff313de14ab7101b74825601b04370fd3021a99c1cc884320c7fea70a2e573e7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:05.324424+00:00",
+        "status": 200,
+        "hash": "ff313de14ab7101b74825601b04370fd3021a99c1cc884320c7fea70a2e573e7",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{ids}/Status": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:47.733749+00:00",
+        "status": 200,
+        "hash": "f2eaf3817bd6dccf2589f64e08bf3f9d62fed23d92cd95f6d849a48ce8baa05b",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:58.196733+00:00",
+        "status": 200,
+        "hash": "f2eaf3817bd6dccf2589f64e08bf3f9d62fed23d92cd95f6d849a48ce8baa05b",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:00.639527+00:00",
+        "status": 200,
+        "hash": "f2eaf3817bd6dccf2589f64e08bf3f9d62fed23d92cd95f6d849a48ce8baa05b",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:06.309820+00:00",
+        "status": 200,
+        "hash": "f2eaf3817bd6dccf2589f64e08bf3f9d62fed23d92cd95f6d849a48ce8baa05b",
+        "max_age": 30
+      }
+    ],
+    "/Line/Search/{query}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:49.968960+00:00",
+        "status": 200,
+        "hash": "563b53031ab8c322ff8f870528046958a3a648ac5626a7afec4a10ff583299ab",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:14:59.151207+00:00",
+        "status": 200,
+        "hash": "563b53031ab8c322ff8f870528046958a3a648ac5626a7afec4a10ff583299ab",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:02.536205+00:00",
+        "status": 200,
+        "hash": "563b53031ab8c322ff8f870528046958a3a648ac5626a7afec4a10ff583299ab",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:07.385708+00:00",
+        "status": 200,
+        "hash": "563b53031ab8c322ff8f870528046958a3a648ac5626a7afec4a10ff583299ab",
+        "max_age": 43200
+      }
+    ],
+    "/Line/Status/{severity}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:51.052778+00:00",
+        "status": 200,
+        "hash": "946ace2d6448d8dec2be97513f6b417a132796bed46af23edb616f14cea36d04",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:00.238786+00:00",
+        "status": 200,
+        "hash": "946ace2d6448d8dec2be97513f6b417a132796bed46af23edb616f14cea36d04",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:03.455797+00:00",
+        "status": 200,
+        "hash": "946ace2d6448d8dec2be97513f6b417a132796bed46af23edb616f14cea36d04",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:08.396798+00:00",
+        "status": 200,
+        "hash": "946ace2d6448d8dec2be97513f6b417a132796bed46af23edb616f14cea36d04",
+        "max_age": 30
+      }
+    ],
+    "/Line/Mode/{modes}/Status": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:57.364343+00:00",
+        "status": 200,
+        "hash": "b2f460112efc505dfb2abf93e5cff25b94d195db15067674618d7821c12ef048",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:10.901882+00:00",
+        "status": 200,
+        "hash": "b2f460112efc505dfb2abf93e5cff25b94d195db15067674618d7821c12ef048",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:19.032696+00:00",
+        "status": 200,
+        "hash": "b2f460112efc505dfb2abf93e5cff25b94d195db15067674618d7821c12ef048",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:16.216165+00:00",
+        "status": 200,
+        "hash": "b2f460112efc505dfb2abf93e5cff25b94d195db15067674618d7821c12ef048",
+        "max_age": 30
+      }
+    ],
+    "/Line/{id}/StopPoints": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:58.395313+00:00",
+        "status": 200,
+        "hash": "3cb4cb976c2ed26290614f78cdc802afc0ea9942538449c8ac5e39faf7ab47b2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:12.010554+00:00",
+        "status": 200,
+        "hash": "3cb4cb976c2ed26290614f78cdc802afc0ea9942538449c8ac5e39faf7ab47b2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:21.654725+00:00",
+        "status": 200,
+        "hash": "3cb4cb976c2ed26290614f78cdc802afc0ea9942538449c8ac5e39faf7ab47b2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:17.362426+00:00",
+        "status": 200,
+        "hash": "3cb4cb976c2ed26290614f78cdc802afc0ea9942538449c8ac5e39faf7ab47b2",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{id}/Timetable/{fromStopPointId}": [
+      {
+        "polled_at_utc": "2026-10-20T21:12:59.723915+00:00",
+        "status": 200,
+        "hash": "18cf257be65e6d791ed497dc1d444ece99cf18925b90b7c2d8a6aaee8d043045",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:13.365692+00:00",
+        "status": 200,
+        "hash": "18cf257be65e6d791ed497dc1d444ece99cf18925b90b7c2d8a6aaee8d043045",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:22.865515+00:00",
+        "status": 200,
+        "hash": "18cf257be65e6d791ed497dc1d444ece99cf18925b90b7c2d8a6aaee8d043045",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:18.699458+00:00",
+        "status": 200,
+        "hash": "18cf257be65e6d791ed497dc1d444ece99cf18925b90b7c2d8a6aaee8d043045",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{id}/Timetable/{fromStopPointId}/to/{toStopPointId}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:00.785765+00:00",
+        "status": 200,
+        "hash": "ca423c226e3b27d349c4194dd03fa2f2774bd90a833609a853393b754993f655",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:14.453207+00:00",
+        "status": 200,
+        "hash": "ca423c226e3b27d349c4194dd03fa2f2774bd90a833609a853393b754993f655",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:23.888179+00:00",
+        "status": 200,
+        "hash": "ca423c226e3b27d349c4194dd03fa2f2774bd90a833609a853393b754993f655",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:19.442412+00:00",
+        "status": 200,
+        "hash": "ca423c226e3b27d349c4194dd03fa2f2774bd90a833609a853393b754993f655",
+        "max_age": 43200
+      }
+    ],
+    "/Line/{ids}/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:02.804508+00:00",
+        "status": 200,
+        "hash": "8e02bce866b5a0413bbb63105e8ce19366952c4312f8faf2b84d406a49d63743",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:16.417203+00:00",
+        "status": 200,
+        "hash": "8e02bce866b5a0413bbb63105e8ce19366952c4312f8faf2b84d406a49d63743",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:25.387112+00:00",
+        "status": 200,
+        "hash": "8e02bce866b5a0413bbb63105e8ce19366952c4312f8faf2b84d406a49d63743",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:20.974334+00:00",
+        "status": 200,
+        "hash": "8e02bce866b5a0413bbb63105e8ce19366952c4312f8faf2b84d406a49d63743",
+        "max_age": 30
+      }
+    ],
+    "/Line/Mode/{modes}/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:04.932639+00:00",
+        "status": 200,
+        "hash": "b5662ef21c78710f7c3b6bf63ef54b731d219b1764ac945397c34fe3955c76b0",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:17.438666+00:00",
+        "status": 200,
+        "hash": "b5662ef21c78710f7c3b6bf63ef54b731d219b1764ac945397c34fe3955c76b0",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:26.496200+00:00",
+        "status": 200,
+        "hash": "b5662ef21c78710f7c3b6bf63ef54b731d219b1764ac945397c34fe3955c76b0",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:21.966227+00:00",
+        "status": 200,
+        "hash": "b5662ef21c78710f7c3b6bf63ef54b731d219b1764ac945397c34fe3955c76b0",
+        "max_age": 30
+      }
+    ],
+    "/Line/{ids}/Arrivals/{stopPointId}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:06.334734+00:00",
+        "status": 200,
+        "hash": "33a64148f446096786da01613ac50b831262440b40f2ff8ca0ffb8945044aa52",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:18.741043+00:00",
+        "status": 200,
+        "hash": "6b5353bbdb25c375aa143bba5a3091d96a97fddd3a955b60691397bf25196024",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:27.862188+00:00",
+        "status": 200,
+        "hash": "a1198202f2b7d7eb6d41ae15ff05527b4841653180e4086053a77b81f2f6b5e1",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:24.703488+00:00",
+        "status": 200,
+        "hash": "8280f096df6c82a0598c0555a925831ea3b0779c191316a5faa5e6575ce0b443",
+        "max_age": 30
+      }
+    ],
+    "/Mode/ActiveServiceTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:07.432609+00:00",
+        "status": 200,
+        "hash": "06986642b3dd1abffab70781481b6b2dc2593bdeb7c70fd7d2fd5394eaa63175",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:19.768056+00:00",
+        "status": 200,
+        "hash": "06986642b3dd1abffab70781481b6b2dc2593bdeb7c70fd7d2fd5394eaa63175",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:29.165639+00:00",
+        "status": 200,
+        "hash": "06986642b3dd1abffab70781481b6b2dc2593bdeb7c70fd7d2fd5394eaa63175",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:26.006843+00:00",
+        "status": 200,
+        "hash": "06986642b3dd1abffab70781481b6b2dc2593bdeb7c70fd7d2fd5394eaa63175",
+        "max_age": 30
+      }
+    ],
+    "/Mode/{mode}/Arrivals": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:08.409727+00:00",
+        "status": 200,
+        "hash": "7cc6523dd658a5eb698ff52d8fcc07501fef9baa5813757080e0034415acf700",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:20.872021+00:00",
+        "status": 200,
+        "hash": "e2ed1d6fe82077649dc35920712229640b58c53c8e003a207f80f80d631c078d",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:31.032132+00:00",
+        "status": 200,
+        "hash": "708fec5d3fcadb3d5f23c84564ba550465d138b98b55331c794f417421d12976",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:26.965338+00:00",
+        "status": 200,
+        "hash": "3c185d9c94c81e14e463969d67c469f48b17b422d335323bec1e4aebd9f9e330",
+        "max_age": 30
+      }
+    ],
+    "/Occupancy/BikePoints/{ids}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:11.107129+00:00",
+        "status": 200,
+        "hash": "7b083819198abc74ae85cce1638f88500ce2333a4c27fc81000658c27e5dee6f",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:24.124729+00:00",
+        "status": 200,
+        "hash": "7b083819198abc74ae85cce1638f88500ce2333a4c27fc81000658c27e5dee6f",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:34.166204+00:00",
+        "status": 200,
+        "hash": "7b083819198abc74ae85cce1638f88500ce2333a4c27fc81000658c27e5dee6f",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:29.623050+00:00",
+        "status": 200,
+        "hash": "7b083819198abc74ae85cce1638f88500ce2333a4c27fc81000658c27e5dee6f",
+        "max_age": 30
+      }
+    ],
+    "/Place/Meta/Categories": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:12.185967+00:00",
+        "status": 200,
+        "hash": "4b8bd8166a1529a4bcd8d4c8e6334a5bbab93488ef2c61b46313dd3026495af2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:25.225076+00:00",
+        "status": 200,
+        "hash": "4b8bd8166a1529a4bcd8d4c8e6334a5bbab93488ef2c61b46313dd3026495af2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:35.253116+00:00",
+        "status": 200,
+        "hash": "4b8bd8166a1529a4bcd8d4c8e6334a5bbab93488ef2c61b46313dd3026495af2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:30.956210+00:00",
+        "status": 200,
+        "hash": "4b8bd8166a1529a4bcd8d4c8e6334a5bbab93488ef2c61b46313dd3026495af2",
+        "max_age": 43200
+      }
+    ],
+    "/Place/Meta/PlaceTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:13.636037+00:00",
+        "status": 200,
+        "hash": "2dbc87589e6325d3adb147036c89f7f8001163286d5f5f1fb4f04b7593acd7bc",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:26.288794+00:00",
+        "status": 200,
+        "hash": "2dbc87589e6325d3adb147036c89f7f8001163286d5f5f1fb4f04b7593acd7bc",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:36.196296+00:00",
+        "status": 200,
+        "hash": "2dbc87589e6325d3adb147036c89f7f8001163286d5f5f1fb4f04b7593acd7bc",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:31.932071+00:00",
+        "status": 200,
+        "hash": "2dbc87589e6325d3adb147036c89f7f8001163286d5f5f1fb4f04b7593acd7bc",
+        "max_age": 43200
+      }
+    ],
+    "/Place/Type/{types}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:14.632492+00:00",
+        "status": 200,
+        "hash": "f2e345008b91f4656ea148f9335b15cc13a55857d2c0f7105b364ec959e9b68b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:27.276524+00:00",
+        "status": 200,
+        "hash": "f2e345008b91f4656ea148f9335b15cc13a55857d2c0f7105b364ec959e9b68b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:37.155982+00:00",
+        "status": 200,
+        "hash": "f2e345008b91f4656ea148f9335b15cc13a55857d2c0f7105b364ec959e9b68b",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:32.857259+00:00",
+        "status": 200,
+        "hash": "b832288f28e512e9a83c131abc41cea27e24b87590f47308c26327133ac89578",
+        "max_age": 43200
+      }
+    ],
+    "/Place/{id}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:18.106754+00:00",
+        "status": 200,
+        "hash": "dc93776ad28b7654c74a9de43328ac1375dd73876e89c951cb8449d97d9b63ee",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:29.364328+00:00",
+        "status": 200,
+        "hash": "dc93776ad28b7654c74a9de43328ac1375dd73876e89c951cb8449d97d9b63ee",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:39.419252+00:00",
+        "status": 200,
+        "hash": "dc93776ad28b7654c74a9de43328ac1375dd73876e89c951cb8449d97d9b63ee",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:35.633415+00:00",
+        "status": 200,
+        "hash": "dc93776ad28b7654c74a9de43328ac1375dd73876e89c951cb8449d97d9b63ee",
+        "max_age": 1800
+      }
+    ],
+    "/Place": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:19.091829+00:00",
+        "status": 200,
+        "hash": "164827fdc60479e7a2ec6d7a3109e973c32ebf6e422b37ed7999fd04b37416ef",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:30.504195+00:00",
+        "status": 200,
+        "hash": "7ccfc0450285d2c3a2f085d2c9891934a7a5d6724d1efcc42106589f16933d21",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:40.615705+00:00",
+        "status": 200,
+        "hash": "164827fdc60479e7a2ec6d7a3109e973c32ebf6e422b37ed7999fd04b37416ef",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:36.628931+00:00",
+        "status": 200,
+        "hash": "164827fdc60479e7a2ec6d7a3109e973c32ebf6e422b37ed7999fd04b37416ef",
+        "max_age": 43200
+      }
+    ],
+    "/Place/{type}/At/{Lat}/{Lon}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:21.215626+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:31.969870+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:42.302583+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:38.582224+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      }
+    ],
+    "/Road": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:22.226220+00:00",
+        "status": 200,
+        "hash": "8fc6191578e4fed35fcce16c65856594471abe23cc90335d628089773997f775",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:33.151480+00:00",
+        "status": 200,
+        "hash": "8fc6191578e4fed35fcce16c65856594471abe23cc90335d628089773997f775",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:43.256717+00:00",
+        "status": 200,
+        "hash": "8fc6191578e4fed35fcce16c65856594471abe23cc90335d628089773997f775",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:39.549045+00:00",
+        "status": 200,
+        "hash": "8fc6191578e4fed35fcce16c65856594471abe23cc90335d628089773997f775",
+        "max_age": 150
+      }
+    ],
+    "/Road/{ids}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:23.314821+00:00",
+        "status": 200,
+        "hash": "5db269661a2153ced493d2a29e1e0c6140fbd3714061a01c23e557bdf0bfc8b4",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:34.154682+00:00",
+        "status": 200,
+        "hash": "5db269661a2153ced493d2a29e1e0c6140fbd3714061a01c23e557bdf0bfc8b4",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:44.619984+00:00",
+        "status": 200,
+        "hash": "5db269661a2153ced493d2a29e1e0c6140fbd3714061a01c23e557bdf0bfc8b4",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:40.523546+00:00",
+        "status": 200,
+        "hash": "5db269661a2153ced493d2a29e1e0c6140fbd3714061a01c23e557bdf0bfc8b4",
+        "max_age": 150
+      }
+    ],
+    "/Road/{ids}/Status": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:24.458782+00:00",
+        "status": 200,
+        "hash": "d3b4aa84f86a563ea112440e68cf27c579f4e9daa57f2b46e8b7850a27fbde62",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:35.149836+00:00",
+        "status": 200,
+        "hash": "454963584900a8a6a19e0d4976a7e02bc57242c6ee7b13d5857e07da90385c4f",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:45.980387+00:00",
+        "status": 200,
+        "hash": "10de60c79e3ec97df315d8ead652fa6bf97548dfff153dcb255235a7b17a8d18",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:41.691298+00:00",
+        "status": 200,
+        "hash": "79492e0dfabca015f4593e83df89a3cc4ad4ffb481d994dfce6cd962a8888d16",
+        "max_age": 150
+      }
+    ],
+    "/Road/{ids}/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:25.500824+00:00",
+        "status": 200,
+        "hash": "26d2a3448761e907332fa1b995f0dab84ac94d598bfe9a95aa350b399e21ecec",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:36.590636+00:00",
+        "status": 200,
+        "hash": "26d2a3448761e907332fa1b995f0dab84ac94d598bfe9a95aa350b399e21ecec",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:47.102029+00:00",
+        "status": 200,
+        "hash": "26d2a3448761e907332fa1b995f0dab84ac94d598bfe9a95aa350b399e21ecec",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:42.826192+00:00",
+        "status": 200,
+        "hash": "26d2a3448761e907332fa1b995f0dab84ac94d598bfe9a95aa350b399e21ecec",
+        "max_age": 150
+      }
+    ],
+    "/Road/all/Street/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:26.847079+00:00",
+        "status": 200,
+        "hash": "8060b736fcfaeb56ee2897fbc0b00778957490351ae724e47f89cf0e21d3796e",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:37.637643+00:00",
+        "status": 200,
+        "hash": "8060b736fcfaeb56ee2897fbc0b00778957490351ae724e47f89cf0e21d3796e",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:48.878969+00:00",
+        "status": 200,
+        "hash": "8060b736fcfaeb56ee2897fbc0b00778957490351ae724e47f89cf0e21d3796e",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:44.187275+00:00",
+        "status": 200,
+        "hash": "8060b736fcfaeb56ee2897fbc0b00778957490351ae724e47f89cf0e21d3796e",
+        "max_age": 150
+      }
+    ],
+    "/Road/all/Disruption/{disruptionIds}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:28.333228+00:00",
+        "status": 200,
+        "hash": "5e7f36b324ee63cd65cb4554f67283a9689c5c1bcac9a1668fb47b6798c31e73",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:39.457859+00:00",
+        "status": 200,
+        "hash": "5e7f36b324ee63cd65cb4554f67283a9689c5c1bcac9a1668fb47b6798c31e73",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:50.389430+00:00",
+        "status": 200,
+        "hash": "5e7f36b324ee63cd65cb4554f67283a9689c5c1bcac9a1668fb47b6798c31e73",
+        "max_age": 150
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:45.696630+00:00",
+        "status": 200,
+        "hash": "5e7f36b324ee63cd65cb4554f67283a9689c5c1bcac9a1668fb47b6798c31e73",
+        "max_age": 150
+      }
+    ],
+    "/Road/Meta/Categories": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:29.595489+00:00",
+        "status": 200,
+        "hash": "3b1bc44c4f2af74fb4dfbf41302342b25942f71e9af457c4ab4a4a7360a5f01c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:41.096392+00:00",
+        "status": 200,
+        "hash": "3b1bc44c4f2af74fb4dfbf41302342b25942f71e9af457c4ab4a4a7360a5f01c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:51.418390+00:00",
+        "status": 200,
+        "hash": "3b1bc44c4f2af74fb4dfbf41302342b25942f71e9af457c4ab4a4a7360a5f01c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:47.016801+00:00",
+        "status": 200,
+        "hash": "3b1bc44c4f2af74fb4dfbf41302342b25942f71e9af457c4ab4a4a7360a5f01c",
+        "max_age": 43200
+      }
+    ],
+    "/Road/Meta/Severities": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:30.643164+00:00",
+        "status": 200,
+        "hash": "5a8b96994e8a8220426939ddd9799bc49e6fbe5dd5880cd14d40db49b1c58bc7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:42.222445+00:00",
+        "status": 200,
+        "hash": "5a8b96994e8a8220426939ddd9799bc49e6fbe5dd5880cd14d40db49b1c58bc7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:52.363466+00:00",
+        "status": 200,
+        "hash": "5a8b96994e8a8220426939ddd9799bc49e6fbe5dd5880cd14d40db49b1c58bc7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:48.071815+00:00",
+        "status": 200,
+        "hash": "5a8b96994e8a8220426939ddd9799bc49e6fbe5dd5880cd14d40db49b1c58bc7",
+        "max_age": 43200
+      }
+    ],
+    "/Search": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:31.986005+00:00",
+        "status": 200,
+        "hash": "8ed2f924934d90180937eb287a864e14666e88f3a3ae6a264dc465cb4ccb9bda",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:15:43.150711+00:00",
+        "status": 200,
+        "hash": "8ed2f924934d90180937eb287a864e14666e88f3a3ae6a264dc465cb4ccb9bda",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:53.277191+00:00",
+        "status": 200,
+        "hash": "8ed2f924934d90180937eb287a864e14666e88f3a3ae6a264dc465cb4ccb9bda",
+        "max_age": 1800
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:49.133609+00:00",
+        "status": 200,
+        "hash": "8ed2f924934d90180937eb287a864e14666e88f3a3ae6a264dc465cb4ccb9bda",
+        "max_age": 1800
+      }
+    ],
+    "/Search/BusSchedules": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:34.039223+00:00",
+        "status": 200,
+        "hash": "ca500ea9157004fbcc8b415ddd04354a57040c1d4fa1e4b546e30f0d2d067823",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:08.189692+00:00",
+        "status": 200,
+        "hash": "ca500ea9157004fbcc8b415ddd04354a57040c1d4fa1e4b546e30f0d2d067823",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:54.455591+00:00",
+        "status": 200,
+        "hash": "ca500ea9157004fbcc8b415ddd04354a57040c1d4fa1e4b546e30f0d2d067823",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:20:50.454579+00:00",
+        "status": 200,
+        "hash": "ca500ea9157004fbcc8b415ddd04354a57040c1d4fa1e4b546e30f0d2d067823",
+        "max_age": 43200
+      }
+    ],
+    "/Search/Meta/SearchProviders": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:35.034973+00:00",
+        "status": 200,
+        "hash": "d50740a782818b1e1ecfb27c60efa895d5a0a9e3942a94d1a58f9553c43ff105",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:21.468410+00:00",
+        "status": 200,
+        "hash": "d50740a782818b1e1ecfb27c60efa895d5a0a9e3942a94d1a58f9553c43ff105",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:55.506129+00:00",
+        "status": 200,
+        "hash": "d50740a782818b1e1ecfb27c60efa895d5a0a9e3942a94d1a58f9553c43ff105",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:01.933895+00:00",
+        "status": 200,
+        "hash": "d50740a782818b1e1ecfb27c60efa895d5a0a9e3942a94d1a58f9553c43ff105",
+        "max_age": 43200
+      }
+    ],
+    "/Search/Meta/Categories": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:36.167028+00:00",
+        "status": 200,
+        "hash": "25588cf6cc82feeda0d2ec0dbbd524630587f8828def6f4186e588cad753a8e8",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:22.532271+00:00",
+        "status": 200,
+        "hash": "25588cf6cc82feeda0d2ec0dbbd524630587f8828def6f4186e588cad753a8e8",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:56.502557+00:00",
+        "status": 200,
+        "hash": "25588cf6cc82feeda0d2ec0dbbd524630587f8828def6f4186e588cad753a8e8",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:02.916023+00:00",
+        "status": 200,
+        "hash": "25588cf6cc82feeda0d2ec0dbbd524630587f8828def6f4186e588cad753a8e8",
+        "max_age": 43200
+      }
+    ],
+    "/Search/Meta/Sorts": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:36.985090+00:00",
+        "status": 200,
+        "hash": "faf7dc5b6634a43a251a926e606612e8a708c91a980772874be3774bd57fb566",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:23.563002+00:00",
+        "status": 200,
+        "hash": "faf7dc5b6634a43a251a926e606612e8a708c91a980772874be3774bd57fb566",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:57.471297+00:00",
+        "status": 200,
+        "hash": "faf7dc5b6634a43a251a926e606612e8a708c91a980772874be3774bd57fb566",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:03.924040+00:00",
+        "status": 200,
+        "hash": "faf7dc5b6634a43a251a926e606612e8a708c91a980772874be3774bd57fb566",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Meta/Categories": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:37.933659+00:00",
+        "status": 200,
+        "hash": "aae6faa27786174ba11c2cb9383ee13de6ed68e9e651e8b6ad607f9bfd669253",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:24.540010+00:00",
+        "status": 200,
+        "hash": "d2c35c0fe29ee954565224be39d856fddbfac1598cf2bb2e2b3943812a35178c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:58.491182+00:00",
+        "status": 200,
+        "hash": "d2c35c0fe29ee954565224be39d856fddbfac1598cf2bb2e2b3943812a35178c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:04.988091+00:00",
+        "status": 200,
+        "hash": "aae6faa27786174ba11c2cb9383ee13de6ed68e9e651e8b6ad607f9bfd669253",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Meta/StopTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:39.004162+00:00",
+        "status": 200,
+        "hash": "838e2a4c3b60166c1076e3a1935cfb2c0b58e68fb7f150c6ec6bbaddeee519a1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:49.201505+00:00",
+        "status": 200,
+        "hash": "838e2a4c3b60166c1076e3a1935cfb2c0b58e68fb7f150c6ec6bbaddeee519a1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:18:59.580290+00:00",
+        "status": 200,
+        "hash": "838e2a4c3b60166c1076e3a1935cfb2c0b58e68fb7f150c6ec6bbaddeee519a1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:06.075510+00:00",
+        "status": 200,
+        "hash": "838e2a4c3b60166c1076e3a1935cfb2c0b58e68fb7f150c6ec6bbaddeee519a1",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Meta/Modes": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:40.761051+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:50.185989+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:00.566285+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:07.122541+00:00",
+        "status": 200,
+        "hash": "1424b1d79dbafe60919b50d919d2f2b6c587e6ea080df3ea6615c88a4ee6737c",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{ids}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:41.783049+00:00",
+        "status": 200,
+        "hash": "679e5ab8a867194ddabd97b8ab13d1970a132120b4ddfd094b015d6fc745c6aa",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:51.119511+00:00",
+        "status": 200,
+        "hash": "679e5ab8a867194ddabd97b8ab13d1970a132120b4ddfd094b015d6fc745c6aa",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:01.562635+00:00",
+        "status": 200,
+        "hash": "679e5ab8a867194ddabd97b8ab13d1970a132120b4ddfd094b015d6fc745c6aa",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:08.225307+00:00",
+        "status": 200,
+        "hash": "679e5ab8a867194ddabd97b8ab13d1970a132120b4ddfd094b015d6fc745c6aa",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{id}/placeTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:43.103483+00:00",
+        "status": 200,
+        "hash": "7476e4a1c8d1420c0fb411ee6ca04259d93caa39a4e2eb777b178ab7ef3cb89e",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:52.473502+00:00",
+        "status": 200,
+        "hash": "7476e4a1c8d1420c0fb411ee6ca04259d93caa39a4e2eb777b178ab7ef3cb89e",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:02.895456+00:00",
+        "status": 200,
+        "hash": "7476e4a1c8d1420c0fb411ee6ca04259d93caa39a4e2eb777b178ab7ef3cb89e",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:09.591306+00:00",
+        "status": 200,
+        "hash": "7476e4a1c8d1420c0fb411ee6ca04259d93caa39a4e2eb777b178ab7ef3cb89e",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Type/{types}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:44.171540+00:00",
+        "status": 200,
+        "hash": "7a13f79003845085fe8f8d2c12ae3e35ff7f76b71382e010e64734e1ef3657a1",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:53.418769+00:00",
+        "status": 200,
+        "hash": "bc6211eeb34096200368e0d496601828f26df1bbad447face75dd297c4523293",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:04.655231+00:00",
+        "status": 200,
+        "hash": "307ffdca576208f438dd10149a905242521ae8194a1a4ffd0e78a79ed99bcb60",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:10.816631+00:00",
+        "status": 200,
+        "hash": "307ffdca576208f438dd10149a905242521ae8194a1a4ffd0e78a79ed99bcb60",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Type/{types}/page/{page}": [
+      {
+        "polled_at_utc": "2026-10-20T21:13:59.440509+00:00",
+        "status": 200,
+        "hash": "f0251f1a1827f019834e7035f58bdc335332bb38865ca5a9370612345340afb7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:55.643107+00:00",
+        "status": 200,
+        "hash": "f0251f1a1827f019834e7035f58bdc335332bb38865ca5a9370612345340afb7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:24.487641+00:00",
+        "status": 200,
+        "hash": "f0251f1a1827f019834e7035f58bdc335332bb38865ca5a9370612345340afb7",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:13.254168+00:00",
+        "status": 200,
+        "hash": "f0251f1a1827f019834e7035f58bdc335332bb38865ca5a9370612345340afb7",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/ServiceTypes": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:15.644796+00:00",
+        "status": 200,
+        "hash": "0cab7c22df7b0c730b378891dcea313600e6faf189e0c85e97bfd5cb24094ee3",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:58.271597+00:00",
+        "status": 200,
+        "hash": "0cab7c22df7b0c730b378891dcea313600e6faf189e0c85e97bfd5cb24094ee3",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:27.186883+00:00",
+        "status": 200,
+        "hash": "0cab7c22df7b0c730b378891dcea313600e6faf189e0c85e97bfd5cb24094ee3",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:15.764281+00:00",
+        "status": 200,
+        "hash": "0cab7c22df7b0c730b378891dcea313600e6faf189e0c85e97bfd5cb24094ee3",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{id}/Arrivals": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:17.183871+00:00",
+        "status": 200,
+        "hash": "a657a65fa136a7f1e02a313a077f351e7a404b1d6b26864db2f1780b900c0717",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:16:59.654046+00:00",
+        "status": 200,
+        "hash": "634ab03c36315978b2734cda0215b5fc130c8fc727ff9093f7b069fbb1f961c7",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:28.259832+00:00",
+        "status": 200,
+        "hash": "7b14790c6d1a747bbf03c41ff9a5e63df4d91c9295746450b7289bec72d68390",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:16.805407+00:00",
+        "status": 200,
+        "hash": "ffa745b1349a3cc277fb9209746a174f673b051834a4a6334b44b6092f7409f8",
+        "max_age": 30
+      }
+    ],
+    "/StopPoint/{id}/ArrivalDepartures": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:18.200535+00:00",
+        "status": 200,
+        "hash": "0395bc936c4a2db126e997e5e13b85aacca0352ee5c01dbbdd64e4d58cd0e053",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:05.633849+00:00",
+        "status": 200,
+        "hash": "41fc811a125e00f494ded0f168b20095e9747dd4e324b0d3b779d7f41eb31642",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:29.366419+00:00",
+        "status": 200,
+        "hash": "cf4ad0a0e86ca04f36ddbddd1ea370708d43b2a9b5401b5935bbd565ed79da1d",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:17.803422+00:00",
+        "status": 200,
+        "hash": "097767a5db4b671722a56b3e9003f9de19a7bdb0d267bd4dfe8c6106a9fa2e60",
+        "max_age": 30
+      }
+    ],
+    "/StopPoint/{id}/CanReachOnLine/{lineId}": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:19.298484+00:00",
+        "status": 200,
+        "hash": "86328384f468fa7cedbdb3dda0c8adbd32314b2a12a66eda4f29405881554ff2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:06.967049+00:00",
+        "status": 200,
+        "hash": "86328384f468fa7cedbdb3dda0c8adbd32314b2a12a66eda4f29405881554ff2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:30.472106+00:00",
+        "status": 200,
+        "hash": "86328384f468fa7cedbdb3dda0c8adbd32314b2a12a66eda4f29405881554ff2",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:18.843118+00:00",
+        "status": 200,
+        "hash": "86328384f468fa7cedbdb3dda0c8adbd32314b2a12a66eda4f29405881554ff2",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{id}/Route": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:20.648376+00:00",
+        "status": 200,
+        "hash": "416de6af5aa1e4db3ad689e5fafdd030851e44a244bb46cbde4cd8adcda405e9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:08.193725+00:00",
+        "status": 200,
+        "hash": "416de6af5aa1e4db3ad689e5fafdd030851e44a244bb46cbde4cd8adcda405e9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:31.433919+00:00",
+        "status": 200,
+        "hash": "416de6af5aa1e4db3ad689e5fafdd030851e44a244bb46cbde4cd8adcda405e9",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:19.898998+00:00",
+        "status": 200,
+        "hash": "416de6af5aa1e4db3ad689e5fafdd030851e44a244bb46cbde4cd8adcda405e9",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Mode/{modes}/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:21.799554+00:00",
+        "status": 200,
+        "hash": "d884c90465d086f3be710e6e14d9c9be991bb6cfc55622f7c037566b9909ac12",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:09.172416+00:00",
+        "status": 200,
+        "hash": "8520652ad4df6c8de1bb81985240418e1b7faac24e726001f4015815a10bacd4",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:32.341916+00:00",
+        "status": 200,
+        "hash": "1e147a2c000b6e0c17d106add8b4b98b1e5afa36ff0feb6f1f37f1413cb82af9",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:21.059018+00:00",
+        "status": 200,
+        "hash": "e5fb5e745443c9346392199372cb35fe26a5a00da91dfcd9484154b9b3f4df16",
+        "max_age": 30
+      }
+    ],
+    "/StopPoint/{ids}/Disruption": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:22.833971+00:00",
+        "status": 200,
+        "hash": "b63e8806d96d6eddc04355004db16beabd546b624c72680f0b93d02bacf563a3",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:10.200732+00:00",
+        "status": 200,
+        "hash": "b63e8806d96d6eddc04355004db16beabd546b624c72680f0b93d02bacf563a3",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:33.371386+00:00",
+        "status": 200,
+        "hash": "b63e8806d96d6eddc04355004db16beabd546b624c72680f0b93d02bacf563a3",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:22.088344+00:00",
+        "status": 200,
+        "hash": "b63e8806d96d6eddc04355004db16beabd546b624c72680f0b93d02bacf563a3",
+        "max_age": 30
+      }
+    ],
+    "/StopPoint/{id}/DirectionTo/{toStopPointId}": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:23.987164+00:00",
+        "status": 200,
+        "hash": "76cd83a8ce0816e4a11ba6d7ba53f9004dc7c45cff7fa426a2743ec4244abc1d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:12.402615+00:00",
+        "status": 200,
+        "hash": "76cd83a8ce0816e4a11ba6d7ba53f9004dc7c45cff7fa426a2743ec4244abc1d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:34.372566+00:00",
+        "status": 200,
+        "hash": "76cd83a8ce0816e4a11ba6d7ba53f9004dc7c45cff7fa426a2743ec4244abc1d",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:23.115088+00:00",
+        "status": 200,
+        "hash": "76cd83a8ce0816e4a11ba6d7ba53f9004dc7c45cff7fa426a2743ec4244abc1d",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:25.083831+00:00",
+        "status": 200,
+        "hash": "1eabc33482c935845f9c170a2a3a7d6d7b2efeb13c5649c891e4bd315fbb2a91",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:13.443593+00:00",
+        "status": 200,
+        "hash": "1eabc33482c935845f9c170a2a3a7d6d7b2efeb13c5649c891e4bd315fbb2a91",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:35.380493+00:00",
+        "status": 200,
+        "hash": "1eabc33482c935845f9c170a2a3a7d6d7b2efeb13c5649c891e4bd315fbb2a91",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:24.506410+00:00",
+        "status": 200,
+        "hash": "1eabc33482c935845f9c170a2a3a7d6d7b2efeb13c5649c891e4bd315fbb2a91",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/Search/{query}": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:27.228633+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:14.657766+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:36.739037+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:25.999013+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      }
+    ],
+    "/StopPoint/Search": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:28.444476+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:15.673973+00:00",
+        "status": 200,
+        "hash": "81e7cbccf7c1faa34898c0b06cda8595c78bfd3a5a68e161b98bf9168fca611a",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:37.805700+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:27.067948+00:00",
+        "status": 200,
+        "hash": "25d5d9dfc8f0d9a93fce7f92b72dffb8dd73c18eb7f74f4194a48f1244a6be9f",
+        "max_age": 302400
+      }
+    ],
+    "/StopPoint/Sms/{id}": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:29.554257+00:00",
+        "status": 200,
+        "hash": "b11ee41fa81ffd25dc0ef84d7a7d4ac389d014006d4157bed40580327174c2e4",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:16.613981+00:00",
+        "status": 200,
+        "hash": "b11ee41fa81ffd25dc0ef84d7a7d4ac389d014006d4157bed40580327174c2e4",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:38.872859+00:00",
+        "status": 200,
+        "hash": "b11ee41fa81ffd25dc0ef84d7a7d4ac389d014006d4157bed40580327174c2e4",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:28.122528+00:00",
+        "status": 200,
+        "hash": "b11ee41fa81ffd25dc0ef84d7a7d4ac389d014006d4157bed40580327174c2e4",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{stopPointId}/TaxiRanks": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:32.287639+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:18.009616+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:40.562977+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:29.877202+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      }
+    ],
+    "/StopPoint/{stopPointId}/CarParks": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:33.529960+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:19.043973+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:41.798391+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:31.078468+00:00",
+        "status": 200,
+        "hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "max_age": 43200
+      }
+    ],
+    "/Vehicle/{ids}/Arrivals": [
+      {
+        "polled_at_utc": "2026-10-20T21:14:34.580028+00:00",
+        "status": 200,
+        "hash": "6cc5a08f482dc352a7b5e1937f82530065b8cc546dacf9aee0ebfba28ad677b3",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:17:20.684109+00:00",
+        "status": 200,
+        "hash": "8ae82711d1091928790478fecb49848886b6c0ade473d938dad967be3d3133ba",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:19:42.723061+00:00",
+        "status": 200,
+        "hash": "504fc1a2739d383a2f4895d16bf37eac867579413e517d254fe9b0d901f3f9d4",
+        "max_age": 30
+      },
+      {
+        "polled_at_utc": "2026-10-20T21:21:32.108345+00:00",
+        "status": 200,
+        "hash": "3515c3bed620c0e147a7ebda4e4f10f1eeae737b23b1257478f3a8beb810e070",
+        "max_age": 30
+      }
+    ]
+  }
+}
