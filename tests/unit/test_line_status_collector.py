@@ -109,3 +109,23 @@ def test_stop_request_flushes_batches(tmp_path, config, severity_meta, first_pol
 
     assert polls == 2
     assert len(read_zone(lake, writers, "coverage")) == 2
+
+
+def test_quiet_hour_still_publishes_change_batch(tmp_path, config, severity_meta, first_poll):
+    """Bug found in production: the change writer only rolled over when a new
+    change arrived, so a quiet hour left the previous batch unpublished."""
+    lake = LocalLake(tmp_path / "lake")
+    writers = make_writers(lake, tmp_path / "tmp", "line_status")
+    times = iter([
+        datetime(2026, 10, 21, 19, 59, 46, tzinfo=timezone.utc),   # baseline at 19:59
+        datetime(2026, 10, 21, 20, 0, 16, tzinfo=timezone.utc),    # 20:00, nothing changed
+    ])
+    client = FakeClient(severity_meta, first_poll, first_poll)
+    collector = LineStatusCollector(client, config, writers, "test", now=lambda: next(times))
+
+    collector.poll_once()
+    collector.poll_once()
+
+    # Without calling flush(): the 19:xx change batch must already be published.
+    assert len(writers["changes"].published) == 1
+    assert "line_status_changes_20261021T195946Z" in writers["changes"].published[0]["object_path"]

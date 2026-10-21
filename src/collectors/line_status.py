@@ -84,6 +84,9 @@ class LineStatusCollector:
     def poll_once(self):
         """Run one poll; return its coverage record."""
         collected = self.now()
+        for writer in self.writers.values():
+            writer.roll_over(collected)
+
         poll = {
             "poll_id": collected.strftime("%Y%m%dT%H%M%S%fZ"),
             "collected_at_utc": collected.isoformat(),

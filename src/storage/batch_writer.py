@@ -42,11 +42,21 @@ class BatchWriter:
         self._batch_start = None
         self.published = []
 
-    def append(self, record):
-        at = _parse_time(record[self.time_field])
+    def roll_over(self, at):
+        """Publish the current batch if `at` falls in a later hour.
 
+        Called on every poll, so sparse writers (change records) still publish
+        hourly even when no new record arrives. Time-based batches must follow
+        the clock, not the arrival of data.
+        """
+        if isinstance(at, str):
+            at = _parse_time(at)
         if self._batch_start and _hour(at) != _hour(self._batch_start):
             self.flush()
+
+    def append(self, record):
+        at = _parse_time(record[self.time_field])
+        self.roll_over(at)
 
         if self._tmp_path is None:
             self._batch_start = at
