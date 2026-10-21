@@ -36,14 +36,14 @@ Last reviewed: 2026-10-21
 - [~] Integrate and test all relevant TfL API endpoints — 71/84 pass (sweep 2026-10-20); freshness measured
 - [~] Use Python for ingestion, validation and transformation — bus reference collectors, transformers, validators exist
 - [x] Shared TfL client (`src/clients/tfl.py`): timeouts, retries with backoff and jitter, `Retry-After`, safe error messages — 25 unit tests
-- [ ] Live endpoint registry (`config/live_endpoints.yaml`)
+- [~] Endpoint configuration — `config/line_status.json` (one JSON file per live endpoint; no YAML dependency)
 - [ ] Use Kafka for event-streaming workflows
 - [ ] Use Airflow to orchestrate and schedule pipelines
 - [~] Use GCS for historical and excess data — archive script with manifests exists
 - [~] Use BigQuery for analytical queries and transformations — `route_coverage` view exists
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
 - [~] Automated data-quality checks — snapshot validators exist
-- [~] Unit tests (pytest, mocked responses, no network) — client covered; run with `.venv/bin/python -m pytest`
+- [~] Unit tests (pytest, mocked responses, no network) — client and line status covered (63 tests); run with `.venv/bin/python -m pytest`
 
 ### Endpoint analysis card (completed for each endpoint before its collector is written)
 
@@ -137,8 +137,8 @@ Size on 2026-10-21: 219 MiB, 24 objects.
 | `tmp/` | `tmp/...` | Partial runs, in-progress files | Auto-deleted after a few days |
 
 - [~] `raw/` follows the convention, with SHA-256 manifests — bus datasets done
-- [ ] Compress raw files as `.jsonl.gz` (BigQuery reads gzip directly)
-- [ ] Partial or failed runs go to `tmp/`, never `raw/`
+- [~] Compress raw files as `.jsonl.gz` (BigQuery reads gzip directly) — new collectors via `src/storage/batch_writer.py`
+- [x] Partial or failed runs stay in local tmp until verified; leftovers are recovered on the next run
 - [ ] Align `processed/` to `processed/{table}/date=/run_id=`
 - [ ] Add `coverage/` records for every poll
 
@@ -159,7 +159,7 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 - [~] Preserve timestamped raw API responses before transformation — done for bus datasets
 - [~] Store processed, validated datasets separately from raw data — local `data/processed/`; not yet in GCS
 - [~] Partition by date and, where appropriate, endpoint or transport mode — `raw/{endpoint}/date=/run_id=`
-- [ ] Store a collection-coverage record for every poll (proves when data was observed)
+- [x] Store a collection-coverage record for every poll (proves when data was observed) — line status collector
 - [ ] Build a growing historical dataset for trends, seasonality, comparisons and modelling
 - [ ] Retain history independently of the 24-hour Sheets cycle
 - [~] Verify archived files are complete and readable before deleting temporary data — SHA-256 manifests exist

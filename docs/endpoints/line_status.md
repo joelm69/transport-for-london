@@ -1,6 +1,6 @@
 # Endpoint analysis card — Line status (all rail modes)
 
-Status: complete (2026-10-21) — ready for collector implementation
+Status: complete (2026-10-21) · collector implemented: `src/collectors/line_status.py`
 
 | | |
 |---|---|
@@ -64,13 +64,14 @@ and splitting one incident when TfL edits its text.
 | VM on all day | 2,880 | ~6 MB/day (~2 GB/year) |
 
 Every raw response is kept: cheap, and it allows all history to be rebuilt if change logic is fixed later.
-Polls are batched into one file per hour (avoids the small-files problem).
+Polls are batched into one file per hour (avoids the small-files problem). Each batch file has its own
+`<file>.manifest.json`, because two collection sessions in the same hour produce two batch files.
 
 ### Paths (storage contract — unchanged when Kafka becomes the writer)
 
 | Zone | Path | Contents |
 |---|---|---|
-| Raw | `raw/line_status/date=YYYY-MM-DD/hour=HH/line_status_{batch_start}.jsonl.gz` + `manifest.json` | One envelope per poll: `poll_id`, `collected_at_utc`, `collection_window`, `http_status`, `endpoint`, full `response` |
+| Raw | `raw/line_status/date=YYYY-MM-DD/hour=HH/line_status_{batch_start}.jsonl.gz` + `<file>.manifest.json` | One envelope per poll: `poll_id`, `collected_at_utc`, `collection_window`, `http_status`, `endpoint`, full `response` |
 | Changes | `processed/line_status_changes/date=YYYY-MM-DD/line_status_changes_{batch_start}.jsonl.gz` | One row per (line, status) whose fingerprint changed |
 | Coverage | `coverage/line_status/date=YYYY-MM-DD/coverage_{batch_start}.jsonl.gz` | One row per poll, change or not |
 | Temporary | `tmp/line_status/...` | Partial or failed batches |
@@ -86,6 +87,11 @@ Polls are batched into one file per hour (avoids the small-files problem).
 - `NEW_INCIDENT` — a new `incident_key` appears
 - `UPDATE` — same incident, severity or reason changed
 - `RESOLVED` — an incident disappears (line returns to Good Service)
+- `ONGOING` — unchanged status, re-emitted because another status on the same line changed,
+  so a line's latest change rows always describe its full state
+
+Every change row also carries `severity_class` (good / closed / disrupted), `previous_fingerprints`,
+`resolved_incident_keys` and `dq_flags` (WARN rules that applied).
 
 ### Coverage record columns
 
@@ -156,6 +162,7 @@ Elizabeth line); "`status.lineId` always equals `line.id`" (Good Service omits `
 | C5 | Incidents open at session end are marked censored | Survival analysis |
 | C6 | `fromDate` never changes within an `incident_key` | Verifies the step-2 assumption |
 | C7 | Batch record count and SHA-256 match the manifest before promotion from `tmp/` to `raw/` | Archive integrity |
+| C8 | Count incidents lasting a single poll and Good ↔ disrupted flips within 60 s | Measures flapping (see findings) |
 
 ### Where rules run
 
@@ -232,3 +239,13 @@ Measure the share of Other before considering a text classifier.
 | Is reliability improving or worsening? | Trend analysis (rolling averages) |
 | Was today unusually bad? | Anomaly detection on daily incident counts |
 | How often do incidents escalate (e.g. Minor → Severe)? | Descriptive statistics over `UPDATE` records |
+
+## Findings from the first live run (2026-10-21 18:13–18:14 UTC)
+
+**Flapping.** The Elizabeth line was Good Service at 18:13:08, Severe Delays at 18:13:38 with
+`fromDate` 18:12:12 (earlier than the Good Service response), and Good Service again at 18:14:08.
+Likely cause: TfL cache servers returning different versions of the feed.
+
+Decision: the change log stays a faithful record of what TfL returned. Debouncing (ignoring states that
+last a single poll) belongs in the derived status-period SQL, where it can be tuned and re-run on all
+history. Check C8 measures how often it happens; revisit after one week of data.

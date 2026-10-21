@@ -1,0 +1,27 @@
+{
+  "dataset": "line_status",
+  "endpoint": "/Line/Mode/tube,dlr,overground,elizabeth-line,tram/Status",
+  "params": {"detail": "false"},
+  "poll_interval_seconds": 30,
+  "expected_line_ids": [
+    "bakerloo", "central", "circle", "district", "dlr", "elizabeth",
+    "hammersmith-city", "jubilee", "liberty", "lioness", "metropolitan",
+    "mildmay", "northern", "piccadilly", "suffragette", "tram", "victoria",
+    "waterloo-city", "weaver", "windrush"
+  ],
+  "severity_classes": {
+    "good": [10, 18],
+    "closed": [20]
+  },
+  "future_from_date_tolerance_seconds": 300,
+  "fallback_severity_codes": {
+    "0": "Special Service", "1": "Closed", "2": "Suspended",
+    "3": "Part Suspended", "4": "Planned Closure", "5": "Part Closure",
+    "6": "Severe Delays", "7": "Reduced Service", "8": "Bus Service",
+    "9": "Minor Delays", "10": "Good Service", "11": "Part Closed",
+    "12": "Exit Only", "13": "No Step Free Access",
+    "14": "Change of frequency", "15": "Diverted", "16": "Not Running",
+    "17": "Issues Reported", "18": "No Issues", "19": "Information",
+    "20": "Service Closed"
+  }
+}
