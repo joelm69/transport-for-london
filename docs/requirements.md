@@ -142,11 +142,17 @@ Size on 2026-10-21: 219 MiB, 24 objects.
 - [ ] Align `processed/` to `processed/{table}/date=/run_id=`
 - [ ] Add `coverage/` records for every poll
 
-#### One-off tidy-up of existing objects (requires approval before any move or delete)
+#### One-off tidy-up of existing objects — done 2026-10-21 (approved by user)
 
-- [ ] Move top-level `bus_arrivals_snapshot_20261014.jsonl` and `bus_stop_points.json.gz` into `raw/`
-- [ ] Move `processed/run_id=20261016T202642305170Z/*` to `processed/{table}/date=2026-10-16/run_id=.../`
-- [ ] Move the four partial `bus_route_sequences` runs of 2026-10-16 to `tmp/` (keep the complete 211 MB run `20261016T202642305170Z`)
+Each object was copied, CRC32C-verified, then the source deleted; manifests were rewritten
+with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
+
+- [x] Top-level `bus_arrivals_snapshot_20261014.jsonl` → `raw/_legacy/bus_arrivals/date=2026-10-14/` (mixes legacy records and one run, so quarantined)
+- [x] Top-level `bus_stop_points.json.gz` → `raw/bus_stop_points/date=2026-10-14/run_id=20261014T203151000000Z/` with a new manifest (run ID derived from `collected_at_utc`)
+- [x] `processed/run_id=20261016T202642305170Z/*` → `processed/{route_stop_occurrences,unique_bus_stops}/date=2026-10-16/run_id=.../`
+- [x] Four partial `bus_route_sequences` runs of 2026-10-16 → `tmp/raw/...`, manifests marked `run_status: PARTIAL`; the complete 211 MB run stays in `raw/`
+
+`raw/_legacy/` is a quarantine for files that predate the conventions: kept, but not read by `raw/{endpoint}/` loaders.
 
 #### Archive requirements
 
