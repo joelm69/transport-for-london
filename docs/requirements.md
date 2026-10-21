@@ -55,7 +55,7 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 | # | Endpoint | Refresh (measured) | Use | Card |
 |---|---|---|---|---|
 | 1 | `/Line/Mode/{modes}/Status` (all rail modes) | 30 s, event-driven | Live status; reliability KPI | [x] [card](endpoints/line_status.md) |
-| 2 | `/Line/Mode/{modes}/Disruption`, `/StopPoint/Mode/{modes}/Disruption` | 30 s | Disruption causes and durations | [ ] |
+| 2 | `/StopPoint/Mode/{modes}/Disruption` (line disruptions rejected: duplicates line status) | 30 s, slow-changing | Station notices, accessibility, planned-works overrun | [x] [card](endpoints/stop_disruptions.md) |
 | 3 | `/Mode/{mode}/Arrivals` | 30 s | Waits and headways | [ ] |
 | 4 | `/BikePoint` | 30 s, snapshot (store changes only) | Live map; empty/full docks | [ ] |
 | 5 | `/AirQuality` | 30 min | Air-quality patterns (investigate timestamp anomaly) | [ ] |

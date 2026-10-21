@@ -1,6 +1,6 @@
 # Endpoint analysis card — Stop disruptions (rail modes)
 
-Status: steps 1–4 complete · step 5 (hot/cold use) pending
+Status: complete (2026-10-22) — ready for collector implementation
 
 | | |
 |---|---|
@@ -166,4 +166,53 @@ important was lost.
 
 ## 5. Hot and cold use
 
-*Pending.*
+### Hot path (live)
+
+**Portfolio "Station notices" panel** under the London Rail board (TfL called directly, shared 30 s cache):
+
+| Shows | From |
+|---|---|
+| Counts: part closures, accessibility issues, planned works, live incidents | `type`, `appearance`, `accessibility_flag` |
+| Stations with part closures | `type = Part Closure` |
+| Step-free and lift problems, filterable by mode | `accessibility_flag` |
+| "Since … · planned until …" for planned works | `fromDate`, PlannedWork `toDate` |
+
+**MCP live tool:** `get_station_notices(station | mode | accessibility_only)`.
+
+### Cold path (daily, BigQuery → Sheet → Tableau, and MCP history tools)
+
+| Table | Grain | Key columns |
+|---|---|---|
+| `stop_disruption_incidents` | `disruption_key` | station, mode, type, appearance, start, observed end, planned end, duration, censored, accessibility flag, overrun |
+| `station_disruption_daily` | station × day | minutes under any notice by type, accessibility minutes |
+| `accessibility_daily` | mode × day | stations with step-free / lift issues, longest open outage |
+
+### Metric definitions
+
+| Metric | Definition |
+|---|---|
+| Accessibility outage duration | Observed end − `fromDate` for records with `accessibility_flag`; censored while open |
+| Planned-works overrun | PlannedWork only: observed end − planned `toDate` (positive = finished late) |
+| Station notice minutes | Observed minutes with at least one active notice, by type |
+
+### Business questions and methods
+
+| Business question | Method |
+|---|---|
+| Which stations most often lack step-free access, and for how long? | Descriptive statistics, ranking |
+| How long do lift outages last? | Survival analysis (censored durations) |
+| Do planned works finish on time? | Overrun distribution, planned vs actual |
+| Which modes and lines have the most station closures? | Counts by mode; by line once stations are linked to lines |
+| Are problems concentrated at major interchanges? | Spatial analysis (needs station coordinates) |
+
+### MCP and RAG
+
+RAG over notice descriptions answers "what is happening at Bank?"; MCP tools return exact figures
+(outage durations, overrun statistics).
+
+### Gaps to close later
+
+- **Station coordinates:** the stop reference data covers buses only; maps need a one-off fetch of
+  rail station locations.
+- **Station → line links:** `concernedLines` appeared on 1 of 63 records; linking notices to lines
+  needs rail route sequences, as already built for buses.
