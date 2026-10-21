@@ -1,0 +1,14 @@
+{
+  "dataset": "stop_disruptions",
+  "changes_name": "stop_disruption_changes",
+  "endpoint": "/StopPoint/Mode/tube,dlr,overground,elizabeth-line,tram/Disruption",
+  "params": {},
+  "poll_interval_seconds": 60,
+  "modes": ["tube", "dlr", "overground", "elizabeth-line", "tram"],
+  "known_types": ["Information", "Interchange Message", "Part Closure"],
+  "known_appearances": ["RealTime", "Information", "PlannedWork"],
+  "future_from_date_tolerance_seconds": 300,
+  "rolling_to_date_hours": 3,
+  "rolling_to_date_tolerance_seconds": 360,
+  "accessibility_pattern": "\\blifts?\\b|step[- ]free|escalators?|wheelchair|\\bramps?\\b|accessib"
+}

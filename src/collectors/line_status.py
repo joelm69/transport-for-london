@@ -27,8 +27,8 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.clients.tfl import TflClient, TflError  # noqa: E402
+from src.collectors.runner import make_writers, run  # noqa: E402,F401  (re-exported)
 from src.deduplication.line_status import detect_changes, flatten_statuses  # noqa: E402
-from src.storage.batch_writer import BatchWriter  # noqa: E402
 from src.storage.lake import GcsLake, LocalLake  # noqa: E402
 from src.validation.line_status import ERROR, WARN, Issue, has_errors, validate_poll  # noqa: E402
 
@@ -55,17 +55,6 @@ def load_severity_codes(client, config):
         logger.warning("Severity codes unavailable (%s); using config fallback", exc)
         fallback = {int(k): v for k, v in config["fallback_severity_codes"].items()}
         return {"default": fallback}
-
-
-def make_writers(lake, tmp_dir, dataset):
-    return {
-        "raw": BatchWriter(lake, tmp_dir, dataset, f"raw/{dataset}", dataset,
-                           hour_partition=True),
-        "changes": BatchWriter(lake, tmp_dir, dataset, f"processed/{dataset}_changes",
-                               f"{dataset}_changes"),
-        "coverage": BatchWriter(lake, tmp_dir, dataset, f"coverage/{dataset}",
-                                "coverage"),
-    }
 
 
 class LineStatusCollector:
@@ -158,43 +147,6 @@ class LineStatusCollector:
         }
         self.writers["coverage"].append(coverage)
         return coverage
-
-
-def run(collector, writers, interval, max_polls=None, deadline=None,
-        clock=time.monotonic, sleep=time.sleep, should_stop=lambda: False):
-    """Poll on a fixed interval until max_polls, deadline or a stop request.
-    Batches are always flushed on exit."""
-    for writer in writers.values():
-        writer.recover()
-
-    polls = 0
-    try:
-        while not should_stop():
-            started = clock()
-            coverage = collector.poll_once()
-            polls += 1
-            logger.info(
-                "poll %s valid=%s changes=%d warnings=%s errors=%s",
-                coverage["poll_id"], coverage["valid"], coverage["changes_written"],
-                coverage["warnings"] or "-", coverage["errors"] or "-",
-            )
-
-            if max_polls is not None and polls >= max_polls:
-                break
-            if deadline is not None and clock() >= deadline:
-                break
-
-            remaining = interval - (clock() - started)
-            # Sleep in short steps so a stop request is noticed quickly.
-            while remaining > 0 and not should_stop():
-                step = min(1.0, remaining)
-                sleep(step)
-                remaining -= step
-    finally:
-        for writer in writers.values():
-            writer.flush()
-
-    return polls
 
 
 def main(argv=None):

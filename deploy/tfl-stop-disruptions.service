@@ -1,0 +1,24 @@
+# systemd unit for the always-on stop disruptions collector on the GCE VM.
+# Separate from tfl-line-status so a failure in one cannot stop the other.
+# Install:  sudo cp deploy/tfl-stop-disruptions.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now tfl-stop-disruptions
+# Logs:     journalctl -u tfl-stop-disruptions -f
+[Unit]
+Description=TfL rail station disruption notices collector (writes to GCS)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/home/joelmathooko/tfl-pipeline/.venv/bin/python -m src.collectors.stop_disruptions --forever --window continuous --lake gcs
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=30
+KillSignal=SIGTERM
+TimeoutStopSec=90
+MemoryMax=300M
+
+[Install]
+WantedBy=multi-user.target
