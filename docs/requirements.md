@@ -72,6 +72,37 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 - [ ] Select visualisations based on data quality and business questions
 - [ ] Compute KPIs over observed time only (collection is on demand, so history has gaps)
 
+### 3a. Sampling design
+
+History is only useful for data science if it is a fair, consistent sample.
+
+- [ ] Collect during fixed daily windows (e.g. 30 min each at morning peak, midday and evening peak) as part of the daily scheduled VM run — confirm VM cost first
+- [ ] Treat visitor-triggered collection as extra data, never the basis for comparisons
+- [ ] Minimum history before modelling or drawing conclusions: 2–4 weeks of fixed windows
+- [ ] Record the collection window with every dataset so analyses can filter to comparable samples
+
+### 3b. Data science methods
+
+| Method | Data | Example question | Minimum history | Status |
+|---|---|---|---|---|
+| Descriptive statistics and distributions | Arrivals, disruptions | What is the typical wait at a station, and how variable is it? | Days | [ ] |
+| Spatial analysis | Stops, routes, bike docks | Which areas have poor bus coverage or few bike docks? | Available now (reference data) | [ ] |
+| Headway regularity and bunching | Arrivals | Do trains or buses arrive in clumps instead of evenly? | Days | [ ] |
+| Prediction accuracy | Arrivals | How far off are TfL's countdown predictions, by line? | Days | [ ] |
+| Time-series seasonality | Line status, BikePoint, air quality | Do disruptions peak at certain hours or weekdays? | 2–4 weeks | [ ] |
+| Trend analysis (rolling averages) | Reliability KPI | Is a line getting more or less reliable? | Weeks | [ ] |
+| Survival analysis (handles ongoing/censored events) | Disruption durations | How long does a signal failure usually last? | Weeks | [ ] |
+| Anomaly detection | Disruption counts, air quality | Was today unusual compared with normal? | Weeks | [ ] |
+| Hypothesis testing | Reliability | Is weekend service less reliable than weekdays? | Weeks | [ ] |
+| Forecasting (baseline vs simple model, time-based split) | BikePoint | Will this dock be empty in an hour? | Weeks | [ ] |
+| Correlation (not causation) | Air quality vs road incidents | Do high-pollution days coincide with more incidents? | Months | [ ] |
+
+### 3c. Analysis workflow
+
+- [ ] Python notebooks in `analytics/` (pandas, statsmodels, scikit-learn) reading from BigQuery / GCS
+- [ ] Publish results as tables to Tableau (via the daily Sheet) and to MCP (so the AI can answer from them)
+- [ ] Document each analysis: question, data used, method, assumptions, limitations
+
 ## 4. AI integration
 
 - [ ] Host the MCP server on **Cloud Run** (scales to zero, `min-instances = 0`) — *changed from the VM on 2026-10-21*
@@ -91,6 +122,33 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 - [ ] Define retention rules for each storage location
 
 ### GCS historical archive
+
+Bucket: `gs://transport_for_london_bucket` — `us-central1`, Standard, public access blocked,
+uniform IAM access. Soft delete and versioning are **off**, so deletions are permanent.
+Size on 2026-10-21: 219 MiB, 24 objects.
+
+#### Zone layout
+
+| Zone | Path convention | Contents | Rule |
+|---|---|---|---|
+| `raw/` | `raw/{endpoint}/date=YYYY-MM-DD/run_id={id}/{endpoint}.jsonl.gz` + `manifest.json` | Exact API responses, timestamped | Immutable; long-term history |
+| `processed/` | `processed/{table}/date=YYYY-MM-DD/run_id={id}/{table}.csv` + manifest | Cleaned, validated tables | Rebuildable from `raw/` |
+| `coverage/` | `coverage/{endpoint}/date=YYYY-MM-DD/...` | One record per poll (time, status, records, changes) | Proves when data was observed |
+| `tmp/` | `tmp/...` | Partial runs, in-progress files | Auto-deleted after a few days |
+
+- [~] `raw/` follows the convention, with SHA-256 manifests — bus datasets done
+- [ ] Compress raw files as `.jsonl.gz` (BigQuery reads gzip directly)
+- [ ] Partial or failed runs go to `tmp/`, never `raw/`
+- [ ] Align `processed/` to `processed/{table}/date=/run_id=`
+- [ ] Add `coverage/` records for every poll
+
+#### One-off tidy-up of existing objects (requires approval before any move or delete)
+
+- [ ] Move top-level `bus_arrivals_snapshot_20261014.jsonl` and `bus_stop_points.json.gz` into `raw/`
+- [ ] Move `processed/run_id=20261016T202642305170Z/*` to `processed/{table}/date=2026-10-16/run_id=.../`
+- [ ] Move the four partial `bus_route_sequences` runs of 2026-10-16 to `tmp/` (keep the complete 211 MB run `20261016T202642305170Z`)
+
+#### Archive requirements
 
 - [~] Preserve timestamped raw API responses before transformation — done for bus datasets
 - [~] Store processed, validated datasets separately from raw data — local `data/processed/`; not yet in GCS
