@@ -40,7 +40,7 @@ Last reviewed: 2026-10-21
 - [ ] Use Kafka for event-streaming workflows
 - [ ] Use Airflow to orchestrate and schedule pipelines
 - [~] Use GCS for historical and excess data — archive script with manifests exists
-- [~] Use BigQuery for analytical queries and transformations — `route_coverage` view exists
+- [x] Use BigQuery for analytical queries and transformations — line status external tables and views (`analytics/line_status/`), hourly serving table `tfl_portfolio.line_disruption_hourly` refreshed by a systemd timer on the VM
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
 - [~] Automated data-quality checks — snapshot validators exist
 - [~] Unit tests (pytest, mocked responses, no network) — client and line status covered (63 tests); run with `.venv/bin/python -m pytest`
@@ -68,7 +68,7 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 - [~] Analyse bus routes, stops and network coverage — route-stop tables and coverage view built
 - [ ] Analyse live arrivals and service disruptions
 - [ ] Investigate air-quality patterns
-- [ ] Develop historical trends, comparisons and meaningful KPIs
+- [~] Develop historical trends, comparisons and meaningful KPIs — disruption trends line chart on the portfolio (TfL map colours, hover details, 1D–1Y ranges unlocking as history grows)
 - [ ] Select visualisations based on data quality and business questions
 - [ ] Compute KPIs over observed time only (collection is on demand, so history has gaps)
 
