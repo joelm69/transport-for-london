@@ -1,6 +1,7 @@
 # Memory-capped rehearsal of the arrivals pipeline before it goes on the e2-micro VM.
-# The three containers share a 450 MB budget, the memory free on the VM beside the collectors:
-#   kafka 320 MB (Java heap 192 MB) + producer 60 MB + detector 70 MB.
+# Limits are ceilings sized to the ~477 MB free on the VM beside the collectors:
+#   kafka 320 MB (Java heap 192 MB) + producer 60 MB + detector 70 MB + archiver 60 MB.
+# What matters is measured use (measure.sh), which stays well under the ceilings.
 #
 #   docker compose -f docker/kafka_test/compose.yaml up -d --build
 #   docker/kafka_test/measure.sh 60          # sample memory every 30 s for 60 minutes
@@ -63,6 +64,21 @@ services:
     volumes:
       - ../../src:/app/src:ro
       - ../../config:/app/config:ro
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  archiver:
+    build: .
+    mem_limit: 60m
+    # Local lake here (the repo's data/ folder); --lake gcs on the VM.
+    command: python -m src.streaming.archiver --lake local --lake-root /app/data/lake --tmp-dir /app/data/tmp
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+    volumes:
+      - ../../src:/app/src:ro
+      - ../../config:/app/config:ro
+      - ../../data:/app/data
     depends_on:
       kafka:
         condition: service_healthy
