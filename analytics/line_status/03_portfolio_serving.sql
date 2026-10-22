@@ -12,5 +12,5 @@ AS
 SELECT
   line_id, line_name, mode, hour_start,
   observed_minutes, in_service_minutes, disrupted_minutes, disrupted_share,
-  incidents, incident_keys, worst_status, main_cause, flaps
+  incidents, incident_keys, worst_status, main_cause, causes, flaps
 FROM `transport-for-london-511318.tfl_transport_analytics.line_disruption_hourly`;

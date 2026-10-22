@@ -91,18 +91,36 @@ SELECT
   worst.severity AS worst_severity,
   worst.severity_description AS worst_status,
   worst.reason AS worst_reason,
+  -- Cause from the reason text. Rules are checked in order (first match wins): specific
+  -- phrases before general ones ("trespasser on the track" must not become "Track fault").
+  -- Unmatched text uses the phrase after "due to", so a new kind of cause appears as its
+  -- own category automatically; text with no stated cause becomes "Not stated".
   CASE
     WHEN worst.reason IS NULL THEN NULL
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'trespass') THEN 'Trespasser'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'person (?:taken )?ill|taken ill|\bill\b|medical|customer incident|person on the track|person hit')
+      THEN 'Customer incident'
     WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'signal') THEN 'Signal failure'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'track') THEN 'Track fault'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'faulty train|train fault') THEN 'Train fault'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'points? failure') THEN 'Points failure'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'power|electrical|traction current') THEN 'Power failure'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'faulty train|train fault|broken[- ]down train') THEN 'Train fault'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'track fault|broken rail|defective rail|track defect') THEN 'Track fault'
     WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'cancellation') THEN 'Train cancellations'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'\bill\b|customer|passenger') THEN 'Customer incident'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'staff') THEN 'Staff shortage'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'fire|alarm') THEN 'Fire alert'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'power') THEN 'Power supply'
-    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'planned|engineering|closure') THEN 'Planned works'
-    ELSE 'Other'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'staff shortage|shortage of staff|staff sickness|staff availability')
+      THEN 'Staff shortage'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'fire|alarm|smoke') THEN 'Fire alert'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'police|security|suspect|unattended') THEN 'Security alert'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'flood|weather|heat|snow|\bice\b|fallen tree|high winds?') THEN 'Weather'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'strike|industrial action') THEN 'Industrial action'
+    WHEN REGEXP_CONTAINS(LOWER(worst.reason), r'engineering|planned|works|will terminate|revised to|timetable')
+      THEN 'Planned works or changes'
+    ELSE COALESCE(
+      INITCAP(REGEXP_EXTRACT(
+        LOWER(worst.reason),
+        r'due to (?:an? |the )?(?:earlier )?([a-z][a-z -]{2,40}?)(?: at | in | on | near | between |[.,;]|$)'
+      )),
+      'Not stated'
+    )
   END AS cause_category,
   incident_keys,
   -- Debounce (check C8): a flap is a brief switch to a DIFFERENT state and back, e.g.
@@ -154,7 +172,8 @@ aggregated AS (
               IGNORE NULLS ORDER BY worst_severity LIMIT 1)[SAFE_OFFSET(0)].worst_status AS worst_status,
     ARRAY_AGG(IF(counts_as_disruption, STRUCT(seconds, cause_category), NULL)
               IGNORE NULLS ORDER BY seconds DESC LIMIT 1)[SAFE_OFFSET(0)].cause_category AS main_cause,
-    COUNTIF(is_flap AND state_class = 'disrupted') AS flaps
+    COUNTIF(is_flap AND state_class = 'disrupted') AS flaps,
+    ARRAY_AGG(DISTINCT IF(counts_as_disruption, cause_category, NULL) IGNORE NULLS) AS causes
   FROM counted
   GROUP BY line_id, hour_start
 )
