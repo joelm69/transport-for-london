@@ -291,3 +291,16 @@ skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
   committed offset 4,368, exactly the events in the topic (no loss, no duplicate).
 - Overground and Elizabeth line, then DLR (per-stop countdown only).
 - VM deployment: systemd units with memory limits; 24-hour watch of memory.
+
+## Memory test result (Docker, 2026-10-22 08:06–09:05 UTC, morning peak)
+
+No container was killed for memory; no restarts. Medians (p95, max) in MiB: Kafka 221 (296, 316;
+real heap+native ~216, the rest is reclaimable file cache), producer 50 (54, 56), detector 27
+(28, 28), archiver 16 (25, 25). **All four together: median 313, p95 396, max 420 MiB** against
+~477 MiB free on the VM. On the VM the archiver will be ~60 MB heavier (GCS library), so p95
+≈ 455 MiB: it fits, but only just, and the hourly BigQuery refresh will push into zram.
+Recommendation before deploying: remove exim4 (~21 MB), set systemd MemoryMax per process and
+OOM priority so Kafka goes before the collectors, and watch the first 24 hours.
+
+The 09:00 hourly publish worked: 4,719 arrivals, 989 drops, 545 coverage rows and 1,023
+prediction snapshots (6.8 MB) published, then offsets committed for both topics.
