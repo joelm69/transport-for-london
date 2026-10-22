@@ -16,8 +16,9 @@ Restart=always
 RestartSec=30
 KillSignal=SIGTERM
 TimeoutStopSec=90
-# Measured peak 79 MB on the VM (2026-10-22); Tube responses vary in size, so 140M.
-MemoryMax=140M
+# Measured peaks on the VM (2026-10-22): 79 MB with Tube + tram, 127 MB after adding the
+# 12 bus routes (three responses held at once when fetched in parallel). 180M leaves margin.
+MemoryMax=180M
 # Killed before the collectors (-500), after Kafka (500), if memory runs out.
 OOMScoreAdjust=300
 
