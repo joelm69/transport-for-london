@@ -1,6 +1,6 @@
 # Endpoint analysis card — Arrivals (rail modes)
 
-Status: in progress (2026-10-22) · step 1 (response structure) done; next: grain and identity
+Status: in progress (2026-10-22) · sections 1–5 drafted; streaming prototype running in Docker; not yet on the VM
 
 | | |
 |---|---|
@@ -128,3 +128,164 @@ expected time (p10 55 s after, p90 on time); tram predictions vanish a median **
 
 Precision: about ±30 s for the Tube (snapshot spacing), better where "At Platform" is seen. Fine
 for headways and waits measured in minutes; prediction error below ~30 s is not meaningful.
+
+## 3. Pipeline, storage layout and retention
+
+### Why Kafka here
+
+Line status and stop disruptions are small and change rarely: one process polls, compares with
+the last poll and writes changes. Arrivals are different: ~4,500 Tube predictions change every
+poll, the useful output (arrivals) has to be derived by keeping state across snapshots, and
+several consumers need the same stream (arrival detection, the archive, later the live board and
+MCP). Kafka decouples them: each step can fail, restart and be added without the others.
+
+```
+TfL ──► producer ──► [arrivals.predictions] ──► detector ──► [arrivals.events] ──► archiver ──► GCS
+        filters         one message per line      LineTracker     arrival / dropped    hourly batches
+                        per snapshot, key=line    per line        / snapshot events    commit after publish
+```
+
+| Step | Code | Does | Memory (measured, Docker) |
+|---|---|---|---|
+| Producer | `src/streaming/producer.py` | Polls Tube and tram **in parallel** every 15 s, keeps newer snapshots only, slims (30 min, trackable vehicles, 10 fields), publishes one message per line | ~32 MB |
+| Kafka | `apache/kafka:4.0.0`, one KRaft node | Buffers both topics on disk | ~225 MB (heap 192 MB) |
+| Detector | `src/streaming/detector.py` + `arrival_detection.py` | One `LineTracker` per line; emits arrival / dropped events | ~25 MB, ~4,200 visits tracked |
+| Archiver | `src/streaming/archiver.py` + `archive.py` | Writes events to hourly batches with `BatchWriter`, publishes to GCS, then commits offsets | ~25 MB local; ~80 MB with the GCS library (as the collectors) |
+
+Keys and order: every message is keyed by `line_id`, so Kafka delivers each line's snapshots
+and events in order.
+
+### Memory safety (the e2-micro has ~477 MB free beside the collectors)
+
+| Risk | Default | Set to |
+|---|---|---|
+| Kafka log cleaner buffer on the heap | 128 MB (Kafka failed to start with a 192 MB heap) | 8 MB (only the small offsets topic is compacted) |
+| Producer send queue if Kafka is down | 1 GB | 16 MB; a full queue skips the snapshot (the next replaces it) |
+| Consumer pre-fetch | 64 MB per partition | 8 MB (detector), 4 MB (archiver) |
+| Detector state | grows with visits | bounded: visits within 30 min, removed when they close |
+| Kafka data | on disk | 2 h and 250 MB per partition, then deleted |
+
+On the VM each process also gets a systemd `MemoryMax`, and the out-of-memory score is set so the
+kernel stops Kafka before either collector.
+
+### Delivery guarantee: at-least-once
+
+The archiver commits a Kafka offset only after the batch holding that event is published to GCS
+and read back. Events after the last publish sit in BatchWriter's fsynced tmp file; after a crash
+`recover()` publishes them and Kafka redelivers them, so an event can be archived twice. Every
+record carries `kafka_partition` and `kafka_offset`; BigQuery keeps one row per (partition,
+offset). Kafka retention (2 h) must stay longer than the batch period (1 h).
+
+### Volume (measured 2026-10-22, morning peak)
+
+| Record | Rate | Compressed size | Per year (estimate) |
+|---|---|---|---|
+| Arrival (with up to 3 checkpoints) | ~90–250 per minute | 63 B | ~3.5 GB |
+| Dropped visit | ~20–27 per 100 arrivals | 36 B | ~0.5 GB |
+
+Snapshot lag (TfL `timestamp` to detector) was a median 14 s with parallel fetching, 122 s before.
+
+### Paths
+
+| Zone | Path | Contents |
+|---|---|---|
+| Events | `processed/arrival_events/date=YYYY-MM-DD/arrival_events_{batch_start}.jsonl.gz` + manifest | One row per arrival, nested `checkpoints` |
+| Drops | `processed/arrival_drops/date=YYYY-MM-DD/arrival_drops_{batch_start}.jsonl.gz` + manifest | Visits that ended without an arrival, with `reason` |
+| Coverage | `coverage/arrivals/date=YYYY-MM-DD/coverage_{batch_start}.jsonl.gz` | **To build:** one row per accepted line snapshot (mode, line, snapshot time, visits tracked), so waits are measured over observed time only |
+| Raw | none | Predictions are not stored: ~1.2 GB/day, and nearly every one changes every poll. Proposed: an hourly checkpoint of each line's **slimmed** predictions, written by the archiver, for rebuilding if the detection rule changes |
+
+Batch files are cut by `archived_at_utc` (processing time) so a late event never reopens a
+published hour; event times (`arrived_at`, `last_snapshot_at`) are columns.
+
+### Running it
+
+Not yet on the VM. A Docker rehearsal (`docker/kafka_test/compose.yaml`) runs all four pieces
+with memory limits that match the VM; `docker/kafka_test/measure.sh` records their memory.
+
+### Retention
+
+| Zone | Keep | Reason |
+|---|---|---|
+| Kafka topics | 2 h / 250 MB | A buffer, not the archive |
+| `processed/arrival_events`, `processed/arrival_drops` | Indefinitely | ~4 GB a year |
+| `coverage/arrivals` | Indefinitely | Proves observation time |
+| `tmp/arrivals` | Until published | Recovered on restart |
+
+## 4. Data-quality rules
+
+Same levels as the other feeds: ERROR (nothing from this input is used), EXCLUDED (one record
+skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
+
+### Per snapshot (producer)
+
+| # | Rule | Level |
+|---|---|---|
+| S1 | HTTP 200 and a JSON array | ERROR (counted as `errors`) |
+| S2 | Snapshot `timestamp` newer than the last accepted for the mode | EXCLUDED (counted as `stale`; two in three responses in the morning peak) |
+| S3 | Snapshot age (fetch time − TfL `timestamp`) under 5 minutes | WARN: TfL's feed has stalled |
+| S4 | At least one prediction | WARN |
+
+### Per prediction (producer)
+
+| # | Rule | Level |
+|---|---|---|
+| R1 | `vehicleId` present and not all zeros ("000") | EXCLUDED: cannot be tracked |
+| R2 | `expectedArrival` and `timestamp` parse | EXCLUDED |
+| R3 | Lead time (`expectedArrival − timestamp`) within 30 minutes | EXCLUDED by design (horizon) |
+| R4 | Lead time not below −5 minutes | WARN: a prediction for a train long overdue |
+
+### Per event (detector)
+
+| # | Rule | Level |
+|---|---|---|
+| E1 | Arrival only if the vehicle is still in the feed and the last prediction was within 90 s | Otherwise a `dropped` event with the reason |
+| E2 | Checkpoints only for a horizon crossing actually observed | Built into the tracker (a visit first seen 4 min out has no 10- or 5-minute checkpoint) |
+| E3 | Out-of-order snapshot for a line (older than the last processed) | EXCLUDED (counted as `out_of_order`) |
+
+### Across records (BigQuery CHECK)
+
+| # | Check | Expectation |
+|---|---|---|
+| C1 | One row per (`kafka_partition`, `kafka_offset`) | Duplicates only after a crash; dropped in the view |
+| C2 | One arrival per `visit_key` | Duplicates mean a detection bug |
+| C3 | Two arrivals of the same vehicle at the same stop less than 2 minutes apart | Should not happen (double detection) |
+| C4 | Dropped visits / (arrivals + dropped) per line per hour | Measured 16–21% in the morning peak (18% replay, 21% in Docker); investigate above 35% |
+| C5 | Headway under 30 s at the same platform | Suspect (two trains cannot share a platform) |
+| C6 | Hours with arrivals but no coverage rows, or coverage with no arrivals during service | Pipeline fault |
+
+## 5. Hot and cold use
+
+### Hot path (live)
+
+| Use | Source |
+|---|---|
+| Live board "next trains" per station | The TfL API directly (Streamlit), as now; no Kafka needed for a page view |
+| Bunching right now: two trains on a line within a minute of each other | A Kafka consumer of `arrivals.events`, later served to MCP |
+| "Is the Victoria line running regularly right now?" | Headways from the last 30 minutes of events (MCP live tool) |
+
+### Cold path (BigQuery → Sheet → Tableau, MCP history tools)
+
+| Metric | Definition | Why |
+|---|---|---|
+| Headway | Time between consecutive arrivals at the same stop, platform and line | The basic measure of service frequency |
+| Average passenger wait | Σh² / (2 · Σh) over the headways h in a period | Passengers arriving at random wait longer when trains bunch; this is the measure TfL's own "excess wait time" builds on |
+| Regularity | Coefficient of variation of headways (std / mean) | 0 = perfectly even; higher = irregular |
+| Bunching rate | Share of headways under half the period's median | "Trains arriving in clumps" |
+| Prediction error | `arrived_at − expected_arrival` at 10, 5 and 2 minutes: mean (bias) and median absolute error | How far off TfL's countdowns are, by line and horizon |
+| Observed time | From coverage rows | All rates use only the time we were watching |
+
+### Business questions (from docs/requirements.md)
+
+| Question | Metric | Method |
+|---|---|---|
+| What is the typical wait at a station, and how variable is it? | Average passenger wait, headway distribution | Descriptive statistics by station, line, hour of day |
+| Do trains arrive in clumps instead of evenly? | Bunching rate, regularity | By line and hour; compare peaks with off-peak |
+| How far off are TfL's countdown predictions, by line? | Prediction error by horizon | Bias and spread; does accuracy drop during disruptions (join line status)? |
+| Do disruptions show up in waits before the status changes? | Headways vs line status periods | Join on line and time |
+
+### Open items
+
+- Coverage records (`snapshot` events from the detector) and the hourly slimmed-prediction
+  checkpoint: build next.
+- Overground and Elizabeth line, then DLR (per-stop countdown only).
+- VM deployment: systemd units with memory limits; 24-hour watch of memory.
