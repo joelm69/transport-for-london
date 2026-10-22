@@ -331,3 +331,14 @@ rail's 16–21%: buses are curtailed and diverted more often; still under the C4
 
 Analysis is daily in Tableau Public via the 24-hour Google Sheet; live bus views (next buses
 at a stop, buses on a route now) call TfL directly from Streamlit. See docs/requirements.md.
+
+## Reboot test (2026-10-22 18:19 UTC)
+
+`sudo systemctl reboot` with all six services running. All came back on their own 36 s after the
+command (Kafka, producer, detector, archiver, both collectors, the refresh timer); none needed a
+retry. zram and the swap file were restored; OOM scores (Kafka +500, collectors -500) and the
+disabled exim4 persisted. On shutdown the archiver published its partial 18:00 batch (5,236
+arrivals, 1,385 drops, 699 coverage rows, the predictions file) and only then committed offsets;
+after boot it resumed from those offsets and started new batches. The collectors resumed with a
+fresh baseline. Collection gap: ~55 s, recorded in coverage. Before the reboot zram held 374 of
+482 MB: to watch.
