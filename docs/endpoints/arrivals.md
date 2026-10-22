@@ -69,9 +69,62 @@ live tracking. Only about a third of them fall within 30 minutes.
 
 ## 2. Grain and identity
 
-To do with the user. Questions:
+### Decisions (2026-10-22)
 
-- What is one stored record: a prediction, a vehicle's visit to a stop, or an observed arrival?
-- How do we decide a train has **arrived** (prediction drops to ~0 and disappears; `currentLocation`
-  "At Platform"; the vehicle's next stop changes)?
-- Which modes and horizon: all five, or Tube first; all predictions, or only those within 30 min?
+| Question | Decision | Why |
+|---|---|---|
+| What is stored | **Option C**: observed arrivals, plus prediction checkpoints for each arrival | Answers waits, bunching and prediction accuracy at a small fraction of storing every prediction (option A, ~1.2 GB/day) |
+| Modes | **Tube and tram first**; Overground and Elizabeth line next; DLR last | Tube and tram have vehicle IDs and live (not timetable) predictions; DLR has no vehicle ID |
+| Horizon | Predictions **within 30 minutes** of TfL's `timestamp` only | Beyond that it is mostly timetable; cuts Overground and Elizabeth line volume by about two thirds when they are added |
+
+### Records
+
+**Arrival** (one per vehicle per visit to a stop):
+
+| Column | Meaning |
+|---|---|
+| `visit_key` | `line_id` + `vehicle_id` + `naptan_id` + visit number (a train can call at a stop twice: terminus reversals) |
+| `line_id`, `vehicle_id`, `naptan_id`, `station_name`, `platform_name`, `direction`, `destination_naptan_id` | From the last prediction |
+| `arrived_at` | Detected arrival time (rule in "Arrival detection") |
+| `detection` | Which rule fired, so its accuracy can be audited |
+| `last_snapshot_at` | Last TfL `timestamp` that still predicted this visit |
+
+**Prediction checkpoint** (up to one per arrival per horizon): the prediction that was current
+when the train was 10, 5 and 2 minutes away, by TfL's `timestamp`. Columns: `visit_key`,
+`horizon_minutes`, `predicted_at` (TfL `timestamp`), `expected_arrival`. Error = `arrived_at −
+expected_arrival`.
+
+### Arrival detection
+
+Decided 2026-10-22 (combination rule), from a 10-minute recording of Tube and tram in the morning
+peak (07:33–07:43 UTC): 18 Tube and 10 tram snapshots accepted, **52 stale responses rejected**
+(two in three responses were older than one already accepted). Accepted snapshots were a median
+36 s apart for the Tube and 63 s for tram, which sets the timing resolution.
+
+A visit is tracked by its earliest current prediction per (`line_id`, `vehicle_id`, `naptan_id`).
+What happened when a visit's prediction disappeared between two accepted snapshots:
+
+| Disappearance | Tube | Tram | Meaning |
+|---|---|---|---|
+| Within 90 s of `expectedArrival`, vehicle still in the feed | 1,647 (1,318 "At Platform") | 27 | **Arrival** |
+| More than 90 s before `expectedArrival`, vehicle still in the feed | 83 | 47 | Re-planned (e.g. Hammersmith & City 430 lost Aldgate, Barbican, Farringdon while between Euston Square and King's Cross): **not an arrival** |
+| The vehicle left the feed | 155 | 6 | Out of service or lost tracking: **not an arrival** |
+
+Timing at the last sighting differs by mode: Tube predictions vanish a median **25 s after** the
+expected time (p10 55 s after, p90 on time); tram predictions vanish a median **46 s before** it.
+
+**Rule (combination):**
+
+1. A visit counts as an arrival only if, when it disappears, the vehicle is still in the feed and
+   the last prediction was within 90 s of `expectedArrival`.
+2. `arrived_at`:
+   - **Tube:** the TfL `timestamp` of the first snapshot where the visit showed `currentLocation`
+     "At Platform"; if never seen, the last `expectedArrival`. `detection` = `at_platform` or
+     `disappeared`.
+   - **Tram:** the last `expectedArrival` (predictions vanish before arrival). `detection` =
+     `disappeared`.
+3. Disappearances that fail rule 1 are kept as `dropped` records with the reason (`replanned`,
+   `vehicle_gone`), so the rejection rate can be monitored but never counted as service.
+
+Precision: about ±30 s for the Tube (snapshot spacing), better where "At Platform" is seen. Fine
+for headways and waits measured in minutes; prediction error below ~30 s is not meaningful.
