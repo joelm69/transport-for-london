@@ -15,6 +15,7 @@ import os
 import signal
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -40,6 +41,11 @@ def main():
         "compression.type": "zstd",
         "enable.idempotence": True,     # no duplicates if a send is retried
         "linger.ms": 100,               # batch a snapshot's line messages together
+        # Bound the send queue (librdkafka defaults to 1 GB). If Kafka is down, produce()
+        # raises BufferError once ~16 MB are waiting, and the snapshot is skipped: the next
+        # one replaces it anyway.
+        "queue.buffering.max.kbytes": 16384,
+        "queue.buffering.max.messages": 2000,
     })
 
     stop = {"requested": False}
@@ -48,14 +54,21 @@ def main():
 
     last = {}
     counts = {"accepted": 0, "stale": 0, "errors": 0, "messages": 0}
+    def fetch(mode):
+        try:
+            return mode, client.get_json(config["endpoint"].format(mode=mode), config["params"]).data
+        except TflError as error:
+            return mode, error
+
+    # TfL's arrivals endpoint sometimes takes 30 s or more per mode; fetching the modes in
+    # parallel keeps one slow mode from delaying the others.
+    pool = ThreadPoolExecutor(max_workers=len(config["modes"]))
     while not stop["requested"]:
         started = time.monotonic()
-        for mode in config["modes"]:
-            try:
-                records = client.get_json(config["endpoint"].format(mode=mode), config["params"]).data
-            except TflError as error:
+        for mode, records in pool.map(fetch, config["modes"]):
+            if isinstance(records, TflError):
                 counts["errors"] += 1
-                logger.warning("%s: %s", mode, error)
+                logger.warning("%s: %s", mode, records)
                 continue
             snapshot = snapshot_time(records)
             if not is_newer(snapshot, last.get(mode)):
@@ -66,17 +79,22 @@ def main():
             for line_id, line_records in by_line(slim(records, config["horizon_seconds"])).items():
                 value = json.dumps({"mode": mode, "line_id": line_id, "snapshot": snapshot,
                                     "records": line_records}, separators=(",", ":"))
-                producer.produce(topic, key=line_id, value=value)
-                counts["messages"] += 1
+                try:
+                    producer.produce(topic, key=line_id, value=value)
+                    counts["messages"] += 1
+                except BufferError:
+                    counts["dropped_full_queue"] = counts.get("dropped_full_queue", 0) + 1
+            del records
             producer.poll(0)
         producer.flush(10)
-        logger.info("accepted=%(accepted)d stale=%(stale)d errors=%(errors)d messages=%(messages)d", counts)
+        logger.info("cycle %.1fs %s", time.monotonic() - started, counts)
 
         remaining = config["poll_interval_seconds"] - (time.monotonic() - started)
         while remaining > 0 and not stop["requested"]:
             time.sleep(min(1.0, remaining))
             remaining -= 1.0
     producer.flush(10)
+    pool.shutdown()
 
 
 if __name__ == "__main__":

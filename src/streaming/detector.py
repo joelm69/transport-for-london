@@ -38,9 +38,14 @@ def main():
         "group.id": "arrival-detector",
         "auto.offset.reset": "earliest",
         "enable.auto.commit": True,
+        # Bound what the client pre-fetches into memory (librdkafka defaults to 64 MB per
+        # partition): a few snapshots ahead is enough.
+        "queued.max.messages.kbytes": 8192,
+        "fetch.max.bytes": 4194304,
     })
     producer = Producer({"bootstrap.servers": bootstrap, "compression.type": "zstd",
-                         "enable.idempotence": True, "linger.ms": 100})
+                         "enable.idempotence": True, "linger.ms": 100,
+                         "queue.buffering.max.kbytes": 8192})
     consumer.subscribe([config["topics"]["predictions"]])
     events_topic = config["topics"]["events"]
 
