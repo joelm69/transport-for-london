@@ -1,0 +1,15 @@
+{
+  "dataset": "arrivals",
+  "modes": ["tube", "tram"],
+  "endpoint": "/Mode/{mode}/Arrivals",
+  "params": {"count": -1},
+  "poll_interval_seconds": 15,
+  "horizon_seconds": 1800,
+  "arrival_window_seconds": 90,
+  "at_platform_max_seconds": 60,
+  "checkpoint_minutes": [10, 5, 2],
+  "topics": {
+    "predictions": "arrivals.predictions",
+    "events": "arrivals.events"
+  }
+}
