@@ -28,6 +28,13 @@ from the BigQuery serving tables in `tfl_portfolio` (daily summaries, so it stay
 10 million cell limit), one tab per subject, and Tableau Public reads it. New feeds (BikePoint,
 air quality, roads) add tabs; nothing in the Sheet is needed by the live views.
 
+Retention (decided 2026-10-22): summary tabs (per line/route per day, ~11k rows a year) keep full
+history in the Sheet so Tableau keeps long-term trends; detailed tabs (per stop per hour, ~2.5M
+rows a year) keep a rolling last month. Every daily export is also written to GCS as gzip CSV
+(`exports/sheets/<tab>/date=YYYY-MM-DD/`), moved to Nearline after 30 days and deleted after 90
+by a lifecycle rule (Nearline, not Coldline: Coldline bills a 90-day minimum). BigQuery remains
+the source of truth; any tab or archive file can be regenerated from the serving tables.
+
 **Buses (decided 2026-10-22).** The full network is too large for the e2-micro
 (`/Mode/bus/Arrivals?count=-1`: 106,619 predictions, 101 MB, 687 MB to parse), so the rule is:
 whatever can be live is live, and whatever cannot is analysed daily in Tableau Public.
