@@ -22,6 +22,17 @@ Last reviewed: 2026-10-21
 **Hot path (live):** TfL → Streamlit / MCP live tools (and Kafka while the VM runs).
 **Cold path (daily):** GCS → BigQuery → Google Sheet → Tableau Public, plus MCP history tools.
 
+**Buses (decided 2026-10-22).** The full network is too large for the e2-micro
+(`/Mode/bus/Arrivals?count=-1`: 106,619 predictions, 101 MB, 687 MB to parse), so the rule is:
+whatever can be live is live, and whatever cannot is analysed daily in Tableau Public.
+
+| Path | Bus data | Source |
+|---|---|---|
+| Live (Streamlit, later MCP) | Next buses at a stop, buses on a route now, routes with problems now, current disruptions | TfL API directly: `/StopPoint/{id}/Arrivals`, `/Line/{route}/Arrivals`, `/Line/Mode/bus/Status`, `/Line/Mode/bus/Disruption`, `/StopPoint/Mode/bus/Disruption` |
+| VM (history) | Arrivals for a **selected set of routes** only (~10 routes ≈ 2.9 MB per poll, the size of the Tube feed), added to the existing arrivals producer; optionally bus status on change | `/Line/{routes}/Arrivals` |
+| Off the VM (reference, weekly) | Routes, stop sequences, stops, timetables (scheduled headways for excess wait time) | `/Line/Mode/bus/Route`, `/Line/{id}/Route/Sequence/{dir}`, `/Line/{id}/Timetable/{stop}`, existing bus stop data in GCS |
+| Daily analysis (Tableau Public) | Headways, waits, bunching, prediction accuracy, excess wait time, disruption history | BigQuery daily aggregates → 24-hour Google Sheet |
+
 ## 1. Data presentation
 
 - [x] Streamlit: live rail line status — public on the portfolio case study (joeldataportfolio.streamlit.app/transport_for_london, logic vendored in the portfolio's `tfl_live/`); standalone board in `app/streamlit_app.py`
