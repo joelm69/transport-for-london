@@ -46,6 +46,11 @@ whatever can be live is live, and whatever cannot is analysed daily in Tableau P
 | Off the VM (reference, weekly) | Routes, stop sequences, stops, timetables (scheduled headways for excess wait time) | `/Line/Mode/bus/Route`, `/Line/{id}/Route/Sequence/{dir}`, `/Line/{id}/Timetable/{stop}`, existing bus stop data in GCS |
 | Daily analysis (Tableau Public) | Headways, waits, bunching, prediction accuracy, excess wait time, disruption history | BigQuery daily aggregates → 24-hour Google Sheet |
 
+Goal (2026-10-22): Tableau bus analysis will cover **all routes** eventually. For now the VM
+collects the busiest 12. Covering ~675 routes needs a decision later: a second small VM for the
+whole network (~$12/month), or a lighter method (e.g. sampling the full network at intervals
+rather than every 15 s). Growth path meanwhile: add routes in batches of ~12 while VM memory allows.
+
 ## 1. Data presentation
 
 - [x] Streamlit: live rail line status — public on the portfolio case study (joeldataportfolio.streamlit.app/transport_for_london, logic vendored in the portfolio's `tfl_live/`); standalone board in `app/streamlit_app.py`
