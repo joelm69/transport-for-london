@@ -1,13 +1,36 @@
 {
   "dataset": "arrivals",
-  "modes": ["tube", "tram"],
-  "endpoint": "/Mode/{mode}/Arrivals",
-  "params": {"count": -1},
+  "sources": [
+    {
+      "mode": "tube",
+      "path": "/Mode/tube/Arrivals",
+      "params": {
+        "count": -1
+      }
+    },
+    {
+      "mode": "tram",
+      "path": "/Mode/tram/Arrivals",
+      "params": {
+        "count": -1
+      }
+    },
+    {
+      "mode": "bus",
+      "path": "/Line/25,38,73,12,159,24,18,149,207,53,SL1,N29/Arrivals",
+      "params": {},
+      "note": "Selected routes only (2026-10-22): the whole bus network is 101 MB per poll. Central 25 38 73 12 159 24; long 18 149 207 53; express SL1; night N29."
+    }
+  ],
   "poll_interval_seconds": 15,
   "horizon_seconds": 1800,
   "arrival_window_seconds": 90,
   "at_platform_max_seconds": 60,
-  "checkpoint_minutes": [10, 5, 2],
+  "checkpoint_minutes": [
+    10,
+    5,
+    2
+  ],
   "topics": {
     "predictions": "arrivals.predictions",
     "events": "arrivals.events"

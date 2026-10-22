@@ -54,18 +54,19 @@ def main():
 
     last = {}
     counts = {"accepted": 0, "stale": 0, "errors": 0, "messages": 0}
-    def fetch(mode):
+    def fetch(source):
         try:
-            return mode, client.get_json(config["endpoint"].format(mode=mode), config["params"]).data
+            return source["mode"], client.get_json(source["path"], source["params"]).data
         except TflError as error:
-            return mode, error
+            return source["mode"], error
 
-    # TfL's arrivals endpoint sometimes takes 30 s or more per mode; fetching the modes in
-    # parallel keeps one slow mode from delaying the others.
-    pool = ThreadPoolExecutor(max_workers=len(config["modes"]))
+    # TfL's arrivals endpoint sometimes takes 30 s or more per call; fetching the sources in
+    # parallel keeps one slow source from delaying the others. A source is a whole mode
+    # (/Mode/tube/Arrivals) or a list of lines (/Line/25,38,.../Arrivals for buses).
+    pool = ThreadPoolExecutor(max_workers=len(config["sources"]))
     while not stop["requested"]:
         started = time.monotonic()
-        for mode, records in pool.map(fetch, config["modes"]):
+        for mode, records in pool.map(fetch, config["sources"]):
             if isinstance(records, TflError):
                 counts["errors"] += 1
                 logger.warning("%s: %s", mode, records)

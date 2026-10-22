@@ -304,3 +304,30 @@ OOM priority so Kafka goes before the collectors, and watch the first 24 hours.
 
 The 09:00 hourly publish worked: 4,719 arrivals, 989 drops, 545 coverage rows and 1,023
 prediction snapshots (6.8 MB) published, then offsets committed for both topics.
+
+## Buses (added 2026-10-22)
+
+The whole bus network cannot be collected on the e2-micro: `/Mode/bus/Arrivals?count=-1`
+returned 106,619 predictions (101 MB JSON) and needed 687 MB of Python memory to parse. A
+**selected set of 12 routes** is collected instead, as a third producer source:
+
+| Group | Routes |
+|---|---|
+| Central, busiest corridors | 25, 38, 73, 12, 159, 24 |
+| Long cross-London | 18, 149, 207, 53 |
+| Express | SL1 (Superloop) |
+| Night | N29 |
+
+Source: `/Line/25,38,73,12,159,24,18,149,207,53,SL1,N29/Arrivals`, measured at 16:3x London:
+3,263 predictions, 3.2 MB per poll (the size of the Tube feed). N29 is empty in the daytime.
+
+**Detection rule unchanged** (6-minute recording, 9 accepted snapshots of 18 polls, median 34 s
+apart): `currentLocation` is always empty, so there is no "At Platform"; predictions vanish a
+median 32 s *before* the expected time (like trams, 46 s), so `arrived_at` = the last
+`expectedArrival`. 84% of disappearances with the bus still in the feed fall inside the 90 s
+window. Replay: 549 arrivals, 114 `vehicle_gone`, 105 `replanned` (drop share ~28%, higher than
+rail's 16–21%: buses are curtailed and diverted more often; still under the C4 threshold of
+35%). To revisit with a day of data.
+
+Analysis is daily in Tableau Public via the 24-hour Google Sheet; live bus views (next buses
+at a stop, buses on a route now) call TfL directly from Streamlit. See docs/requirements.md.
