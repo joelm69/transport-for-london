@@ -28,11 +28,19 @@ from the BigQuery serving tables in `tfl_portfolio` (daily summaries, so it stay
 10 million cell limit), one tab per subject, and Tableau Public reads it. New feeds (BikePoint,
 air quality, roads) add tabs; nothing in the Sheet is needed by the live views.
 
-Retention (decided 2026-10-22): summary tabs (per line/route per day, ~11k rows a year) keep full
-history in the Sheet so Tableau keeps long-term trends; detailed tabs (per stop per hour, ~2.5M
-rows a year) keep a rolling last month. Every daily export is also written to GCS as gzip CSV
-(`exports/sheets/<tab>/date=YYYY-MM-DD/`), moved to Nearline after 30 days and deleted after 90
-by a lifecycle rule (Nearline, not Coldline: Coldline bills a 90-day minimum). BigQuery remains
+Google Sheet design (decided 2026-10-22): **one Sheet file for the whole project**, one tab per
+subject. The 10 million cell limit applies to the whole file, so each tab keeps its own window:
+**6 months** for every summary tab (line reliability by day and by hour, busiest 12 routes by
+direction and time of day, all routes by day, stations and accessibility by day, prediction
+accuracy by day), and **30 days** for the two detailed tabs (busiest 12 routes by stop; all routes
+by 4-hour band), which would otherwise exceed the limit on their own. Estimated total ~5.8M cells,
+leaving room for bikes, air quality and roads.
+
+Daily export routine (automated, never manual deletion): write yesterday's rows; archive rows now
+outside a tab's window to GCS as gzip CSV (`exports/sheets/<tab>/date=YYYY-MM-DD/`, Nearline after
+30 days, deleted after 90 by a lifecycle rule, Nearline rather than Coldline: Coldline bills a
+90-day minimum); delete them from the Sheet; check the file's cell count and stop with a warning
+above 7M. Tableau Public shows only what is in the Sheet at its daily refresh. BigQuery remains
 the source of truth; any tab or archive file can be regenerated from the serving tables.
 
 **Buses (decided 2026-10-22).** The full network is too large for the e2-micro
