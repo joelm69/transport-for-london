@@ -1,4 +1,5 @@
-"""Archive arrival and dropped events from Kafka to the lake (GCS) in hourly batches.
+"""Archive arrival events, coverage and prediction snapshots from Kafka to the lake (GCS) in
+hourly batches.
 
 Its own consumer group ("arrivals-archiver"), so it reads the events topic independently of any
 other consumer. Auto-commit is off: offsets are committed only after the batch holding those
@@ -42,7 +43,7 @@ def main(argv=None):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
     config = json.loads(CONFIG_FILE.read_text())
-    topic = config["topics"]["events"]
+    events_topic, predictions_topic = config["topics"]["events"], config["topics"]["predictions"]
     lake = GcsLake(BUCKET, project=GCP_PROJECT) if args.lake == "gcs" else LocalLake(args.lake_root)
     archive = EventArchive(make_archive_writers(lake, args.tmp_dir))
     archive.recover()
@@ -52,13 +53,14 @@ def main(argv=None):
         "group.id": "arrivals-archiver",
         "auto.offset.reset": "earliest",
         "enable.auto.commit": False,
+        # Prediction messages are up to a few hundred KB; keep only a few in memory.
         "queued.max.messages.kbytes": 4096,
     })
-    consumer.subscribe([topic])
+    consumer.subscribe([events_topic, predictions_topic])
 
     def commit(offsets):
         if offsets:
-            consumer.commit(offsets=[TopicPartition(topic, p, o) for p, o in offsets.items()],
+            consumer.commit(offsets=[TopicPartition(t, p, o) for (t, p), o in offsets.items()],
                             asynchronous=False)
             logger.info("Committed offsets %s", offsets)
 
@@ -66,7 +68,7 @@ def main(argv=None):
     signal.signal(signal.SIGTERM, lambda *_: stop.update(requested=True))
     signal.signal(signal.SIGINT, lambda *_: stop.update(requested=True))
 
-    logger.info("Archiving %s to %r", topic, lake)
+    logger.info("Archiving %s and %s to %r", events_topic, predictions_topic, lake)
     try:
         while not stop["requested"]:
             commit(archive.tick())
@@ -76,7 +78,9 @@ def main(argv=None):
             if message.error():
                 logger.warning("consumer error: %s", message.error())
                 continue
-            archive.write(json.loads(message.value()), message.partition(), message.offset())
+            record = json.loads(message.value())
+            kind = "predictions" if message.topic() == predictions_topic else record["event"]
+            archive.write(kind, record, message.topic(), message.partition(), message.offset())
     finally:
         commit(archive.close())
         consumer.close()

@@ -1,6 +1,7 @@
 # Memory-capped rehearsal of the arrivals pipeline before it goes on the e2-micro VM.
 # Limits are ceilings sized to the ~477 MB free on the VM beside the collectors:
-#   kafka 320 MB (Java heap 192 MB) + producer 60 MB + detector 70 MB + archiver 60 MB.
+#   kafka 320 MB (Java heap 192 MB) + producer 80 MB + detector 70 MB + archiver 60 MB.
+# Producer: fetching Tube and tram in parallel holds both responses at once (~50 MB peak).
 # What matters is measured use (measure.sh), which stays well under the ceilings.
 #
 #   docker compose -f docker/kafka_test/compose.yaml up -d --build
@@ -43,7 +44,7 @@ services:
 
   producer:
     build: .
-    mem_limit: 60m
+    mem_limit: 80m
     command: python -m src.streaming.producer
     env_file: ../../.env
     environment:

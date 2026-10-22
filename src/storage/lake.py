@@ -5,7 +5,11 @@ GcsLake writes to Google Cloud Storage. Both refuse to overwrite existing
 objects, so a re-run can never silently replace history.
 """
 
+import hashlib
+import shutil
 from pathlib import Path
+
+CHUNK = 1024 * 1024
 
 
 class ObjectExistsError(Exception):
@@ -33,6 +37,23 @@ class LocalLake:
 
     def read(self, path):
         return (self.root / path).read_bytes()
+
+    def write_new_file(self, path, source, content_type=None):
+        """Create-only copy of a local file, streamed (never fully in memory)."""
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with open(source, "rb") as src, target.open("xb") as dst:
+                shutil.copyfileobj(src, dst, CHUNK)
+        except FileExistsError:
+            raise ObjectExistsError(self.uri(path)) from None
+
+    def sha256(self, path):
+        digest = hashlib.sha256()
+        with (self.root / path).open("rb") as file:
+            for chunk in iter(lambda: file.read(CHUNK), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
 
 
 class GcsLake:
@@ -63,3 +84,22 @@ class GcsLake:
 
     def read(self, path):
         return self._bucket.blob(path).download_as_bytes()
+
+    def write_new_file(self, path, source, content_type=None):
+        """Create-only upload of a local file, streamed from disk."""
+        from google.api_core.exceptions import PreconditionFailed
+
+        try:
+            self._bucket.blob(path).upload_from_filename(
+                str(source), content_type=content_type, if_generation_match=0
+            )
+        except PreconditionFailed:
+            raise ObjectExistsError(self.uri(path)) from None
+
+    def sha256(self, path):
+        """Checksum of a stored object, read back in chunks."""
+        digest = hashlib.sha256()
+        with self._bucket.blob(path).open("rb", chunk_size=CHUNK) as file:
+            for chunk in iter(lambda: file.read(CHUNK), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
