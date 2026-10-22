@@ -1,5 +1,5 @@
 from src.streaming.arrival_detection import (
-    LineTracker, is_newer, next_visits, slim, snapshot_time, valid_vehicle,
+    LineTracker, coverage, is_newer, next_visits, slim, snapshot_time, valid_vehicle,
 )
 
 CONFIG = {"arrival_window_seconds": 90, "at_platform_max_seconds": 60, "checkpoint_minutes": [10, 5, 2]}
@@ -82,3 +82,14 @@ def test_checkpoints_need_an_observed_crossing():
     t.update(at("28:30"), [pred("1", "S", "28:30", "30:00"), pred("1", "T", "28:30", "35:00")])   # crosses 2 min
     events = t.update(at("30:30"), [pred("1", "T", "30:30", "35:00")])
     assert [c["horizon_minutes"] for c in events[0]["checkpoints"]] == [2]
+
+
+def test_coverage_row_per_snapshot():
+    t = LineTracker("tube", "victoria", CONFIG)
+    t.update(at("28:00"), [pred("1", "S", "28:00", "29:00"), pred("1", "T", "28:00", "33:00"),
+                           pred("2", "U", "28:00", "40:00")])
+    records = [pred("1", "T", "28:40", "33:00")]
+    events = t.update(at("28:40"), records)
+    row = coverage(t, at("28:40"), len(records), events)
+    assert row == {"event": "snapshot", "mode": "tube", "line_id": "victoria", "snapshot_at": at("28:40"),
+                   "predictions": 1, "visits_tracked": 1, "arrivals": 1, "dropped": 1}

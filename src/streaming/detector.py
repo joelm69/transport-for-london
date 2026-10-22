@@ -2,7 +2,8 @@
 
 One LineTracker per line holds the visits it is watching; state is rebuilt from the topic on
 restart (retention covers far more than the 30-minute horizon). Events go to their own topic,
-keyed by line_id, for the GCS archive writer and live consumers to read independently.
+keyed by line_id, for the GCS archive writer and live consumers to read independently. Each
+processed snapshot also emits a "snapshot" coverage event, the proof of observed time.
 
 Usage:
     python -m src.streaming.detector            # KAFKA_BOOTSTRAP defaults to localhost:9092
@@ -23,7 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from confluent_kafka import Consumer, Producer  # noqa: E402
 
-from src.streaming.arrival_detection import LineTracker, parse_utc  # noqa: E402
+from src.streaming.arrival_detection import LineTracker, coverage, parse_utc  # noqa: E402
 
 logger = logging.getLogger("tfl.streaming.detector")
 CONFIG_FILE = PROJECT_ROOT / "config" / "arrivals.json"
@@ -68,11 +69,12 @@ def main():
                 if tracker.snapshot is not None and parse_utc(snapshot["snapshot"]) <= tracker.snapshot:
                     counts["out_of_order"] += 1
                     continue
-                for event in tracker.update(snapshot["snapshot"], snapshot["records"]):
+                events = tracker.update(snapshot["snapshot"], snapshot["records"])
+                events.append(coverage(tracker, snapshot["snapshot"], len(snapshot["records"]), events))
+                for event in events:
                     counts[event["event"]] += 1
                     producer.produce(events_topic, key=key, value=json.dumps(event, separators=(",", ":")))
                 producer.poll(0)
-                counts["snapshots"] += 1
                 lag.append(time.time() - parse_utc(snapshot["snapshot"]).timestamp())
             elif message is not None:
                 logger.warning("consumer error: %s", message.error())

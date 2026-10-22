@@ -51,3 +51,11 @@ def test_crash_leaves_events_recoverable(tmp_path):
     restarted = EventArchive(make_archive_writers(LocalLake(lake_root), tmp_path / "tmp"))
     restarted.recover()
     assert [r["kafka_offset"] for r in records(lake_root, "processed/arrival_events")] == [10]
+
+
+def test_snapshot_events_go_to_coverage(tmp_path):
+    lake_root = tmp_path / "lake"
+    archive = EventArchive(make_archive_writers(LocalLake(lake_root), tmp_path / "tmp"))
+    archive.write({"event": "snapshot", "line_id": "victoria", "snapshot_at": "2026-10-22T08:50:00Z"}, 0, 5, utc(8, 50))
+    archive.close()
+    assert [r["line_id"] for r in records(lake_root, "coverage/arrivals")] == ["victoria"]

@@ -191,7 +191,7 @@ Snapshot lag (TfL `timestamp` to detector) was a median 14 s with parallel fetch
 |---|---|---|
 | Events | `processed/arrival_events/date=YYYY-MM-DD/arrival_events_{batch_start}.jsonl.gz` + manifest | One row per arrival, nested `checkpoints` |
 | Drops | `processed/arrival_drops/date=YYYY-MM-DD/arrival_drops_{batch_start}.jsonl.gz` + manifest | Visits that ended without an arrival, with `reason` |
-| Coverage | `coverage/arrivals/date=YYYY-MM-DD/coverage_{batch_start}.jsonl.gz` | **To build:** one row per accepted line snapshot (mode, line, snapshot time, visits tracked), so waits are measured over observed time only |
+| Coverage | `coverage/arrivals/date=YYYY-MM-DD/coverage_{batch_start}.jsonl.gz` | One row per processed line snapshot (`snapshot` event from the detector): `mode`, `line_id`, `snapshot_at`, `predictions`, `visits_tracked`, `arrivals`, `dropped`. Waits and rates use observed time only |
 | Raw | none | Predictions are not stored: ~1.2 GB/day, and nearly every one changes every poll. Proposed: an hourly checkpoint of each line's **slimmed** predictions, written by the archiver, for rebuilding if the detection rule changes |
 
 Batch files are cut by `archived_at_utc` (processing time) so a late event never reopens a
@@ -285,7 +285,8 @@ skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
 
 ### Open items
 
-- Coverage records (`snapshot` events from the detector) and the hourly slimmed-prediction
-  checkpoint: build next.
+- Hourly slimmed-prediction checkpoint: build next.
+- Verified 2026-10-22: a graceful archiver restart published 3,441 arrivals and 927 drops and
+  committed offset 4,368, exactly the events in the topic (no loss, no duplicate).
 - Overground and Elizabeth line, then DLR (per-stop countdown only).
 - VM deployment: systemd units with memory limits; 24-hour watch of memory.

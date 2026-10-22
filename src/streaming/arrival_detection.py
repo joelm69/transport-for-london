@@ -8,6 +8,7 @@ Flow per accepted snapshot of one line:
   next_visits() the earliest prediction per (vehicle, stop): the visit currently predicted
   LineTracker   compares visits with the previous snapshot of the same line and emits
                 arrival and dropped events, with prediction checkpoints for accuracy analysis
+  coverage()    one row per processed line snapshot: proof of when the line was observed
 """
 
 from datetime import datetime
@@ -151,3 +152,14 @@ class LineTracker:
             "visit_key": f"{self.line_id}|{vehicle}|{stop}|{arrived_at}",
             "checkpoints": [state["checkpoints"][m] for m in self.checkpoints if m in state["checkpoints"]],
         }
+
+
+def coverage(tracker, snapshot, predictions, events):
+    """Coverage row for one processed snapshot of a line. Rates (waits, bunching, drops) are
+    computed over observed time only: a gap in these rows is time we were not watching."""
+    return {
+        "event": "snapshot", "mode": tracker.mode, "line_id": tracker.line_id,
+        "snapshot_at": snapshot, "predictions": predictions, "visits_tracked": len(tracker.visits),
+        "arrivals": sum(1 for e in events if e["event"] == "arrival"),
+        "dropped": sum(1 for e in events if e["event"] == "dropped"),
+    }

@@ -18,6 +18,7 @@ from src.storage.batch_writer import BatchWriter
 ZONES = {
     "arrival": ("processed/arrival_events", "arrival_events"),
     "dropped": ("processed/arrival_drops", "arrival_drops"),
+    "snapshot": ("coverage/arrivals", "coverage"),
 }
 
 
