@@ -9,6 +9,13 @@ After=network-online.target
 Type=simple
 User=kafka
 Environment=KAFKA_HEAP_OPTS=-Xms192m -Xmx192m
+# Bound the JVM's memory outside the heap. Kafka's defaults assume a large server: on the VM its
+# resident memory reached 311 MB of anonymous memory (heap 192 MB) after 90 minutes and was still
+# growing (2026-10-22). SerialGC needs far less bookkeeping than G1 for a small heap; metaspace,
+# code cache, direct buffers and thread stacks get ceilings; fewer malloc arenas limit native
+# fragmentation. ExitOnOutOfMemoryError: if a ceiling is ever hit, exit and let systemd restart.
+Environment="KAFKA_JVM_PERFORMANCE_OPTS=-server -XX:+UseSerialGC -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=48m -XX:MaxDirectMemorySize=64m -Xss512k -XX:+ExitOnOutOfMemoryError -Djava.awt.headless=true"
+Environment=MALLOC_ARENA_MAX=2
 Environment=LOG_DIR=/var/log/kafka
 ExecStart=/opt/kafka/bin/kafka-server-start.sh /etc/kafka/server.properties
 Restart=on-failure
