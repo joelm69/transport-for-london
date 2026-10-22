@@ -46,10 +46,14 @@ whatever can be live is live, and whatever cannot is analysed daily in Tableau P
 | Off the VM (reference, weekly) | Routes, stop sequences, stops, timetables (scheduled headways for excess wait time) | `/Line/Mode/bus/Route`, `/Line/{id}/Route/Sequence/{dir}`, `/Line/{id}/Timetable/{stop}`, existing bus stop data in GCS |
 | Daily analysis (Tableau Public) | Headways, waits, bunching, prediction accuracy, excess wait time, disruption history | BigQuery daily aggregates → 24-hour Google Sheet |
 
-Goal (2026-10-22): Tableau bus analysis will cover **all routes** eventually. For now the VM
-collects the busiest 12. Covering ~675 routes needs a decision later: a second small VM for the
-whole network (~$12/month), or a lighter method (e.g. sampling the full network at intervals
-rather than every 15 s). Growth path meanwhile: add routes in batches of ~12 while VM memory allows.
+Goal (2026-10-22): Tableau bus analysis will cover **all routes**, with **no new VM**. The VM keeps
+the busiest 12 routes (continuous arrivals). All ~675 routes come from a **Cloud Run job** run every
+30 minutes (Cloud Scheduler): it reads the whole network once (101 MB, needs ~690 MB memory; Cloud
+Run allows 2 GB), computes per route and stop the predicted gaps between the next buses (a
+network-wide bunching snapshot), and writes only that summary. ~48 one-minute runs a day stays in
+Cloud Run's free tier. The summaries feed the Google Sheet for Tableau; Sheet rows are deleted after
+analysis. Google Sheets cannot do the collection itself (Apps Script caps a fetch at 50 MB and a run
+at 6 minutes).
 
 ## 1. Data presentation
 
