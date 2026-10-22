@@ -22,6 +22,12 @@ Last reviewed: 2026-10-21
 **Hot path (live):** TfL → Streamlit / MCP live tools (and Kafka while the VM runs).
 **Cold path (daily):** GCS → BigQuery → Google Sheet → Tableau Public, plus MCP history tools.
 
+**The Google Sheet is the analysis layer for everything that is not live** (decided 2026-10-22):
+buses, bikes, deeper line analysis and data science work, not only buses. It is fed once a day
+from the BigQuery serving tables in `tfl_portfolio` (daily summaries, so it stays far below the
+10 million cell limit), one tab per subject, and Tableau Public reads it. New feeds (BikePoint,
+air quality, roads) add tabs; nothing in the Sheet is needed by the live views.
+
 **Buses (decided 2026-10-22).** The full network is too large for the e2-micro
 (`/Mode/bus/Arrivals?count=-1`: 106,619 predictions, 101 MB, 687 MB to parse), so the rule is:
 whatever can be live is live, and whatever cannot is analysed daily in Tableau Public.

@@ -1,4 +1,4 @@
-# Refreshes the portfolio serving tables (line disruption and station accessibility) once.
+# Refreshes the portfolio serving tables (line disruption, station accessibility, arrivals) once.
 # Triggered hourly by tfl-portfolio-refresh.timer. Logs: journalctl -u tfl-portfolio-refresh
 [Unit]
 Description=Refresh the TfL portfolio serving table in BigQuery
@@ -10,3 +10,6 @@ Type=oneshot
 User=joelmathooko
 WorkingDirectory=/home/joelmathooko/tfl-pipeline
 ExecStart=/bin/sh -c 'cat analytics/line_status/03_portfolio_serving.sql analytics/stop_disruptions/03_portfolio_serving.sql | /usr/bin/bq query --use_legacy_sql=false --project_id=transport-for-london-511318 --location=US --format=none'
+# Arrivals: a separate run, because its script starts with DECLARE (allowed only at the start).
+# Loads today's GCS slice into the native tables and recomputes the last 3 complete hours.
+ExecStart=/bin/sh -c '/usr/bin/bq query --use_legacy_sql=false --project_id=transport-for-london-511318 --location=US --format=none < analytics/arrivals/04_serving_refresh.sql'
