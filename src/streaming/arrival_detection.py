@@ -74,7 +74,9 @@ class LineTracker:
     def __init__(self, mode, line_id, config):
         self.mode = mode
         self.line_id = line_id
-        self.window = config["arrival_window_seconds"]
+        window = config["arrival_window_seconds"]
+        # One number, or per mode with a default (tram predictions vanish minutes early).
+        self.window = window.get(mode, window["default"]) if isinstance(window, dict) else window
         self.at_platform_max = config["at_platform_max_seconds"]
         self.checkpoints = sorted(config["checkpoint_minutes"], reverse=True)
         self.visits = {}          # (vehicle, stop) -> state

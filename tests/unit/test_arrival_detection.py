@@ -93,3 +93,14 @@ def test_coverage_row_per_snapshot():
     row = coverage(t, at("28:40"), len(records), events)
     assert row == {"event": "snapshot", "mode": "tube", "line_id": "victoria", "snapshot_at": at("28:40"),
                    "predictions": 1, "visits_tracked": 1, "arrivals": 1, "dropped": 1}
+
+
+def test_arrival_window_per_mode():
+    cfg = {**CONFIG, "arrival_window_seconds": {"default": 90, "tram": 300}}
+    assert LineTracker("tube", "victoria", cfg).window == 90
+    assert LineTracker("tram", "tram", cfg).window == 300
+    # A tram prediction vanishing 4 minutes before the expected time is an arrival.
+    t = LineTracker("tram", "tram", cfg)
+    t.update(at("20:00"), [pred("2553", "R", "20:00", "24:00"), pred("2553", "Q", "20:00", "30:00")])
+    events = t.update(at("20:30"), [pred("2553", "Q", "20:30", "30:00")])
+    assert events[0]["event"] == "arrival" and events[0]["arrived_at"] == at("24:00")

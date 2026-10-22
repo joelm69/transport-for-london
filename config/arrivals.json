@@ -24,7 +24,11 @@
   ],
   "poll_interval_seconds": 15,
   "horizon_seconds": 1800,
-  "arrival_window_seconds": 90,
+  "arrival_window_seconds": {
+    "default": 90,
+    "tram": 300,
+    "note": "Max seconds before expectedArrival at which a vanished prediction still counts as an arrival. Measured 2026-10-22: Tube 94% and bus 84% vanish within 90 s (flat after); tram only 36% within 90 s, 68% within 300 s, across the whole network."
+  },
   "at_platform_max_seconds": 60,
   "checkpoint_minutes": [
     10,
