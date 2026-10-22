@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from src.presentation.line_board import board_rows, format_duration, summary
+from src.presentation.line_board import line_cards, board_rows, format_duration, summary
 from tests.unit.helpers import line
 
 NOW = datetime(2026, 10, 21, 17, 35, 39, tzinfo=timezone.utc)
@@ -68,3 +68,23 @@ def test_service_closed_is_not_shown_as_disruption(config, second_poll):
 ])
 def test_format_duration(minutes, text):
     assert format_duration(minutes) == text
+
+
+def test_one_card_per_line_with_the_worst_status_first():
+    """Elizabeth line, 2026-10-22: one incident sent as Severe Delays and Minor Delays with the
+    same reason. One card: Severe Delays headline, Minor Delays listed, the reason once."""
+    now = datetime(2026, 10, 22, 19, 0, tzinfo=timezone.utc)
+    reason = "Severe delays between Abbey Wood and Reading and MINOR DELAYS between Whitechapel and Shenfield."
+    status = lambda sev, text: {"statusSeverity": sev, "statusSeverityDescription": text, "reason": reason,
+                                "validityPeriods": [{"fromDate": "2026-10-22T18:28:02Z", "toDate": "2026-10-23T00:29:00Z"}]}
+    data = [
+        {"id": "elizabeth", "name": "Elizabeth line", "modeName": "elizabeth-line",
+         "lineStatuses": [status(9, "Minor Delays"), status(6, "Severe Delays")]},
+        {"id": "victoria", "name": "Victoria", "modeName": "tube",
+         "lineStatuses": [{"statusSeverity": 10, "statusSeverityDescription": "Good Service", "validityPeriods": []}]},
+    ]
+    cards = line_cards(board_rows(data, now, {"good": [10, 18], "closed": [20]}))
+    assert [c["line_id"] for c in cards] == ["elizabeth", "victoria"]
+    elizabeth = cards[0]
+    assert elizabeth["status"] == "Severe Delays" and elizabeth["other_statuses"] == ["Minor Delays"]
+    assert elizabeth["reasons"] == [reason]

@@ -78,8 +78,36 @@ def board_rows(data, now, severity_classes, modes=None):
             "duration": format_duration(minutes),
         })
 
-    rows.sort(key=lambda r: (LEVEL_ORDER[r["level"]], r["line_name"] or ""))
+    # Worst level first, then line name; within a line, the more severe status first
+    # (TfL severities: lower is worse, e.g. 6 Severe Delays before 9 Minor Delays).
+    rows.sort(key=lambda r: (LEVEL_ORDER[r["level"]], r["line_name"] or "", r["severity"] or 0))
     return rows
+
+
+def line_cards(rows):
+    """One card per line from board_rows(): the worst status as the headline, the line's other
+    statuses listed, and each distinct reason once.
+
+    TfL can describe one incident with several statuses: on 2026-10-22 the Elizabeth line had
+    Severe Delays (Abbey Wood - Reading/Heathrow) and Minor Delays (Whitechapel - Shenfield)
+    with identical reason text, which showed as two identical cards. History keeps every status;
+    only the display merges them.
+    """
+    cards = {}
+    for row in rows:                      # worst first, so the first row per line is the headline
+        card = cards.get(row["line_id"])
+        if card is None:
+            cards[row["line_id"]] = {**row, "other_statuses": [],
+                                     "reasons": [row["reason"]] if row["reason"] else []}
+            continue
+        if row["status"] != card["status"] and row["status"] not in card["other_statuses"]:
+            card["other_statuses"].append(row["status"])
+        if row["reason"] and row["reason"] not in card["reasons"]:
+            card["reasons"].append(row["reason"])
+        if (row["duration_minutes"] or 0) > (card["duration_minutes"] or 0):
+            card.update(since_utc=row["since_utc"], duration_minutes=row["duration_minutes"],
+                        duration=row["duration"])
+    return list(cards.values())
 
 
 def summary(rows):
