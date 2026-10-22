@@ -75,6 +75,17 @@ SELECT
   TIMESTAMP(to_utc) AS planned_end,       -- PlannedWork only
   to_date_kind,
   accessibility_flag,
+  -- Main accessibility problem, checked in order: a "no step-free access ... due to a faulty
+  -- lift" notice is about a lift.
+  CASE
+    WHEN NOT accessibility_flag THEN NULL
+    WHEN REGEXP_CONTAINS(LOWER(description), r'\blifts?\b') THEN 'Lifts'
+    WHEN REGEXP_CONTAINS(LOWER(description), r'escalator') THEN 'Escalators'
+    WHEN REGEXP_CONTAINS(LOWER(description), r'step[- ]free') THEN 'Step-free access'
+    WHEN REGEXP_CONTAINS(LOWER(description), r'\bramps?\b|boarding') THEN 'Ramps & boarding'
+    WHEN REGEXP_CONTAINS(LOWER(description), r'wheelchair') THEN 'Wheelchair access'
+    ELSE 'Other access issue'
+  END AS accessibility_issue,
   concerned_lines
 FROM ordered
 WHERE change_type != 'RESOLVED';
@@ -244,3 +255,99 @@ SELECT
   COUNT(DISTINCT IF(part_closure_minutes > 0, atco_code, NULL)) AS stations_part_closed
 FROM `transport-for-london-511318.tfl_transport_analytics.station_disruption_daily`
 GROUP BY mode, london_date;
+
+
+-- 6. Station accessibility by hour ----------------------------------------------------------
+-- Minutes per station and hour with at least one accessibility notice. Stations are combined
+-- by name (an interchange can have a rail and an Underground code with the same notice), and
+-- overlapping notices are merged first (gaps and islands). Flickers are excluded. Only hours
+-- with accessibility minutes are kept; the denominator is stop_disruption_observed_hourly.
+
+CREATE OR REPLACE VIEW `transport-for-london-511318.tfl_transport_analytics.station_accessibility_hourly` AS
+WITH intervals AS (
+  SELECT
+    REGEXP_REPLACE(p.station_name, r' (?:Underground|Rail|DLR) Station$| Tram Stop$| Station$', '') AS station,
+    p.mode,
+    p.accessibility_issue AS issue,
+    p.period_start AS start_at,
+    p.period_end AS end_at
+  FROM `transport-for-london-511318.tfl_transport_analytics.stop_disruption_periods` AS p
+  JOIN `transport-for-london-511318.tfl_transport_analytics.stop_disruption_incidents` AS i
+    USING (disruption_key)
+  WHERE p.accessibility_flag AND NOT i.is_flap
+),
+marked AS (
+  SELECT *, MAX(end_at) OVER (
+    PARTITION BY station ORDER BY start_at, end_at
+    ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+  ) AS previous_max_end
+  FROM intervals
+),
+islands AS (
+  SELECT *, COUNTIF(previous_max_end IS NULL OR start_at > previous_max_end) OVER (
+    PARTITION BY station ORDER BY start_at, end_at ROWS UNBOUNDED PRECEDING
+  ) AS island
+  FROM marked
+),
+merged AS (
+  SELECT station, island, MIN(start_at) AS start_at, MAX(end_at) AS end_at,
+         ARRAY_AGG(DISTINCT mode IGNORE NULLS) AS modes
+  FROM islands
+  GROUP BY station, island
+),
+merged_hours AS (
+  SELECT
+    station,
+    hour_start,
+    SUM(TIMESTAMP_DIFF(
+      LEAST(end_at, TIMESTAMP_ADD(hour_start, INTERVAL 1 HOUR)),
+      GREATEST(start_at, hour_start),
+      SECOND
+    )) / 60 AS accessibility_minutes,
+    ARRAY_CONCAT_AGG(modes) AS all_modes
+  FROM merged,
+  UNNEST(GENERATE_TIMESTAMP_ARRAY(
+    TIMESTAMP_TRUNC(start_at, HOUR),
+    TIMESTAMP_TRUNC(TIMESTAMP_SUB(end_at, INTERVAL 1 MICROSECOND), HOUR),
+    INTERVAL 1 HOUR
+  )) AS hour_start
+  GROUP BY station, hour_start
+),
+issue_hours AS (
+  SELECT station, hour_start, ARRAY_AGG(DISTINCT issue IGNORE NULLS) AS issues
+  FROM intervals,
+  UNNEST(GENERATE_TIMESTAMP_ARRAY(
+    TIMESTAMP_TRUNC(start_at, HOUR),
+    TIMESTAMP_TRUNC(TIMESTAMP_SUB(end_at, INTERVAL 1 MICROSECOND), HOUR),
+    INTERVAL 1 HOUR
+  )) AS hour_start
+  GROUP BY station, hour_start
+)
+SELECT
+  m.station,
+  ARRAY(SELECT DISTINCT x FROM UNNEST(m.all_modes) AS x ORDER BY x) AS modes,
+  m.hour_start,
+  m.accessibility_minutes,
+  i.issues
+FROM merged_hours AS m
+LEFT JOIN issue_hours AS i USING (station, hour_start)
+WHERE m.accessibility_minutes > 0;
+
+
+-- 7. Observed minutes per hour (the denominator for availability) -------------------------
+
+CREATE OR REPLACE VIEW `transport-for-london-511318.tfl_transport_analytics.stop_disruption_observed_hourly` AS
+SELECT
+  hour_start,
+  SUM(TIMESTAMP_DIFF(
+    LEAST(s.session_end, TIMESTAMP_ADD(hour_start, INTERVAL 1 HOUR)),
+    GREATEST(s.session_start, hour_start),
+    SECOND
+  )) / 60 AS observed_minutes
+FROM `transport-for-london-511318.tfl_transport_analytics.stop_disruption_sessions` AS s,
+UNNEST(GENERATE_TIMESTAMP_ARRAY(
+  TIMESTAMP_TRUNC(s.session_start, HOUR),
+  TIMESTAMP_TRUNC(TIMESTAMP_SUB(s.session_end, INTERVAL 1 MICROSECOND), HOUR),
+  INTERVAL 1 HOUR
+)) AS hour_start
+GROUP BY hour_start;

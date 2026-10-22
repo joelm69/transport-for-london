@@ -179,3 +179,22 @@ def test_accessibility_daily(built):
     rows = query(f"SELECT mode, stations_with_accessibility_issues n, stations_part_closed pc "
                  f"FROM `{TEST}.accessibility_daily`")
     assert [(r["mode"], int(r["n"]), int(r["pc"])) for r in rows] == [("tube", 1, 1)]
+
+
+def test_station_accessibility_hourly(built):
+    """S1: lift notice A (10:00-10:20) and escalator notice B (10:10-) merge to 31 min in the
+    10:00 hour and 11 min after the restart; both issues are recorded."""
+    rows = {(r["station"], r["h"]): r for r in query(
+        f"SELECT station, FORMAT_TIMESTAMP('%H', hour_start) h, accessibility_minutes m, issues "
+        f"FROM `{TEST}.station_accessibility_hourly`")}
+    assert set(rows) == {("Station S1", "10"), ("Station S1", "11")}
+    assert float(rows[("Station S1", "10")]["m"]) == 31
+    assert float(rows[("Station S1", "11")]["m"]) == 11
+    assert sorted(rows[("Station S1", "10")]["issues"]) == ["Escalators", "Lifts"]
+
+
+def test_observed_hourly(built):
+    rows = {r["h"]: float(r["m"]) for r in query(
+        f"SELECT FORMAT_TIMESTAMP('%H', hour_start) h, observed_minutes m "
+        f"FROM `{TEST}.stop_disruption_observed_hourly`")}
+    assert rows == {"10": 31, "11": 11}
