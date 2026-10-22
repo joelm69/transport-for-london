@@ -80,7 +80,7 @@ def main(argv=None):
                 continue
             record = json.loads(message.value())
             kind = "predictions" if message.topic() == predictions_topic else record["event"]
-            archive.write(kind, record, message.topic(), message.partition(), message.offset())
+            commit(archive.write(kind, record, message.topic(), message.partition(), message.offset()))
     finally:
         commit(archive.close())
         consumer.close()

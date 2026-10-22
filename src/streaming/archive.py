@@ -61,12 +61,18 @@ class EventArchive:
 
     def write(self, kind, record, topic, partition, offset, now=None):
         """Append one record to the writer for `kind` (an event type, or "predictions").
-        Call tick() first so a due publish happens before this record joins the new batch."""
+        Returns offsets to commit, like tick().
+
+        Every writer is rolled over to `now` *before* the record is added. Otherwise the
+        record's own writer would publish the old batch inside append(), and a later tick()
+        would commit this record's offset while it sits in the new, unpublished batch."""
         now = now or datetime.now(timezone.utc)
+        committable = self.tick(now)
         record = {**record, "archived_at_utc": now.isoformat(),
                   "kafka_partition": partition, "kafka_offset": offset}
         self.writers[kind].append(record)
         self._written[(topic, partition)] = offset
+        return committable
 
     def close(self):
         """Publish everything; return the offsets now safe to commit."""

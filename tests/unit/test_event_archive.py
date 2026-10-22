@@ -68,3 +68,17 @@ def test_predictions_and_events_commit_per_topic(tmp_path):
     archive.write("predictions", {"line_id": "victoria", "records": [{"vehicleId": "1"}]}, "predictions", 0, 40, utc(8, 50))
     assert archive.tick(utc(9, 0)) == {("events", 0): 8, ("predictions", 0): 41}
     assert [r["line_id"] for r in records(lake_root, "raw/arrival_predictions")] == ["victoria"]
+
+
+def test_hour_change_inside_write_never_commits_an_unpublished_record(tmp_path):
+    """Regression (VM, 2026-10-22 11:00): a record whose write crossed the hour made its writer
+    publish the old batch itself; the next tick then committed that record's offset although
+    it sat in the new, unpublished batch."""
+    lake_root = tmp_path / "lake"
+    archive = EventArchive(make_archive_writers(LocalLake(lake_root), tmp_path / "tmp"))
+    assert archive.write("predictions", {"line_id": "victoria"}, "predictions", 0, 707, utc(10, 59)) == {}
+    # No tick between the hour change and this write.
+    committed = archive.write("predictions", {"line_id": "central"}, "predictions", 0, 708, utc(11, 0))
+    assert committed == {("predictions", 0): 708}        # only the published record
+    assert archive.tick(utc(11, 1)) == {}                # 708 is still unpublished
+    assert archive.close() == {("predictions", 0): 709}
