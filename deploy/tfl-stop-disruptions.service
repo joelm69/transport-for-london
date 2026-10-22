@@ -19,6 +19,9 @@ RestartSec=30
 KillSignal=SIGTERM
 TimeoutStopSec=90
 MemoryMax=300M
+# The live site depends on this collector: if memory runs out, the kernel kills Kafka and
+# the arrivals services first.
+OOMScoreAdjust=-500
 
 [Install]
 WantedBy=multi-user.target
