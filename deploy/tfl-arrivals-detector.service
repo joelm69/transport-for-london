@@ -1,0 +1,24 @@
+# TfL arrivals detector: detects arrivals from Kafka predictions. Design: docs/endpoints/arrivals.md.
+# Installed by deploy/setup_kafka.sh. Logs: journalctl -u tfl-arrivals-detector -f
+[Unit]
+Description=TfL arrivals detector
+Wants=tfl-kafka.service network-online.target
+After=tfl-kafka.service network-online.target
+
+[Service]
+Type=simple
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/home/joelmathooko/tfl-pipeline/.venv/bin/python -m src.streaming.detector
+Environment=PYTHONUNBUFFERED=1
+Environment=KAFKA_BOOTSTRAP=127.0.0.1:9092
+Restart=always
+RestartSec=30
+KillSignal=SIGTERM
+TimeoutStopSec=90
+MemoryMax=80M
+# Killed before the collectors (-500), after Kafka (500), if memory runs out.
+OOMScoreAdjust=300
+
+[Install]
+WantedBy=multi-user.target

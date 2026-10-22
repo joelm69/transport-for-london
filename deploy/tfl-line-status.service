@@ -21,6 +21,9 @@ KillSignal=SIGTERM
 TimeoutStopSec=90
 # Protect the 1 GB e2-micro from a runaway process.
 MemoryMax=300M
+# The live site depends on this collector: if memory runs out, the kernel kills Kafka and
+# the arrivals services first.
+OOMScoreAdjust=-500
 
 [Install]
 WantedBy=multi-user.target

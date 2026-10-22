@@ -1,0 +1,85 @@
+# Memory-capped rehearsal of the arrivals pipeline before it goes on the e2-micro VM.
+# Limits are ceilings sized to the ~477 MB free on the VM beside the collectors:
+#   kafka 320 MB (Java heap 192 MB) + producer 80 MB + detector 70 MB + archiver 60 MB.
+# Producer: fetching Tube and tram in parallel holds both responses at once (~50 MB peak).
+# What matters is measured use (measure.sh), which stays well under the ceilings.
+#
+#   docker compose -f docker/kafka_test/compose.yaml up -d --build
+#   docker/kafka_test/measure.sh 60          # sample memory every 30 s for 60 minutes
+#   docker compose -f docker/kafka_test/compose.yaml down -v
+name: tfl-arrivals-test
+
+services:
+  kafka:
+    image: apache/kafka:4.0.0
+    mem_limit: 320m
+    environment:
+      # One node acting as broker and controller (KRaft: no ZooKeeper).
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 1
+      # Kafka is a buffer, not the archive: keep 2 hours, at most ~250 MB per partition.
+      KAFKA_LOG_RETENTION_MS: 7200000
+      KAFKA_LOG_RETENTION_BYTES: 250000000
+      KAFKA_LOG_SEGMENT_BYTES: 52428800
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 60000
+      # The log cleaner (compaction) reserves a 128 MB heap buffer by default; only the small
+      # consumer-offsets topic is compacted here, so 8 MB is plenty.
+      KAFKA_LOG_CLEANER_DEDUPE_BUFFER_SIZE: 8388608
+      KAFKA_HEAP_OPTS: -Xms192m -Xmx192m
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 15s
+      retries: 12
+
+  producer:
+    build: .
+    mem_limit: 80m
+    command: python -m src.streaming.producer
+    env_file: ../../.env
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+    volumes:
+      - ../../src:/app/src:ro
+      - ../../config:/app/config:ro
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  detector:
+    build: .
+    mem_limit: 70m
+    command: python -m src.streaming.detector
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+    volumes:
+      - ../../src:/app/src:ro
+      - ../../config:/app/config:ro
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  archiver:
+    build: .
+    mem_limit: 60m
+    # Local lake here (the repo's data/ folder); --lake gcs on the VM.
+    command: python -m src.streaming.archiver --lake local --lake-root /app/data/lake --tmp-dir /app/data/tmp
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+    volumes:
+      - ../../src:/app/src:ro
+      - ../../config:/app/config:ro
+      - ../../data:/app/data
+    depends_on:
+      kafka:
+        condition: service_healthy

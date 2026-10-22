@@ -37,7 +37,7 @@ Last reviewed: 2026-10-21
 - [~] Use Python for ingestion, validation and transformation — bus reference collectors, transformers, validators exist
 - [x] Shared TfL client (`src/clients/tfl.py`): timeouts, retries with backoff and jitter, `Retry-After`, safe error messages — 25 unit tests
 - [~] Endpoint configuration — `config/line_status.json` (one JSON file per live endpoint; no YAML dependency)
-- [ ] Use Kafka for event-streaming workflows
+- [~] Use Kafka for event-streaming workflows: arrivals (Tube, tram) on the free e2-micro since 2026-10-22, single KRaft node, producer → detector → archiver (docs/endpoints/arrivals.md); 24-hour memory watch pending
 - [ ] Use Airflow to orchestrate and schedule pipelines
 - [~] Use GCS for historical and excess data — archive script with manifests exists
 - [x] Use BigQuery for analytical queries and transformations — line status external tables and views (`analytics/line_status/`), hourly serving table `tfl_portfolio.line_disruption_hourly` refreshed by a systemd timer on the VM
@@ -169,7 +169,7 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 
 - [ ] Target $0 spend where feasible (Kafka/Airflow VM time is the main cost)
 - [ ] Use lightweight cloud resources (Cloud Run for MCP; VM sized for Kafka/Airflow — confirm cost first)
-- [x] Always-on collection on a free-tier e2-micro VM (changed 2026-10-21 from stopping the VM between jobs); Kafka/Airflow will need a temporary resize or a second on-demand VM
+- [x] Always-on collection on a free-tier e2-micro VM (changed 2026-10-21 from stopping the VM between jobs); Kafka fits on the same e2-micro after memory tuning (Docker test 2026-10-22: p95 396 MiB of ~477 free); Airflow may still need more
 - [x] Verify that the VM is stopped after use — checked 2026-10-21
 - [x] Budget alert: "TfL 10$ budget" (50% / 90% / 100%) on the TfL project; expected cost ~$4/month (external IP)
 - [ ] Minimise unnecessary API polling, storage and data transfer (change-only storage for snapshot feeds)
