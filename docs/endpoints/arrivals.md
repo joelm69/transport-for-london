@@ -286,7 +286,7 @@ skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
 
 ### Open items
 
-- GCS lifecycle rule (delete `raw/arrival_predictions/` after 7 days): set when deploying, with approval.
+- GCS lifecycle rule set 2026-10-22 with approval (`deploy/gcs_lifecycle.json`): deletes `raw/arrival_predictions/` objects after 7 days; nothing else in the bucket is affected. Tableau and BigQuery use the events, drops and coverage, kept indefinitely.
 - Verified 2026-10-22: a graceful archiver restart published 3,441 arrivals and 927 drops and
   committed offset 4,368, exactly the events in the topic (no loss, no duplicate).
 - Overground and Elizabeth line, then DLR (per-stop countdown only).
