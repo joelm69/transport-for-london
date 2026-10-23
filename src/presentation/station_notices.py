@@ -11,6 +11,7 @@ has a 910G rail code and a 940G Underground code), as separate records. A panel 
 """
 
 import re
+from difflib import SequenceMatcher
 from datetime import datetime
 
 STATION_SUFFIXES = (
@@ -44,10 +45,41 @@ def short_station_name(name):
     return name
 
 
-def _message_key(description):
-    """The same message republished with a different ending or spacing (Hainault, 2026-10-23:
-    one copy with a final full stop, one without) matches on this key."""
-    return " ".join(description.lower().split()).rstrip(" .")
+SIMILAR_MESSAGE = 0.9   # two messages at one station this alike are the same notice
+
+# "Hounslow East: ...", "Hounslow East - ...", "PIMLICO STATION: ...": TfL's own heading.
+_HEADING = re.compile(r"^(?P<name>[^:.]{1,60}?)\s*(?::|\s[-\u2013]\s)\s*")
+
+
+_NAME_NOISE = {"station", "stations", "underground", "rail", "dlr", "tram", "stop"}
+
+
+# TfL's category label in front of some accessibility messages; not part of the message.
+_LABEL = re.compile(r"^no step free access\s*[-:\u2013]\s*")
+
+
+def _plain_name(name):
+    """'Burnham (Berks)' and 'BURNHAM STATION' -> 'burnham'; '&' and 'and' match."""
+    name = re.sub(r"\(.*?\)", " ", name.lower()).replace("&", "and")
+    return " ".join(w for w in re.split(r"[^a-z0-9]+", name) if w and w not in _NAME_NOISE)
+
+
+def message_body(description, station):
+    """The message without TfL's leading station-name heading, as shown under a station title."""
+    match = _HEADING.match(description)
+    if match:
+        heading, name = _plain_name(match["name"]), _plain_name(station)
+        if heading == name or SequenceMatcher(None, heading, name).ratio() >= 0.8:
+            body = description[match.end():]
+            return body[:1].upper() + body[1:]
+    return description
+
+
+def _message_key(description, station=""):
+    """Matches the same message republished with a different heading, ending or spacing
+    (Hainault and Hounslow East, 2026-10-23)."""
+    text = " ".join(message_body(description, station).lower().split()).rstrip(" .")
+    return _LABEL.sub("", text)
 
 
 def notice_items(data, accessibility_pattern, modes=None):
@@ -65,7 +97,7 @@ def notice_items(data, accessibility_pattern, modes=None):
             continue
         description = " ".join(record["description"].split())   # trailing \r\n seen in real data
         station = short_station_name(record.get("commonName"))
-        key = (station.lower(), _message_key(description))
+        key = (station.lower(), _message_key(description, station))
         item = groups.setdefault(key, {
             "station": station,
             "description": description,
@@ -92,7 +124,7 @@ def notice_items(data, accessibility_pattern, modes=None):
                 item["planned_until"] = end
 
     items = []
-    for item in groups.values():
+    for item in _merge_similar(list(groups.values())):
         item["atco_codes"] = sorted(c for c in item["atco_codes"] if c)
         item["modes"] = sorted(m for m in item["modes"] if m)
         item["mode_name"] = " · ".join(MODE_NAMES.get(m, m) for m in item["modes"])
@@ -113,6 +145,70 @@ def notice_items(data, accessibility_pattern, modes=None):
         return group, newest_first, item["station"]
 
     return sorted(items, key=rank)
+
+
+def _merge_similar(items):
+    """Within one station, fold a message into an earlier one when the two are nearly the same
+    text (one republished with small edits). Keeps the longer text."""
+    kept = []
+    for item in items:
+        key = _message_key(item["description"], item["station"])
+        twin = next((k for k in kept if k["station"].lower() == item["station"].lower()
+                     and SequenceMatcher(None, _message_key(k["description"], k["station"]), key).ratio()
+                     >= SIMILAR_MESSAGE), None)
+        if twin is None:
+            kept.append(item)
+            continue
+        if len(item["description"]) > len(twin["description"]):
+            twin["description"] = item["description"]
+        for field in ("atco_codes", "modes", "types", "appearances"):
+            twin[field] |= item[field]
+        if item["since"] and (twin["since"] is None or item["since"] < twin["since"]):
+            twin["since"] = item["since"]
+        if item["planned_until"] and (twin["planned_until"] is None or item["planned_until"] > twin["planned_until"]):
+            twin["planned_until"] = item["planned_until"]
+    return kept
+
+
+def station_cards(items):
+    """Display cards from notice_items() output: one card per station listing its messages,
+    and one card for several stations when they carry exactly the same messages (a section
+    closure announced at both ends, a coach notice at several stations). Keeps the order of
+    `items`, so call it per section (closures, accessibility, ...)."""
+    by_station = {}
+    for item in items:
+        card = by_station.setdefault(item["station"].lower(), {
+            "stations": [item["station"]], "modes": set(), "messages": [],
+        })
+        card["modes"].update(item["modes"])
+        card["messages"].append({
+            "text": message_body(item["description"], item["station"]),
+            "since": item["since"], "planned_until": item["planned_until"],
+        })
+
+    cards = {}
+    for card in by_station.values():
+        texts = tuple(sorted(_message_key(m["text"]) for m in card["messages"]))
+        shared = cards.get(texts)
+        if shared is None:
+            cards[texts] = card
+            continue
+        shared["stations"] += card["stations"]
+        shared["modes"] |= card["modes"]
+        for mine, theirs in zip(sorted(shared["messages"], key=lambda m: _message_key(m["text"])),
+                                sorted(card["messages"], key=lambda m: _message_key(m["text"]))):
+            if theirs["since"] and (mine["since"] is None or theirs["since"] < mine["since"]):
+                mine["since"] = theirs["since"]
+            if theirs["planned_until"] and (mine["planned_until"] is None or theirs["planned_until"] > mine["planned_until"]):
+                mine["planned_until"] = theirs["planned_until"]
+
+    result = []
+    for card in cards.values():
+        card["modes"] = sorted(m for m in card["modes"] if m)
+        card["mode_name"] = " · ".join(MODE_NAMES.get(m, m) for m in card["modes"])
+        card["title"] = " · ".join(card["stations"])
+        result.append(card)
+    return result
 
 
 def notice_summary(items):

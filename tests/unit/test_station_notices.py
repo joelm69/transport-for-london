@@ -3,7 +3,9 @@ import json
 
 import pytest
 
-from src.presentation.station_notices import notice_items, notice_summary, short_station_name
+from src.presentation.station_notices import (
+    message_body, notice_items, notice_summary, short_station_name, station_cards,
+)
 from tests.unit.helpers import ROOT
 
 FIXTURES = ROOT / "tests" / "fixtures" / "stop_disruptions"
@@ -39,6 +41,61 @@ def test_message_repeated_with_a_different_ending_is_shown_once(pattern):
     items = notice_items(data, pattern)
     assert len(items) == 1
     assert items[0]["description"].endswith("faulty lift.")
+
+
+def _record(station, description, since="2026-10-23T06:00:00Z", mode="tube"):
+    return {"commonName": station, "mode": mode, "type": "Information", "appearance": "RealTime",
+            "fromDate": since, "atcoCode": station[:8], "description": description}
+
+
+def test_heading_variants_of_one_message_are_shown_once(pattern):
+    """Hounslow East, 2026-10-23: the same notice with two different TfL headings."""
+    tail = "Step free access is not available to the westbound platform due to a faulty lift."
+    data = [_record("Hounslow East Underground Station", "Hounslow East: No Step Free Access - " + tail),
+            _record("Hounslow East Underground Station", "Hounslow East - " + tail, since="2026-10-23T05:00:00Z")]
+    items = notice_items(data, pattern)
+    assert len(items) == 1
+    assert items[0]["since"].hour == 5          # the earlier start is kept
+
+
+def test_different_messages_at_one_station_stay_separate(pattern):
+    data = [_record("Canary Wharf", "Canary Wharf: No Step Free Access - Step free access is not available to the DLR platforms."),
+            _record("Canary Wharf", "Canary Wharf: No Step Free Access - Step free access is not available to the Jubilee line.")]
+    assert len(notice_items(data, pattern)) == 2
+
+
+@pytest.mark.parametrize("description, station, body", [
+    ("PIMLICO STATION: No down escalator.", "Pimlico", "No down escalator."),
+    ("BURNHAM STATION: Please travel in the front 8 coaches.", "Burnham (Berks)", "Please travel in the front 8 coaches."),
+    ("ELEPHANT & CASTLE UNDERGROUND STATION: Lifts out of order.", "Elephant & Castle", "Lifts out of order."),
+    ("Hounslow East - step free access is not available.", "Hounslow East", "Step free access is not available."),
+    ("Please note: the lift is closed.", "Bank", "Please note: the lift is closed."),   # not a station heading
+])
+def test_message_body_drops_only_the_station_heading(description, station, body):
+    assert message_body(description, station) == body
+
+
+def test_station_cards_one_per_station_and_shared_messages_combined(pattern):
+    coaches = "Please travel in the front 8 coaches if alighting at this station."
+    data = [_record("Burnham (Berks)", "BURNHAM STATION: " + coaches, mode="elizabeth-line"),
+            _record("Iver", coaches, mode="elizabeth-line"),
+            _record("Oval", "Oval: no down escalator due to a fault."),
+            _record("Oval", "Until mid December, Oval will have an up escalator only.")]
+    cards = station_cards(notice_items(data, pattern))
+    titles = sorted(card["title"] for card in cards)
+    assert titles == ["Burnham (Berks) · Iver", "Oval"]
+    oval = next(card for card in cards if card["title"] == "Oval")
+    assert len(oval["messages"]) == 2
+    burnham = next(card for card in cards if card["title"] != "Oval")
+    assert [m["text"] for m in burnham["messages"]] == [coaches]
+
+
+def test_live_feed_cards_never_repeat_a_station(data, pattern):
+    items = notice_items(data, pattern)
+    for section in ([i for i in items if i["categories"]["part_closure"]],
+                    [i for i in items if not i["categories"]["part_closure"]]):
+        stations = [s.lower() for card in station_cards(section) for s in card["stations"]]
+        assert len(stations) == len(set(stations))
 
 
 def test_part_closures_come_first(data, pattern):

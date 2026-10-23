@@ -9,7 +9,7 @@ the route's stop order. Gaps: the time between two consecutive buses is the diff
 their predicted times at the stop the leading bus reaches next (both are predicted there).
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from statistics import median
 
 GOOD_SERVICE = 10
@@ -56,8 +56,8 @@ def route_stops(sequence):
 
 
 def buses_on_route(arrivals, stops_by_direction, now):
-    """One row per bus on the route: direction, next stop, ETA, position along the route,
-    gap to the bus ahead and whether it is bunched.
+    """One row per bus on the route: direction, next stop, ETA and expected arrival time there,
+    position along the route, gap to the bus ahead and whether it is bunched.
 
     arrivals: /Line/{route}/Arrivals. stops_by_direction: {"inbound": route_stops(...), ...}.
     """
@@ -83,6 +83,7 @@ def buses_on_route(arrivals, stops_by_direction, now):
             "direction": direction, "vehicle_id": vehicle,
             "next_stop_id": next_stop, "next_stop": names[direction].get(next_stop),
             "eta_seconds": eta,
+            "expected_arrival": now + timedelta(seconds=etas[next_stop]),   # UTC, as TfL predicts it
             # Just before the next stop: a bus 90 s away sits about one stop back.
             "position": max(0.0, index - min(eta / SECONDS_PER_STOP, 0.95)),
             "_etas": etas,

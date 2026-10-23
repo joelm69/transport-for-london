@@ -54,6 +54,7 @@ def test_positions_gaps_and_bunching():
     assert {r["vehicle_id"]: r["bunched"] for r in rows} == {"1": False, "2": True, "3": False}
     bus1 = rows[0]
     assert bus1["next_stop"] == "Holborn" and bus1["eta_seconds"] == 60 and 2 < bus1["position"] < 3
+    assert bus1["expected_arrival"] == datetime(2026, 10, 22, 18, 1, tzinfo=timezone.utc)
 
 
 def test_stop_countdown_soonest_first():
