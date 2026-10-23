@@ -66,13 +66,14 @@ def buses_on_route(arrivals, stops_by_direction, now):
     names = {direction: dict(stops) for direction, stops in stops_by_direction.items()}
 
     # Every prediction per (direction, vehicle), and each vehicle's next stop.
-    predictions = {}
+    predictions, routes = {}, {}
     for item in arrivals:
         vehicle, direction = item.get("vehicleId"), item.get("direction")
         if not vehicle or direction not in order or item.get("naptanId") not in order[direction]:
             continue
         eta = (_utc(item["expectedArrival"]) - now).total_seconds()
         predictions.setdefault((direction, vehicle), {})[item["naptanId"]] = eta
+        routes[(direction, vehicle)] = item.get("lineName") or item.get("lineId")
 
     rows = []
     for (direction, vehicle), etas in predictions.items():
@@ -80,7 +81,7 @@ def buses_on_route(arrivals, stops_by_direction, now):
         index = order[direction][next_stop]
         eta = max(0.0, etas[next_stop])
         rows.append({
-            "direction": direction, "vehicle_id": vehicle,
+            "direction": direction, "vehicle_id": vehicle, "route": routes[(direction, vehicle)],
             "next_stop_id": next_stop, "next_stop": names[direction].get(next_stop),
             "eta_seconds": eta,
             "expected_arrival": now + timedelta(seconds=etas[next_stop]),   # UTC, as TfL predicts it

@@ -10,7 +10,8 @@ def at(mmss):
 
 
 def pred(vehicle, stop, eta, direction="outbound"):
-    return {"vehicleId": vehicle, "naptanId": stop, "direction": direction, "expectedArrival": at(eta)}
+    return {"vehicleId": vehicle, "naptanId": stop, "direction": direction, "expectedArrival": at(eta),
+            "lineName": "38"}
 
 
 STOPS = [("A", "Clapton Pond"), ("B", "Hackney"), ("C", "Angel"), ("D", "Holborn"), ("E", "Victoria")]
@@ -54,6 +55,7 @@ def test_positions_gaps_and_bunching():
     assert {r["vehicle_id"]: r["bunched"] for r in rows} == {"1": False, "2": True, "3": False}
     bus1 = rows[0]
     assert bus1["next_stop"] == "Holborn" and bus1["eta_seconds"] == 60 and 2 < bus1["position"] < 3
+    assert bus1["route"] == "38"
     assert bus1["expected_arrival"] == datetime(2026, 10, 22, 18, 1, tzinfo=timezone.utc)
 
 
