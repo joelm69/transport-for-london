@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `transport-for-london-511318.tfl_transport_analytics.
   station_name STRING,
   platform_name STRING,
   direction STRING,
-  stop_side STRING,            -- platform for rail, direction for buses: where headways are measured
+  stop_side STRING,            -- platform for rail, stop letter for buses (A, K...): where headways are measured
   destination_naptan_id STRING,
   last_snapshot_at TIMESTAMP,
   last_expected_arrival TIMESTAMP,

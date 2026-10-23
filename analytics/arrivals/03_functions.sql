@@ -37,7 +37,7 @@ CREATE OR REPLACE TABLE FUNCTION `transport-for-london-511318.tfl_transport_anal
 
 
 -- 2. Headways: time since the previous arrival of the same line at the same stop and side
---    (platform for rail, direction for buses), within one observation session. Rows for
+--    (platform for rail, stop letter for buses), within one observation session. Rows for
 --    arrivals in [t0, t1).
 
 CREATE OR REPLACE TABLE FUNCTION `transport-for-london-511318.tfl_transport_analytics.fn_arrival_headways`(t0 TIMESTAMP, t1 TIMESTAMP) AS (
