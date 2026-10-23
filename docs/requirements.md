@@ -16,8 +16,8 @@ Last reviewed: 2026-10-21
 | **Google Sheets** | Temporary bridge for daily Tableau Public publishing |
 | **GCS** | Raw and processed historical storage |
 | **BigQuery** | Analytical queries, transformations and KPI tables |
-| **Kafka + producers (GCP VM)** | Event streaming while the VM runs |
-| **Airflow (GCP VM)** | Orchestration and scheduling (design decided when we reach it) |
+| **Kafka + producers (GCP VM)** | Event streaming on the always-on free-tier VM |
+| **Scheduling** | systemd timers on the VM (hourly BigQuery refresh); Cloud Scheduler for scheduled Cloud Run jobs |
 
 **Hot path (live):** TfL → Streamlit / MCP live tools (and Kafka while the VM runs).
 **Cold path (daily):** GCS → BigQuery → Google Sheet → Tableau Public, plus MCP history tools.
@@ -79,7 +79,7 @@ at 6 minutes).
 - [x] Shared TfL client (`src/clients/tfl.py`): timeouts, retries with backoff and jitter, `Retry-After`, safe error messages — 25 unit tests
 - [~] Endpoint configuration — `config/line_status.json` (one JSON file per live endpoint; no YAML dependency)
 - [~] Use Kafka for event-streaming workflows: arrivals (Tube, tram) on the free e2-micro since 2026-10-22, single KRaft node, producer → detector → archiver (docs/endpoints/arrivals.md); 24-hour memory watch pending
-- [ ] Use Airflow to orchestrate and schedule pipelines
+- [x] Schedule pipelines simply: systemd timers on the VM (hourly serving refresh since 2026-10-21); Cloud Scheduler for Cloud Run jobs (all-routes bus snapshot, planned)
 - [~] Use GCS for historical and excess data — archive script with manifests exists
 - [x] Use BigQuery for analytical queries and transformations — line status external tables and views (`analytics/line_status/`), hourly serving table `tfl_portfolio.line_disruption_hourly` refreshed by a systemd timer on the VM
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
@@ -101,7 +101,7 @@ volume · hot or cold · GCS raw/processed/coverage paths · data-quality rules 
 | 4 | `/BikePoint` | 30 s, snapshot (store changes only) | Live map; empty/full docks | [ ] |
 | 5 | `/AirQuality` | 30 min | Air-quality patterns (investigate timestamp anomaly) | [ ] |
 | 6 | `/Road`, `/Road/all/Disruption` | 150 s | Incidents by borough and severity | [ ] |
-| — | Reference data (lines, routes, stops) | 12 h+ | Daily refresh via Airflow | [~] bus done |
+| — | Reference data (lines, routes, stops) | 12 h+ | Weekly scheduled refresh | [~] bus done |
 
 ## 3. Analytics and data science
 
@@ -208,9 +208,9 @@ with the new `gcs_uri` plus `moved_from` / `moved_at_utc`.
 
 ## 6. Cloud cost and operations
 
-- [ ] Target $0 spend where feasible (Kafka/Airflow VM time is the main cost)
-- [ ] Use lightweight cloud resources (Cloud Run for MCP; VM sized for Kafka/Airflow — confirm cost first)
-- [x] Always-on collection on a free-tier e2-micro VM (changed 2026-10-21 from stopping the VM between jobs); Kafka fits on the same e2-micro after memory tuning (Docker test 2026-10-22: p95 396 MiB of ~477 free); Airflow may still need more
+- [~] Target $0 spend where feasible: free-tier e2-micro for collection and Kafka, BigQuery and Cloud Run within free tiers
+- [~] Use lightweight cloud resources (Cloud Run for MCP and the all-routes bus snapshot; the e2-micro for collection and Kafka)
+- [x] Always-on collection on a free-tier e2-micro VM (changed 2026-10-21 from stopping the VM between jobs); Kafka fits on the same e2-micro after memory tuning (Docker test 2026-10-22: p95 396 MiB of ~477 free)
 - [x] Verify that the VM is stopped after use — checked 2026-10-21
 - [x] Budget alert: "TfL 10$ budget" (50% / 90% / 100%) on the TfL project; expected cost ~$4/month (external IP)
 - [ ] Minimise unnecessary API polling, storage and data transfer (change-only storage for snapshot feeds)
