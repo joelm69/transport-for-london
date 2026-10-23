@@ -1,2 +1,4 @@
 streamlit==1.66.1
 confluent-kafka==2.10.0  # arrivals streaming (src/streaming), on the VM
+google-cloud-bigquery==3.46.2  # Sheet export: runs the export queries (scripts/export_to_sheet.py)
+google-auth==2.62.0  # Sheet export: credentials and an authorised session for the Sheets API
