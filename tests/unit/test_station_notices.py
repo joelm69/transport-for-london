@@ -31,6 +31,16 @@ def test_same_message_is_shown_once_per_station(data, pattern):
     assert len(willesden[0]["atco_codes"]) == 2 and len(willesden[0]["modes"]) == 2
 
 
+def test_message_repeated_with_a_different_ending_is_shown_once(pattern):
+    text = "Hainault: No Step Free Access - No step free exit to street level due to a faulty lift."
+    record = {"commonName": "Hainault Underground Station", "mode": "tube", "type": "Information",
+              "appearance": "RealTime", "fromDate": "2026-10-23T06:00:00Z", "atcoCode": "940GZZLUHLT"}
+    data = [{**record, "description": text[:-1]}, {**record, "description": "  " + text.replace(" - ", "  -  ")}]
+    items = notice_items(data, pattern)
+    assert len(items) == 1
+    assert items[0]["description"].endswith("faulty lift.")
+
+
 def test_part_closures_come_first(data, pattern):
     items = notice_items(data, pattern)
     closures = [i for i in items if i["categories"]["part_closure"]]

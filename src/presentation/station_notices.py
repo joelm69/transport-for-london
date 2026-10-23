@@ -44,6 +44,12 @@ def short_station_name(name):
     return name
 
 
+def _message_key(description):
+    """The same message republished with a different ending or spacing (Hainault, 2026-10-23:
+    one copy with a final full stop, one without) matches on this key."""
+    return " ".join(description.lower().split()).rstrip(" .")
+
+
 def notice_items(data, accessibility_pattern, modes=None):
     """One item per (station, message), most important first.
 
@@ -57,9 +63,9 @@ def notice_items(data, accessibility_pattern, modes=None):
             continue
         if modes and record.get("mode") not in modes:
             continue
-        description = record["description"].strip()   # trailing \r\n seen in real data
+        description = " ".join(record["description"].split())   # trailing \r\n seen in real data
         station = short_station_name(record.get("commonName"))
-        key = (station.lower(), description)
+        key = (station.lower(), _message_key(description))
         item = groups.setdefault(key, {
             "station": station,
             "description": description,
@@ -70,6 +76,8 @@ def notice_items(data, accessibility_pattern, modes=None):
             "since": None,
             "planned_until": None,
         })
+        if len(description) > len(item["description"]):   # keep the copy with the full stop
+            item["description"] = description
         item["atco_codes"].add(record.get("atcoCode"))
         item["modes"].add(record.get("mode"))
         item["types"].add(record.get("type"))
