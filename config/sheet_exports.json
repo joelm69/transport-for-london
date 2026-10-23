@@ -1,9 +1,11 @@
 {
-  "_comment": "Tabs of the project Google Sheet (Tableau Public source), refreshed nightly by the tfl-sheets-export Cloud Run Job. Each query keeps its own window (6 months for summary tabs), so a tab never outgrows the Sheet; BigQuery keeps the full history.",
+  "_comment": "Tabs of the project Google Sheet (Tableau Public source), refreshed nightly by the tfl-sheets-export Cloud Run Job. Each query keeps its own window (6 months for summary tabs, 30 days for detail tabs), so a tab never outgrows the Sheet; BigQuery keeps the full history.",
   "tabs": [
     {"tab": "line_reliability_daily", "sql": "analytics/exports/line_reliability_daily.sql"},
     {"tab": "station_accessibility_daily", "sql": "analytics/exports/station_accessibility_daily.sql"},
     {"tab": "arrival_accuracy_daily", "sql": "analytics/exports/arrival_accuracy_daily.sql"},
-    {"tab": "bus_routes_daily", "sql": "analytics/exports/bus_routes_daily.sql"}
+    {"tab": "bus_routes_daily", "sql": "analytics/exports/bus_routes_daily.sql"},
+    {"tab": "bus_vehicles_daily", "sql": "analytics/exports/bus_vehicles_daily.sql"},
+    {"tab": "bus_vehicle_routes_daily", "sql": "analytics/exports/bus_vehicle_routes_daily.sql"}
   ]
 }
