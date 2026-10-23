@@ -17,7 +17,7 @@ Last reviewed: 2026-10-21
 | **GCS** | Raw and processed historical storage |
 | **BigQuery** | Analytical queries, transformations and KPI tables |
 | **Kafka + producers (GCP VM)** | Event streaming on the always-on free-tier VM |
-| **Scheduling** | systemd timers on the VM (hourly BigQuery refresh); Cloud Scheduler for scheduled Cloud Run jobs |
+| **Scheduling and orchestration** | systemd timer on the VM for the hourly BigQuery refresh; **Cloud Scheduler + Cloud Run Jobs + Cloud Workflows** (serverless) for the batch jobs |
 
 **Hot path (live):** TfL → Streamlit / MCP live tools (and Kafka while the VM runs).
 **Cold path (daily):** GCS → BigQuery → Google Sheet → Tableau Public, plus MCP history tools.
@@ -79,7 +79,16 @@ at 6 minutes).
 - [x] Shared TfL client (`src/clients/tfl.py`): timeouts, retries with backoff and jitter, `Retry-After`, safe error messages — 25 unit tests
 - [~] Endpoint configuration — `config/line_status.json` (one JSON file per live endpoint; no YAML dependency)
 - [~] Use Kafka for event-streaming workflows: arrivals (Tube, tram) on the free e2-micro since 2026-10-22, single KRaft node, producer → detector → archiver (docs/endpoints/arrivals.md); 24-hour memory watch pending
-- [x] Schedule pipelines simply: systemd timers on the VM (hourly serving refresh since 2026-10-21); Cloud Scheduler for Cloud Run jobs (all-routes bus snapshot, planned)
+- [~] Orchestration (decided 2026-10-23): the hourly serving refresh stays on its systemd timer (since
+  2026-10-21). Batch jobs run serverless: **Cloud Run Jobs** do the work (all-routes bus snapshot,
+  daily Google Sheet export and archive, weekly bus reference load), **Cloud Workflows** chains the
+  daily steps with retries ("quality checks, then export, then archive"; Mondays also the bus
+  reference load), **Cloud Scheduler** triggers them. Free-tier design: 2 Scheduler jobs (of 3
+  free): the 30-minute snapshot is triggered directly (through a Workflow it would need ~7,000
+  steps a month, over the 5,000 free), and the daily Workflow (~300 steps a month). Snapshot
+  ~86k vCPU-s / 173k GiB-s a month of Cloud Run's 180k / 360k free, shared with the future MCP
+  server. One container image in Artifact Registry (0.5 GB free) with old versions cleaned up.
+  Check live pricing pages when building; a $1 budget alert is the safety net.
 - [~] Use GCS for historical and excess data — archive script with manifests exists
 - [x] Use BigQuery for analytical queries and transformations — line status external tables and views (`analytics/line_status/`), hourly serving table `tfl_portfolio.line_disruption_hourly` refreshed by a systemd timer on the VM
 - [~] Implement deduplication and idempotent ingestion — run-partitioned, create-only writes for bus data
