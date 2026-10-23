@@ -3,6 +3,10 @@
     {
       "action": {"type": "Delete"},
       "condition": {"age": 7, "matchesPrefix": ["raw/arrival_predictions/"]}
+    },
+    {
+      "action": {"type": "Delete"},
+      "condition": {"age": 30, "matchesPrefix": ["raw/bus_network/"]}
     }
   ]
 }
