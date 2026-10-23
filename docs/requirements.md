@@ -68,8 +68,8 @@ at 6 minutes).
 - [x] Streamlit: live rail line status — public on the portfolio case study (joeldataportfolio.streamlit.app/transport_for_london, logic vendored in the portfolio's `tfl_live/`); standalone board in `app/streamlit_app.py`
 - [ ] Streamlit + MCP: AI-powered queries about current TfL conditions
 - [ ] Tableau Public: historical analytics, data science, KPIs and trends
-- [~] Google Sheets: temporary bridge for Tableau Public publishing — project Sheet created 2026-10-23; first tab `line_reliability_daily` written by `scripts/export_to_sheet.py` as service account `tfl-sheets-export` (BigQuery read on `tfl_portfolio`, job user; no key file). Daily schedule pending
-- [ ] 24-hour cycle: refresh Tableau's published dataset approximately daily
+- [x] Google Sheets: temporary bridge for Tableau Public publishing — project Sheet with 4 tabs (`config/sheet_exports.json`), refreshed nightly at 02:00 London by the Cloud Run Job `tfl-sheets-export` (Cloud Scheduler `tfl-sheets-export-nightly`, both since 2026-10-23), running as service account `tfl-sheets-export` (BigQuery read on `tfl_portfolio` and two `tfl_transport_analytics` tables; no key file). Each tab keeps 6 months; BigQuery keeps full history, so no GCS archive copy is needed
+- [~] 24-hour cycle: refresh Tableau's published dataset approximately daily — Sheet side done (nightly job); Tableau Public's own daily refresh pending
 - [ ] Separate live operational insights (Streamlit) from historical analysis (Tableau)
 
 ## 2. Data engineering
