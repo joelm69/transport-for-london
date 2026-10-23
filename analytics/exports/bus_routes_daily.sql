@@ -8,11 +8,11 @@
 --   total headway time  = mean_headway * headways
 --   average wait        = sum(h^2) / (2 sum(h)), and average_wait * 2 * sum(h) = sum(h^2)
 --   bunching rate       = bunched headways / headways
--- Time-of-day bands are London time.
+-- Time-of-day bands are London time. The last 6 months (the tab's window).
 WITH events AS (
   SELECT line_id, naptan_id, direction
   FROM `transport-for-london-511318.tfl_transport_analytics.arrival_events`
-  WHERE source_date >= '2026-10-21' AND mode = 'bus'
+  WHERE source_date >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH) AND mode = 'bus'
 ),
 stop_direction AS (
   SELECT line_id, naptan_id, APPROX_TOP_COUNT(direction, 1)[OFFSET(0)].value AS direction
@@ -42,6 +42,7 @@ hourly AS (
   JOIN stop_direction AS sd USING (line_id, naptan_id)
   WHERE h.mode = 'bus'
     AND DATE(h.hour_start, 'Europe/London') < CURRENT_DATE('Europe/London')
+    AND DATE(h.hour_start, 'Europe/London') >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH)
     AND h.headways > 0
 )
 SELECT

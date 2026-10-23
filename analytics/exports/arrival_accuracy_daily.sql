@@ -10,7 +10,7 @@
 WITH arrivals AS (
   SELECT *
   FROM `transport-for-london-511318.tfl_transport_analytics.arrival_events`
-  WHERE source_date >= '2026-10-21'
+  WHERE source_date >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH)   -- the tab's window
     AND detection = 'at_platform'
     AND DATE(arrived_at, 'Europe/London') < CURRENT_DATE('Europe/London')
   -- One arrival per visit (a visit_key can repeat only after a crash replay).
