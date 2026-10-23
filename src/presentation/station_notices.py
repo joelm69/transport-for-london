@@ -170,10 +170,26 @@ def _merge_similar(items):
     return kept
 
 
+MAX_TITLE_STATIONS = 3   # more stations than this: a short title, the names listed below it
+
+# "Suffragette Line: No service between ..." -> "Suffragette line"; also "London Tramlink: ...".
+_LINE_HEADING = re.compile(r"^(?P<line>[A-Za-z&' ]{1,40}?(?:\bline|tramlink|\bDLR|overground))\s*:", re.IGNORECASE)
+
+
+def _line_of(text):
+    match = _LINE_HEADING.match(text)
+    if not match:
+        return None
+    line = match["line"].strip()
+    return line[:-4] + "line" if line.lower().endswith(" line") else line
+
+
 def station_cards(items):
     """Display cards from notice_items() output: one card per station listing its messages,
     and one card for several stations when they carry exactly the same messages (a section
-    closure announced at both ends, a coach notice at several stations). Keeps the order of
+    closure announced at both ends, a coach notice at several stations). A card for more than
+    MAX_TITLE_STATIONS stations gets a short title (the line named in the message and the
+    count) and the names in station_list. Keeps the order of
     `items`, so call it per section (closures, accessibility, ...)."""
     by_station = {}
     for item in items:
@@ -206,7 +222,15 @@ def station_cards(items):
     for card in cards.values():
         card["modes"] = sorted(m for m in card["modes"] if m)
         card["mode_name"] = " · ".join(MODE_NAMES.get(m, m) for m in card["modes"])
-        card["title"] = " · ".join(card["stations"])
+        if len(card["stations"]) > MAX_TITLE_STATIONS:
+            # A section closure posted at every station on it: name the line, list the stations.
+            line = _line_of(card["messages"][0]["text"])
+            count = f'{len(card["stations"])} stations'
+            card["title"] = f"{line} · {count}" if line else count
+            card["station_list"] = ", ".join(card["stations"])
+        else:
+            card["title"] = " · ".join(card["stations"])
+            card["station_list"] = None
         result.append(card)
     return result
 

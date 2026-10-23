@@ -90,6 +90,24 @@ def test_station_cards_one_per_station_and_shared_messages_combined(pattern):
     assert [m["text"] for m in burnham["messages"]] == [coaches]
 
 
+def test_a_closure_posted_at_many_stations_gets_a_short_title(pattern):
+    """Suffragette line, 2026-10-23: one closure notice posted at 9 stations."""
+    text = ("Suffragette Line: No service between South Tottenham and Barking Riverside due to an "
+            "operational incident. GOOD SERVICE on the rest of the line.")
+    stations = ["Barking", "Barking Riverside", "Blackhorse Road", "South Tottenham", "Wanstead Park"]
+    data = [_record(name, text, mode="overground") for name in stations]
+    [card] = station_cards(notice_items(data, pattern))
+    assert card["title"] == "Suffragette line · 5 stations"
+    assert card["station_list"] == ", ".join(stations)
+    few = station_cards(notice_items([_record("Bank", "Escalator closed."), _record("Monument", "Escalator closed.")], pattern))
+    assert few[0]["title"] == "Bank · Monument" and few[0]["station_list"] is None
+
+
+def test_many_stations_without_a_line_name_are_counted(pattern):
+    data = [_record(f"Station {n}", "Please travel in the front 7 coaches.") for n in "ABCD"]
+    assert station_cards(notice_items(data, pattern))[0]["title"] == "4 stations"
+
+
 def test_live_feed_cards_never_repeat_a_station(data, pattern):
     items = notice_items(data, pattern)
     for section in ([i for i in items if i["categories"]["part_closure"]],
