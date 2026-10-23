@@ -62,11 +62,13 @@ def test_positions_gaps_and_bunching():
 def test_stop_countdown_soonest_first():
     arrivals = [
         {"lineName": "56", "destinationName": "Smithfield", "expectedArrival": at("02:30")},
-        {"lineName": "38", "destinationName": "Victoria", "expectedArrival": at("00:40")},
+        {"lineName": "38", "destinationName": "Victoria", "expectedArrival": at("00:40"), "vehicleId": "LTZ1520"},
         {"lineName": "30", "destinationName": "Marble Arch", "expectedArrival": at("11:00")},
         {"lineName": "38", "destinationName": "Victoria", "expectedArrival": "2026-10-22T17:58:00Z"},  # gone
     ]
-    assert [(r["route"], r["minutes"]) for r in stop_countdown(arrivals, NOW)] == [("38", 0), ("56", 2), ("30", 11)]
+    rows = stop_countdown(arrivals, NOW)
+    assert [(r["route"], r["minutes"]) for r in rows] == [("38", 0), ("56", 2), ("30", 11)]
+    assert rows[0]["vehicle_id"] == "LTZ1520" and rows[1]["vehicle_id"] is None
 
 
 def test_overtaking_counts_as_zero_gap_and_contradictions_are_ignored():

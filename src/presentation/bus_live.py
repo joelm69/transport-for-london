@@ -116,7 +116,8 @@ def buses_on_route(arrivals, stops_by_direction, now):
 
 
 def stop_countdown(arrivals, now, limit=12):
-    """Next buses at a stop (/StopPoint/{id}/Arrivals), soonest first: route, destination, minutes."""
+    """Next buses at a stop (/StopPoint/{id}/Arrivals), soonest first: route, destination,
+    minutes, and the bus's registration (vehicleId)."""
     rows = []
     for item in arrivals:
         seconds = (_utc(item["expectedArrival"]) - now).total_seconds()
@@ -125,6 +126,7 @@ def stop_countdown(arrivals, now, limit=12):
         rows.append({
             "route": item.get("lineName") or item.get("lineId"),
             "destination": item.get("destinationName") or item.get("towards"),
+            "vehicle_id": item.get("vehicleId"),
             "minutes": max(0, int(seconds // 60)),
             "seconds": seconds,
         })
