@@ -1,3 +1,4 @@
+import gzip
 """Unit tests for src/clients/tfl.py. No network: the opener is faked."""
 
 import email.message
@@ -106,7 +107,19 @@ def test_request_has_key_params_and_json_headers():
     assert url.path == "/Line/Mode/tube/Status"
     assert query == {"detail": ["false"], "app_key": [API_KEY]}
     assert request.get_header("Accept") == "application/json"
+    assert request.get_header("Accept-encoding") == "gzip"
     assert timeout == 12
+
+
+def test_gzip_response_is_decompressed():
+    body = json.dumps([{"id": "38"}]).encode()
+    opener = FakeOpener(FakeResponse(gzip.compress(body), headers={"Content-Encoding": "gzip"}))
+    client, _ = make_client(opener)
+
+    response = client.get_json("/Mode/bus/Arrivals")
+
+    assert response.data == [{"id": "38"}]
+    assert response.size_bytes == len(body)
 
 
 # --- Retries and backoff -----------------------------------------------------

@@ -12,6 +12,7 @@ Example:
     lines = response.data
 """
 
+import gzip
 import http.client
 import json
 import logging
@@ -157,7 +158,10 @@ class TflClient:
 
         request = urllib.request.Request(
             self._url(path, params),
-            headers={"Accept": "application/json", "User-Agent": USER_AGENT},
+            # gzip: the network-wide bus feed is 84 MB plain but a fraction of that compressed,
+            # and arrives in about a minute instead of many (measured 2026-10-23).
+            headers={"Accept": "application/json", "Accept-Encoding": "gzip",
+                     "User-Agent": USER_AGENT},
             method="GET",
         )
 
@@ -174,6 +178,8 @@ class TflClient:
                     body = response.read()
                     status = response.status
                     headers = dict(response.headers.items())
+                if {k.lower(): v for k, v in headers.items()}.get("content-encoding", "").lower() == "gzip":
+                    body = gzip.decompress(body)
 
                 return self._parse(
                     path, params, status, body, headers,
