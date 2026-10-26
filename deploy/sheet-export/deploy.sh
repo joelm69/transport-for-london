@@ -30,4 +30,4 @@ gcloud run jobs deploy "$JOB" \
     --project "$PROJECT" --region "$REGION" --source "$CONTEXT" \
     --service-account "$SERVICE_ACCOUNT" \
     --set-env-vars "TFL_SHEET_ID=$SHEET_ID" \
-    --cpu 1 --memory 512Mi --task-timeout 10m --max-retries 1
+    --cpu 1 --memory 1Gi --task-timeout 30m --max-retries 1

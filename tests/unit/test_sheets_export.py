@@ -35,3 +35,46 @@ def test_cell_count_counts_the_replaced_tab_at_its_new_size():
     values = [["h"] * 11] * 41          # header + 40 rows
     assert cells_after_replace(spreadsheet, "line_reliability_daily", values) == 26_000 + 41 * 11
     assert cells_after_replace(spreadsheet, "new_tab", values) == 26_550 + 41 * 11
+
+
+def test_large_tabs_are_written_in_chunks(monkeypatch):
+    import src.exports.sheets as sheets
+
+    calls = []
+
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"sheets": [_sheet("tab", 10, 2)]}
+
+    class Session:
+        def request(self, method, url, timeout=None, **kwargs):
+            calls.append((method, url.split("/values/")[-1] if "/values/" in url else url, kwargs))
+            return Response()
+
+    monkeypatch.setattr(sheets, "CHUNK_ROWS", 4)
+    client = sheets.SheetsClient(Session(), "sheet-id")
+    values = [["h1", "h2"]] + [[i, i] for i in range(9)]          # header + 9 rows = 10 rows
+    client.replace({"sheets": [_sheet("tab", 10, 2)]}, "tab", values)
+    puts = [(target, len(kw["json"]["values"])) for method, target, kw in calls if method == "PUT"]
+    assert puts == [("'tab'!A1", 4), ("'tab'!A5", 4), ("'tab'!A9", 2)]
+
+
+def test_rate_limited_writes_wait_and_retry():
+    import src.exports.sheets as sheets
+
+    statuses, waits = [429, 429, 200], []
+
+    class Response:
+        def __init__(self, status):
+            self.status_code = status
+        def json(self):
+            return {}
+
+    class Session:
+        def request(self, method, url, timeout=None, **kwargs):
+            return Response(statuses.pop(0))
+
+    client = sheets.SheetsClient(Session(), "sheet-id", sleep=waits.append)
+    client._call("PUT", "/values/x")
+    assert waits == [5, 10] and statuses == []

@@ -1,7 +1,8 @@
 -- Google Sheet tab `station_accessibility_daily` (Tableau Public): one row per station per
 -- completed London day on which it had an accessibility notice (lifts, step-free access,
 -- escalators), for the last 6 months. Stations without notices are not listed: no notice does
--- not mean step-free.
+-- not mean step-free. Sheet data starts 26 October 2026, 15:00 London time (BigQuery keeps
+-- everything).
 -- Source: tfl_portfolio.station_accessibility_hourly and stop_disruption_observed_hourly.
 --
 -- problem_share = minutes with a notice / minutes the notices feed was observed that day.
@@ -10,6 +11,7 @@ WITH observed AS (
   FROM `transport-for-london-511318.tfl_portfolio.stop_disruption_observed_hourly`
   WHERE DATE(hour_start, 'Europe/London') < CURRENT_DATE('Europe/London')
     AND DATE(hour_start, 'Europe/London') >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH)
+    AND hour_start >= TIMESTAMP('2026-10-26 15:00:00', 'Europe/London')   -- Sheet start
   GROUP BY day
 ),
 stations AS (
@@ -20,6 +22,7 @@ stations AS (
   FROM `transport-for-london-511318.tfl_portfolio.station_accessibility_hourly`
   WHERE DATE(hour_start, 'Europe/London') < CURRENT_DATE('Europe/London')
     AND DATE(hour_start, 'Europe/London') >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH)
+    AND hour_start >= TIMESTAMP('2026-10-26 15:00:00', 'Europe/London')   -- Sheet start
   GROUP BY day, station
 )
 SELECT

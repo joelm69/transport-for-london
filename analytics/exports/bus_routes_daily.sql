@@ -1,114 +1,73 @@
 -- Google Sheet tab: bus_routes_daily
--- All 675 TfL bus routes.
--- Historical metrics from 24 October 2026, 19:00 London time onward.
--- Historical data accumulates; no rolling six-month limit.
--- Routes without collected performance observations remain included with NULL metrics.
+-- All 675 TfL bus routes, per route, direction, completed London day and time of day.
+-- Sheet data starts 26 October 2026, 15:00 London time; the last 30 days are kept in the Sheet
+-- (BigQuery keeps everything). Only routes that ran: no placeholder rows for routes not seen.
 --
--- Metrics are measured headways at stops, from tfl_portfolio.arrival_stop_hourly (the 12 routes
--- the VM follows, config/arrivals.json). Its stop_side is the stop letter for buses, not the
--- direction, so each stop's direction comes from the arrival events and where that direction
--- heads from the route reference. Combined exactly from the hourly rows, using headway counts as
--- weights. Time-of-day bands are London time; only completed London days.
+-- Source: the network-wide bus poll every 30 minutes (scripts/bus_network_snapshot.py, external
+-- table bus_network_routes): per route and direction, the buses running and the predicted gaps
+-- between successive buses at each stop (buses due within 30 minutes). Per day and time band:
+--   buses          average number of buses running at a poll
+--   typical gap    gap-weighted average of each poll's median gap
+--   bunching rate  share of gaps under half that poll's median gap
+--   longest gap    the longest predicted gap seen
+-- Time-of-day bands are London time.
 
 WITH params AS (
-  SELECT TIMESTAMP('2026-10-24 19:00:00', 'Europe/London') AS project_start
+  SELECT
+    TIMESTAMP('2026-10-26 15:00:00', 'Europe/London') AS sheet_start,
+    GREATEST(
+      DATE('2026-10-26'),
+      DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 30 DAY)
+    ) AS window_start
 ),
 
-route_reference AS (
-  SELECT DISTINCT
-    LOWER(line_id) AS route
-  FROM
-    `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
-  WHERE
-    collection_run_id = (
-      SELECT MAX(collection_run_id)
-      FROM
-        `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
-    )
+latest_route_reference AS (
+  SELECT *
+  FROM `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
+  WHERE collection_run_id = (
+    SELECT MAX(collection_run_id)
+    FROM `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
+  )
 ),
 
 towards AS (
-  SELECT
-    LOWER(line_id) AS route,
-    direction,
-    stop_name AS towards
+  -- Where each direction heads: the last stop of its longest branch.
+  SELECT LOWER(line_id) AS route, direction, stop_name AS towards
   FROM (
-    SELECT
-      *,
-      COUNT(*) OVER (
-        PARTITION BY LOWER(line_id), direction, branch_id
-      ) AS branch_stops
-    FROM
-      `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
-    WHERE
-      collection_run_id = (
-        SELECT MAX(collection_run_id)
-        FROM
-          `transport-for-london-511318.tfl_transport_analytics.route_stop_occurrences`
-      )
+    SELECT *, COUNT(*) OVER (PARTITION BY line_id, direction, branch_id) AS branch_stops
+    FROM latest_route_reference
   )
   QUALIFY ROW_NUMBER() OVER (
-    PARTITION BY LOWER(line_id), direction
-    ORDER BY branch_stops DESC, stop_order DESC
+    PARTITION BY line_id, direction ORDER BY branch_stops DESC, stop_order DESC
   ) = 1
 ),
 
-events AS (
+polls AS (
   SELECT
-    LOWER(e.line_id) AS route,
-    e.naptan_id,
-    e.direction
-  FROM
-    `transport-for-london-511318.tfl_transport_analytics.arrival_events` AS e,
-    params AS p
-  WHERE
-    -- source_date is the partition column: filtering on it keeps the scan to the days needed.
-    e.source_date >= DATE('2026-10-24')
-    AND e.mode = 'bus'
-    AND e.last_snapshot_at >= p.project_start
-),
-
-stop_direction AS (
-  SELECT
-    route,
-    naptan_id,
-    APPROX_TOP_COUNT(direction, 1)[OFFSET(0)].value AS direction
-  FROM events
-  GROUP BY route, naptan_id
-),
-
-hourly AS (
-  SELECT
-    DATE(h.hour_start, 'Europe/London') AS day,
-    LOWER(h.line_id) AS route,
-    sd.direction,
-    EXTRACT(
-      HOUR FROM DATETIME(h.hour_start, 'Europe/London')
-    ) AS london_hour,
-    h.naptan_id,
-    h.headways,
-    h.mean_headway_seconds,
-    h.average_wait_seconds,
-    h.bunched_headways
-  FROM
-    `transport-for-london-511318.tfl_portfolio.arrival_stop_hourly` AS h
-  JOIN stop_direction AS sd
-    ON LOWER(h.line_id) = sd.route
-    AND h.naptan_id = sd.naptan_id
+    DATE(r.snapshot_at, 'Europe/London') AS day,
+    LOWER(r.line_id) AS route,
+    r.direction,
+    EXTRACT(HOUR FROM DATETIME(r.snapshot_at, 'Europe/London')) AS london_hour,
+    r.buses,
+    r.gaps,
+    r.median_gap_seconds,
+    r.max_gap_seconds,
+    r.bunched_gaps
+  FROM `transport-for-london-511318.tfl_transport_analytics.bus_network_routes` AS r
   CROSS JOIN params AS p
   WHERE
-    h.mode = 'bus'
-    AND h.hour_start >= p.project_start
-    AND DATE(h.hour_start, 'Europe/London')
-        < CURRENT_DATE('Europe/London')
-    AND h.headways > 0
+    -- `date` is the poll's UTC folder: the filter reads only those days' files.
+    r.date >= DATE_SUB(p.window_start, INTERVAL 1 DAY)
+    AND r.snapshot_at >= p.sheet_start
+    AND DATE(r.snapshot_at, 'Europe/London') >= p.window_start
+    AND DATE(r.snapshot_at, 'Europe/London') < CURRENT_DATE('Europe/London')
 ),
 
 daily_metrics AS (
   SELECT
-    hourly.day,
-    hourly.route,
-    hourly.direction,
+    day,
+    route,
+    direction,
     CASE
       WHEN london_hour < 5 THEN '1 Night (00-05)'
       WHEN london_hour < 7 THEN '2 Early (05-07)'
@@ -117,86 +76,28 @@ daily_metrics AS (
       WHEN london_hour < 19 THEN '5 Evening peak (16-19)'
       ELSE '6 Evening (19-24)'
     END AS time_band,
-    COUNT(DISTINCT naptan_id) AS stops,
-    SUM(headways) AS headways,
-    ROUND(
-      SAFE_DIVIDE(
-        SUM(mean_headway_seconds * headways),
-        SUM(headways)
-      ) / 60,
-      2
-    ) AS mean_gap_minutes,
-    ROUND(
-      SAFE_DIVIDE(
-        SUM(
-          average_wait_seconds
-          * mean_headway_seconds
-          * headways
-        ),
-        SUM(mean_headway_seconds * headways)
-      ) / 60,
-      2
-    ) AS average_wait_minutes,
-    ROUND(
-      SAFE_DIVIDE(SUM(bunched_headways), SUM(headways)),
-      4
-    ) AS bunching_rate
-  FROM hourly
-  GROUP BY
-    hourly.day,
-    hourly.route,
-    hourly.direction,
-    time_band
-),
-
-observed_output AS (
-  SELECT
-    d.day,
-    d.route,
-    d.direction,
-    t.towards,
-    d.time_band,
-    d.stops,
-    d.headways,
-    d.mean_gap_minutes,
-    d.average_wait_minutes,
-    d.bunching_rate
-  FROM daily_metrics AS d
-  LEFT JOIN towards AS t
-    ON t.route = d.route
-    AND t.direction = d.direction
-),
-
-routes_without_observations AS (
-  SELECT
-    CAST(NULL AS DATE) AS day,
-    r.route,
-    CAST(NULL AS STRING) AS direction,
-    CAST(NULL AS STRING) AS towards,
-    'No historical observations' AS time_band,
-    CAST(NULL AS INT64) AS stops,
-    CAST(NULL AS INT64) AS headways,
-    CAST(NULL AS FLOAT64) AS mean_gap_minutes,
-    CAST(NULL AS FLOAT64) AS average_wait_minutes,
-    CAST(NULL AS FLOAT64) AS bunching_rate
-  FROM route_reference AS r
-  WHERE NOT EXISTS (
-    SELECT 1
-    FROM daily_metrics AS d
-    WHERE d.route = r.route
-  )
+    COUNT(*) AS polls,
+    ROUND(AVG(buses), 1) AS buses,
+    ROUND(SAFE_DIVIDE(SUM(median_gap_seconds * gaps), SUM(gaps)) / 60, 2) AS typical_gap_minutes,
+    ROUND(SAFE_DIVIDE(SUM(bunched_gaps), SUM(gaps)), 4) AS bunching_rate,
+    ROUND(MAX(max_gap_seconds) / 60, 1) AS longest_gap_minutes
+  FROM polls
+  GROUP BY day, route, direction, time_band
 )
 
-SELECT *
-FROM observed_output
-
-UNION ALL
-
-SELECT *
-FROM routes_without_observations
-
-ORDER BY
-  route,
-  day,
-  direction,
-  time_band;
+SELECT
+  d.day,
+  UPPER(d.route) AS route,
+  d.direction,
+  t.towards,
+  d.time_band,
+  d.polls,
+  d.buses,
+  d.typical_gap_minutes,
+  d.bunching_rate,
+  d.longest_gap_minutes
+FROM daily_metrics AS d
+LEFT JOIN towards AS t
+  ON t.route = d.route
+  AND t.direction = d.direction
+ORDER BY route, day, direction, time_band;

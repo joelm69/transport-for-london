@@ -9,6 +9,7 @@ so no Sheets client library is needed. Credentials are Application Default Crede
 export service account on Cloud Run, or a person impersonating it locally. No key files.
 """
 
+import time
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -18,6 +19,7 @@ SCOPES = (
     "https://www.googleapis.com/auth/bigquery",
 )
 MAX_FILE_CELLS = 7_000_000   # stop above this; Google's limit is 10 million per file
+CHUNK_ROWS = 10_000          # rows per write: one request must stay under Google's ~10 MB limit
 FORMULA_STARTS = ("=", "+", "-", "@")
 
 
@@ -67,14 +69,21 @@ def cells_after_replace(spreadsheet, tab, values):
 class SheetsClient:
     """The few Sheets API calls the export needs. `session` is an authorised requests session."""
 
-    def __init__(self, session, spreadsheet_id, timeout=30):
+    def __init__(self, session, spreadsheet_id, timeout=60, sleep=time.sleep):
         self.session = session
         self.spreadsheet_id = spreadsheet_id
         self.timeout = timeout
+        self._sleep = sleep
 
     def _call(self, method, path="", **kwargs):
-        response = self.session.request(method, f"{SHEETS_API}/{self.spreadsheet_id}{path}",
-                                        timeout=self.timeout, **kwargs)
+        # Google allows about 60 writes a minute; the all-routes tabs need dozens of chunked
+        # writes, so a 429 (or a passing 5xx) waits and tries again rather than failing the run.
+        for attempt in range(6):
+            response = self.session.request(method, f"{SHEETS_API}/{self.spreadsheet_id}{path}",
+                                            timeout=self.timeout, **kwargs)
+            if response.status_code not in (429, 500, 502, 503) or attempt == 5:
+                break
+            self._sleep(min(60, 5 * 2 ** attempt))
         if response.status_code >= 400:
             # The API's own message (e.g. "The caller does not have permission"), never credentials.
             message = response.json().get("error", {}).get("message", response.reason)
@@ -104,6 +113,9 @@ class SheetsClient:
         ]})
         quoted = "'" + tab.replace("'", "''") + "'"
         self._call("POST", f"/values/{quoted}:clear")
-        self._call("PUT", f"/values/{quoted}!A1", params={"valueInputOption": "USER_ENTERED"},
-                   json={"values": values})
+        # In chunks: a large tab (the all-routes bus tabs reach ~1 million cells) is far over
+        # what one request may carry.
+        for start in range(0, len(values), CHUNK_ROWS):
+            self._call("PUT", f"/values/{quoted}!A{start + 1}", params={"valueInputOption": "USER_ENTERED"},
+                       json={"values": values[start:start + CHUNK_ROWS]})
         return rows * columns

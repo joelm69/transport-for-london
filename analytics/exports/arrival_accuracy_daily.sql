@@ -13,6 +13,7 @@ WITH arrivals AS (
   WHERE source_date >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 6 MONTH)   -- the tab's window
     AND detection = 'at_platform'
     AND DATE(arrived_at, 'Europe/London') < CURRENT_DATE('Europe/London')
+    AND arrived_at >= TIMESTAMP('2026-10-26 15:00:00', 'Europe/London')   -- Sheet start (data from 26 October 2026, 15:00 London time)
   -- One arrival per visit (a visit_key can repeat only after a crash replay).
   QUALIFY ROW_NUMBER() OVER (PARTITION BY visit_key ORDER BY kafka_partition, kafka_offset) = 1
 ),
