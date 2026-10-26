@@ -41,7 +41,9 @@ def upload(session, name, body):
     response = session.post(
         UPLOAD.format(bucket=BUCKET),
         params={"uploadType": "media", "name": name, "ifGenerationMatch": "0"},
-        headers={"Content-Type": "application/x-ndjson", "Content-Encoding": "gzip"},
+        # Stored as a .gz file, not with Content-Encoding: gzip: GCS decompresses such a body on
+        # arrival, so the .json.gz would hold plain JSON and BigQuery fails ("Invalid gzip file").
+        headers={"Content-Type": "application/gzip"},
         data=body, timeout=60,
     )
     if response.status_code == 412:
