@@ -104,7 +104,9 @@ class SheetsClient:
         self.ensure_tab(spreadsheet, tab)
         sheet_id = next((s["properties"]["sheetId"] for s in self.spreadsheet()["sheets"]
                          if s["properties"]["title"] == tab))
-        rows, columns = max(len(values), 1), max((len(r) for r in values), default=1)
+        # At least one row under the frozen header: Sheets refuses a grid with no unfrozen rows
+        # (a tab with no data yet, e.g. right after a fresh start).
+        rows, columns = max(len(values), 2), max((len(r) for r in values), default=1)
         self._call("POST", ":batchUpdate", json={"requests": [
             {"updateSheetProperties": {
                 "properties": {"sheetId": sheet_id, "gridProperties": {

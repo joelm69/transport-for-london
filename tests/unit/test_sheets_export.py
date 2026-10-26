@@ -78,3 +78,25 @@ def test_rate_limited_writes_wait_and_retry():
     client = sheets.SheetsClient(Session(), "sheet-id", sleep=waits.append)
     client._call("PUT", "/values/x")
     assert waits == [5, 10] and statuses == []
+
+
+def test_a_tab_with_only_its_header_keeps_one_empty_row():
+    import src.exports.sheets as sheets
+
+    resizes = []
+
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"sheets": [_sheet("tab", 10, 3)]}
+
+    class Session:
+        def request(self, method, url, timeout=None, **kwargs):
+            body = kwargs.get("json") or {}
+            for r in body.get("requests", []):
+                if "updateSheetProperties" in r:
+                    resizes.append(r["updateSheetProperties"]["properties"]["gridProperties"])
+            return Response()
+
+    sheets.SheetsClient(Session(), "sheet-id").replace({"sheets": [_sheet("tab", 10, 3)]}, "tab", [["a", "b", "c"]])
+    assert resizes == [{"rowCount": 2, "columnCount": 3, "frozenRowCount": 1}]
