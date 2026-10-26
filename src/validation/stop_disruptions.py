@@ -5,7 +5,7 @@ cannot be identified and is skipped; the rest of the poll is processed), WARN (k
 """
 
 import re
-from collections import Counter, defaultdict
+from collections import defaultdict
 from datetime import timedelta
 
 from src.validation.line_status import ERROR, WARN, Issue, has_errors, parse_utc  # noqa: F401
@@ -22,9 +22,32 @@ def disruption_identity(record):
     return record["atcoCode"], record["type"], from_date.isoformat()
 
 
+def _text(record):
+    return " ".join((record.get("description") or "").lower().split())
+
+
+def poll_identities(data):
+    """The identity of each record in one poll, by index (None: unidentifiable).
+
+    Usually disruption_identity(). When two records share it but say different things, each
+    also carries its text, so both are kept as separate notices: since 2026-10-24 TfL posts
+    the Circle and District line closures at a station as two notices with the same station,
+    type and start, which made every poll fail. Records that clash keep text-based identities
+    only while they clash; every other notice keeps the identity it always had.
+    """
+    base = {i: disruption_identity(r) for i, r in enumerate(data) if isinstance(r, dict)}
+    texts = defaultdict(set)
+    for i, identity in base.items():
+        if identity is not None:
+            texts[identity].add(_text(data[i]))
+    return {i: (identity + (_text(data[i]),) if identity is not None and len(texts[identity]) > 1 else identity)
+            for i, identity in base.items()}
+
+
 def validate_poll(data, config, collected_at):
-    """Apply rules P1-P3 and D1-D7. Record-level issues carry the record index in
-    `status_index`."""
+    """Apply rules P1-P2 and D1-D8. Record-level issues carry the record index in
+    `status_index`. (P3, a key clash rejecting the whole poll, was retired on 2026-10-26:
+    clashing notices now get separate identities, see poll_identities.)"""
     if not isinstance(data, list):
         return [Issue(ERROR, "P1", "Response body is not a JSON array")]
 
@@ -36,7 +59,8 @@ def validate_poll(data, config, collected_at):
     types = set(config["known_types"])
     appearances = set(config["known_appearances"])
     max_from = collected_at + timedelta(seconds=config["future_from_date_tolerance_seconds"])
-    identities = Counter()
+    identities = poll_identities(data)
+    seen = set()
     names = defaultdict(set)
 
     for index, record in enumerate(data):
@@ -47,11 +71,15 @@ def validate_poll(data, config, collected_at):
             issues.append(issue(EXCLUDED, "D1", "Record is not an object"))
             continue
 
-        identity = disruption_identity(record)
+        identity = identities.get(index)
         if identity is None or not (record.get("description") or "").strip():
             issues.append(issue(EXCLUDED, "D1", "Missing atcoCode, type, description or parseable fromDate"))
             continue
-        identities[identity] += 1
+        if identity in seen:
+            # The same notice twice (same station, type, start and text): keep the first.
+            issues.append(issue(EXCLUDED, "D8", "Duplicate of an earlier record in this poll"))
+            continue
+        seen.add(identity)
 
         if not NAPTAN.fullmatch(record["atcoCode"]):
             issues.append(issue(WARN, "D2", f"Unexpected atcoCode format {record['atcoCode']!r}"))
@@ -68,10 +96,6 @@ def validate_poll(data, config, collected_at):
         if from_date > max_from:
             issues.append(issue(WARN, "D6", "fromDate is in the future"))
         names[record["atcoCode"]].add(record.get("commonName"))
-
-    clashes = [key for key, count in identities.items() if count > 1]
-    if clashes:
-        issues.append(Issue(ERROR, "P3", f"{len(clashes)} disruption_key clash(es), e.g. {clashes[0]}"))
 
     for code, values in names.items():
         if len(values) > 1:

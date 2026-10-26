@@ -63,10 +63,31 @@ def test_p2_empty_is_only_a_warning(cfg):
     assert rules(validate_poll([], cfg, FIRST_AT)) == ["P2"]
 
 
-def test_p3_key_clash_is_an_error(cfg, first):
+def test_same_station_type_and_start_with_different_text_are_two_notices(cfg, first):
+    """2026-10-24: the Circle and District closures at a station share station, type and start."""
     clash = copy.deepcopy(first[0])
     clash["description"] = "Different text, same station, type and start"
-    assert "P3" in rules(validate_poll(first + [clash], cfg, FIRST_AT), ERROR)
+    data = first + [clash]
+    issues = validate_poll(data, cfg, FIRST_AT)
+    assert not rules(issues, ERROR) and not rules(issues, EXCLUDED)
+    records = normalise(data, {}, cfg, FIRST_AT, issues)
+    assert len(records) == len(first) + 1
+    assert len({r["disruption_key"] for r in records}) == len(records)
+
+
+def test_notices_without_a_clash_keep_their_key(cfg, first):
+    clash = copy.deepcopy(first[0])
+    clash["description"] = "Different text"
+    before = {r["disruption_key"] for r in normalise(first[1:], {}, cfg, FIRST_AT)}
+    after = {r["disruption_key"] for r in normalise(first + [clash], {}, cfg, FIRST_AT)}
+    assert before <= after
+
+
+def test_d8_exact_duplicate_is_kept_once(cfg, first):
+    data = first + [copy.deepcopy(first[0])]
+    issues = validate_poll(data, cfg, FIRST_AT)
+    assert rules(issues, EXCLUDED) == ["D8"] and not rules(issues, ERROR)
+    assert len(normalise(data, {}, cfg, FIRST_AT, issues)) == len(first)
 
 
 def test_d1_unidentifiable_record_is_excluded_not_fatal(cfg, first):
@@ -231,9 +252,7 @@ def test_failed_poll_stores_error_and_keeps_state(tmp_path, cfg, first):
 
 
 def test_invalid_poll_is_kept_for_investigation(tmp_path, cfg, first):
-    clash = copy.deepcopy(first[0])
-    clash["description"] = "Same key, different text"
     t0 = datetime(2026, 10, 21, 20, 10, 0, tzinfo=timezone.utc)
-    coverage, raw, _ = collect(tmp_path, cfg, [first, first + [clash]], [t0, t0 + timedelta(minutes=1)])
-    assert coverage[1]["errors"] == ["P3"] and coverage[1]["raw_reason"] == "invalid"
+    coverage, raw, _ = collect(tmp_path, cfg, [first, {"not": "an array"}], [t0, t0 + timedelta(minutes=1)])
+    assert coverage[1]["errors"] == ["P1"] and coverage[1]["raw_reason"] == "invalid"
     assert coverage[1]["changes_written"] == 0

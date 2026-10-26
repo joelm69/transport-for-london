@@ -13,7 +13,7 @@ import json
 import re
 from datetime import timedelta
 
-from src.validation.stop_disruptions import EXCLUDED, disruption_identity, parse_utc
+from src.validation.stop_disruptions import EXCLUDED, parse_utc, poll_identities
 
 END_OF_SERVICE_TIMES = {"00:29", "01:29"}  # 01:29 London time in summer / winter
 
@@ -47,11 +47,12 @@ def normalise(data, poll, config, collected_at, issues=()):
             flags.setdefault(issue.status_index, []).append(issue.rule)
 
     accessibility = re.compile(config["accessibility_pattern"], re.IGNORECASE)
+    identities = poll_identities(data)
     records = []
     for index, raw in enumerate(data):
         if index in excluded:
             continue
-        identity = disruption_identity(raw)
+        identity = identities[index]
         appearance = raw.get("appearance")
         description = (raw.get("description") or "").strip()
         planned_to = parse_utc(raw.get("toDate")) if appearance == "PlannedWork" else None
