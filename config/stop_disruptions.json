@@ -5,7 +5,7 @@
   "params": {},
   "poll_interval_seconds": 60,
   "modes": ["tube", "dlr", "overground", "elizabeth-line", "tram"],
-  "known_types": ["Information", "Interchange Message", "Part Closure"],
+  "known_types": ["Information", "Interchange Message", "Part Closure", "Closure"],
   "known_appearances": ["RealTime", "Information", "PlannedWork"],
   "future_from_date_tolerance_seconds": 300,
   "rolling_to_date_hours": 3,

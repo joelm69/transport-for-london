@@ -26,7 +26,8 @@ MODE_NAMES = {
     "tram": "Tram",
 }
 
-CATEGORIES = ("part_closure", "accessibility", "planned", "live")
+CATEGORIES = ("closure", "accessibility", "planned", "live")
+CLOSURE_TYPES = {"Part Closure", "Closure"}   # "Closure": a whole station, first seen 2026-10-26
 
 
 def _utc(value):
@@ -85,7 +86,7 @@ def _message_key(description, station=""):
 def notice_items(data, accessibility_pattern, modes=None):
     """One item per (station, message), most important first.
 
-    Order: part closures, then accessibility, then the rest; newest first within each.
+    Order: closures (part or whole station), then accessibility, then the rest; newest first within each.
     """
     accessibility = re.compile(accessibility_pattern, re.IGNORECASE)
     groups = {}
@@ -131,7 +132,7 @@ def notice_items(data, accessibility_pattern, modes=None):
         item["types"] = sorted(t for t in item["types"] if t)
         item["appearances"] = sorted(a for a in item["appearances"] if a)
         item["categories"] = {
-            "part_closure": "Part Closure" in item["types"],
+            "closure": bool(CLOSURE_TYPES & set(item["types"])),
             "accessibility": bool(accessibility.search(item["description"])),
             "planned": "PlannedWork" in item["appearances"],
             "live": "RealTime" in item["appearances"],
@@ -140,7 +141,7 @@ def notice_items(data, accessibility_pattern, modes=None):
 
     def rank(item):
         c = item["categories"]
-        group = 0 if c["part_closure"] else 1 if c["accessibility"] else 2
+        group = 0 if c["closure"] else 1 if c["accessibility"] else 2
         newest_first = -(item["since"].timestamp() if item["since"] else 0)
         return group, newest_first, item["station"]
 

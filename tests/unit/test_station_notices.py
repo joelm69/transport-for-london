@@ -110,15 +110,23 @@ def test_many_stations_without_a_line_name_are_counted(pattern):
 
 def test_live_feed_cards_never_repeat_a_station(data, pattern):
     items = notice_items(data, pattern)
-    for section in ([i for i in items if i["categories"]["part_closure"]],
-                    [i for i in items if not i["categories"]["part_closure"]]):
+    for section in ([i for i in items if i["categories"]["closure"]],
+                    [i for i in items if not i["categories"]["closure"]]):
         stations = [s.lower() for card in station_cards(section) for s in card["stations"]]
         assert len(stations) == len(set(stations))
 
 
-def test_part_closures_come_first(data, pattern):
+def test_whole_station_closure_counts_as_a_closure(pattern):
+    """2026-10-26: TfL's first 'Closure' (a whole station) next to the usual 'Part Closure'."""
+    data = [{**_record("Shadwell", "Shadwell: station closed all day."), "type": "Closure",
+             "appearance": "PlannedWork"}]
+    [item] = notice_items(data, pattern)
+    assert item["categories"]["closure"]
+
+
+def test_closures_come_first(data, pattern):
     items = notice_items(data, pattern)
-    closures = [i for i in items if i["categories"]["part_closure"]]
+    closures = [i for i in items if i["categories"]["closure"]]
     assert closures and items[: len(closures)] == closures
 
 
@@ -127,7 +135,7 @@ def test_summary_counts(data, pattern):
     counts = notice_summary(items)
     assert counts["notices"] == len(items)
     assert counts["stations"] <= counts["notices"]
-    assert counts["part_closure"] >= 1 and counts["accessibility"] > counts["part_closure"]
+    assert counts["closure"] >= 1 and counts["accessibility"] > counts["closure"]
 
 
 def test_planned_until_only_for_planned_work(data, pattern):

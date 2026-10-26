@@ -173,7 +173,7 @@ important was lost.
 | Shows | From |
 |---|---|
 | Counts: part closures, accessibility issues, planned works, live incidents | `type`, `appearance`, `accessibility_flag` |
-| Stations with part closures | `type = Part Closure` |
+| Stations with part closures | `type` is `Part Closure` or `Closure` (whole station, first seen 2026-10-26) |
 | Step-free and lift problems, filterable by mode | `accessibility_flag` |
 | "Since … · planned until …" for planned works | `fromDate`, PlannedWork `toDate` |
 

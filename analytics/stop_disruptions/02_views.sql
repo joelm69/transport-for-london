@@ -168,7 +168,8 @@ WITH intervals AS (
   CROSS JOIN UNNEST(ARRAY_CONCAT(
     ['any'],
     IF(p.accessibility_flag, ['accessibility'], []),
-    IF(p.type = 'Part Closure', ['part_closure'], [])
+    -- 'Closure' (a whole station, first seen 2026-10-26) counts with part closures.
+    IF(p.type IN ('Part Closure', 'Closure'), ['part_closure'], [])
   )) AS category
   WHERE NOT i.is_flap
 ),
