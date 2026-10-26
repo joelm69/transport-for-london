@@ -3,6 +3,8 @@
     python scripts/export_to_sheet.py --all                      # every tab in config/sheet_exports.json
     python scripts/export_to_sheet.py SQL TAB                    # one tab
     python scripts/export_to_sheet.py ... --dry-run              # query and size check only, no Sheet access
+    python scripts/export_to_sheet.py --all --through-today      # include today so far (one-off, e.g.
+                                                                 # to design charts before the first night)
 
 The nightly Cloud Run Job (deploy/sheet-export/) runs `--all`. The Sheet's ID comes from
 TFL_SHEET_ID (.env locally, an environment variable on Cloud Run). Credentials: Application
@@ -31,8 +33,15 @@ PROJECT_ID = "transport-for-london-511318"
 CONFIG = ROOT / "config" / "sheet_exports.json"
 
 
-def query_values(client, sql_path):
-    job = client.query(sql_path.read_text())
+COMPLETED_DAYS = "< CURRENT_DATE('Europe/London')"   # every export query's "completed days only" rule
+
+
+def query_values(client, sql_path, through_today=False):
+    sql = sql_path.read_text()
+    if through_today:
+        # Today's hours so far as well; the next nightly run (without the flag) replaces them.
+        sql = sql.replace(COMPLETED_DAYS, "<= CURRENT_DATE('Europe/London')")
+    job = client.query(sql)
     result = job.result()
     columns = [field.name for field in result.schema]
     values = to_values(columns, [dict(row) for row in result])
@@ -41,8 +50,8 @@ def query_values(client, sql_path):
     return values
 
 
-def export(bq, sheets, sql_path, tab):
-    values = query_values(bq, sql_path)
+def export(bq, sheets, sql_path, tab, through_today=False):
+    values = query_values(bq, sql_path, through_today)
     if sheets is None:
         return
     spreadsheet = sheets.spreadsheet()
@@ -60,6 +69,8 @@ def main():
     parser.add_argument("tab", nargs="?", help="Sheet tab to replace, e.g. line_reliability_daily")
     parser.add_argument("--all", action="store_true", help="every tab in config/sheet_exports.json")
     parser.add_argument("--dry-run", action="store_true", help="query and check sizes; don't touch the Sheet")
+    parser.add_argument("--through-today", action="store_true",
+                        help="include today so far (one-off; the nightly run replaces it with the full day)")
     args = parser.parse_args()
     if args.all == bool(args.sql and args.tab):
         parser.error("give either --all or both SQL and TAB")
@@ -81,7 +92,7 @@ def main():
     failed = []
     for sql_path, tab in jobs:
         try:
-            export(bq, sheets, sql_path, tab)
+            export(bq, sheets, sql_path, tab, args.through_today)
         except Exception as exc:   # noqa: BLE001 - reported, then the run exits non-zero
             print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
             failed.append(tab)
