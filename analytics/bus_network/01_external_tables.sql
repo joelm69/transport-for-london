@@ -31,7 +31,11 @@ CREATE OR REPLACE EXTERNAL TABLE `transport-for-london-511318.tfl_transport_anal
   gaps INT64,
   median_gap_seconds FLOAT64,
   max_gap_seconds INT64,
-  bunched_gaps INT64
+  bunched_gaps INT64,
+  -- From 2026-10-27 (null before): average wait = gap_seconds_sq_sum / (2 * gap_seconds_sum).
+  gap_seconds_sum INT64,
+  gap_seconds_sq_sum INT64,
+  median_wait_seconds FLOAT64
 )
 WITH PARTITION COLUMNS (date DATE)
 OPTIONS (

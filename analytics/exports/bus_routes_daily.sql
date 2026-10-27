@@ -10,6 +10,8 @@
 --   typical gap    gap-weighted average of each poll's median gap
 --   bunching rate  share of gaps under half that poll's median gap
 --   longest gap    the longest predicted gap seen
+--   average wait   for a passenger arriving at random: sum(gap^2) / (2 sum(gap)), exact
+--   median wait    the wait half of such passengers beat (typical across the day's polls)
 -- Time-of-day bands are London time.
 
 WITH params AS (
@@ -52,7 +54,10 @@ polls AS (
     r.gaps,
     r.median_gap_seconds,
     r.max_gap_seconds,
-    r.bunched_gaps
+    r.bunched_gaps,
+    r.gap_seconds_sum,
+    r.gap_seconds_sq_sum,
+    r.median_wait_seconds
   FROM `transport-for-london-511318.tfl_transport_analytics.bus_network_routes` AS r
   CROSS JOIN params AS p
   WHERE
@@ -80,7 +85,12 @@ daily_metrics AS (
     ROUND(AVG(buses), 1) AS buses,
     ROUND(SAFE_DIVIDE(SUM(median_gap_seconds * gaps), SUM(gaps)) / 60, 2) AS typical_gap_minutes,
     ROUND(SAFE_DIVIDE(SUM(bunched_gaps), SUM(gaps)), 4) AS bunching_rate,
-    ROUND(MAX(max_gap_seconds) / 60, 1) AS longest_gap_minutes
+    ROUND(MAX(max_gap_seconds) / 60, 1) AS longest_gap_minutes,
+    -- Passenger waits (polls from 2026-10-27; null before): the average is exact across polls,
+    -- the median is the gap-weighted average of each poll's median wait (a typical value).
+    ROUND(SAFE_DIVIDE(SUM(gap_seconds_sq_sum), 2 * SUM(gap_seconds_sum)) / 60, 2) AS average_wait_minutes,
+    ROUND(SAFE_DIVIDE(SUM(median_wait_seconds * gap_seconds_sum),
+                      SUM(IF(median_wait_seconds IS NULL, NULL, gap_seconds_sum))) / 60, 2) AS median_wait_minutes
   FROM polls
   GROUP BY day, route, direction, time_band
 )
@@ -95,7 +105,9 @@ SELECT
   d.buses,
   d.typical_gap_minutes,
   d.bunching_rate,
-  d.longest_gap_minutes
+  d.longest_gap_minutes,
+  d.average_wait_minutes,
+  d.median_wait_minutes
 FROM daily_metrics AS d
 LEFT JOIN towards AS t
   ON t.route = d.route

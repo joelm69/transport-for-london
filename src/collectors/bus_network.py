@@ -14,6 +14,11 @@ Pure functions: no network, no storage. The network-wide feed has no timeToStati
 Predicted gap: at each stop, the time between successive buses of the same route and
 direction predicted to arrive in the next GAP_HORIZON_SECONDS. A route's typical gap is the
 median over all its stops; bunched = a gap under half that median (as on the live page).
+
+Waiting time is not the gap: a passenger arriving at random is more likely to arrive during a
+long gap, so bunching lengthens waits. For gaps h, the average wait is sum(h^2) / (2 sum(h)),
+kept as the two sums so a day's average is exact; the median wait is the wait half of such
+passengers beat (median_wait_seconds).
 """
 
 from datetime import datetime
@@ -63,6 +68,22 @@ def vehicle_rows(predictions, snapshot_at):
     ]
 
 
+def median_wait_seconds(gaps):
+    """The wait half of passengers beat, if they arrive at random: within a gap of h seconds
+    the wait is uniform on [0, h], and longer gaps catch proportionally more passengers. Solves
+    sum(min(w, h)) = sum(h) / 2 for w."""
+    if not gaps:
+        return None
+    ordered, half = sorted(gaps), sum(gaps) / 2
+    covered = 0   # sum of the gaps already shorter than w
+    for i, gap in enumerate(ordered):
+        remaining = len(ordered) - i            # gaps at least as long as this one
+        if covered + remaining * gap >= half:
+            return (half - covered) / remaining
+        covered += gap
+    return float(ordered[-1])   # not reached: the loop always ends by the longest gap
+
+
 def route_rows(predictions, snapshot_at):
     """One row per route and direction: buses running and their predicted gaps."""
     buses, due = {}, {}
@@ -87,5 +108,8 @@ def route_rows(predictions, snapshot_at):
             "median_gap_seconds": typical,
             "max_gap_seconds": max(gaps) if gaps else None,
             "bunched_gaps": sum(g < BUNCHED_SHARE * typical for g in gaps) if typical else 0,
+            "gap_seconds_sum": sum(gaps),
+            "gap_seconds_sq_sum": sum(g * g for g in gaps),
+            "median_wait_seconds": median_wait_seconds(gaps),
         })
     return rows

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.collectors.bus_network import route_rows, slim, vehicle_rows
+from src.collectors.bus_network import median_wait_seconds, route_rows, slim, vehicle_rows
 
 AT = "2026-10-23T18:00:00Z"
 
@@ -36,6 +36,10 @@ def test_route_gaps_and_bunching():
     assert out["buses"] == 4 and out["gaps"] == 3
     assert out["median_gap_seconds"] == 540 and out["max_gap_seconds"] == 540
     assert out["bunched_gaps"] == 1                     # 60 s < half of 540 s
+    # Waits for passengers arriving at random over gaps of 60, 540 and 540 s.
+    assert out["gap_seconds_sum"] == 1140 and out["gap_seconds_sq_sum"] == 60**2 + 2 * 540**2
+    assert round(out["gap_seconds_sq_sum"] / (2 * out["gap_seconds_sum"]), 1) == 257.4   # average wait
+    assert out["median_wait_seconds"] == 255
     assert rows[("38", "inbound")]["gaps"] == 0 and rows[("38", "inbound")]["median_gap_seconds"] is None
 
 
@@ -44,3 +48,12 @@ def test_repeated_and_incomplete_predictions_are_ignored():
     assert len(slim(data)) == 3
     [row] = route_rows([p for p in data if isinstance(p, dict)], AT)
     assert row["buses"] == 1 and row["gaps"] == 0
+
+
+def test_median_wait():
+    assert median_wait_seconds([600]) == 300                 # even service: half the gap
+    assert median_wait_seconds([600, 600]) == 300
+    # Bunched: 2 and 18 minutes, the same buses per hour as every 10. The long gap catches 90% of
+    # arrivals, so half of passengers wait over 8 minutes instead of 5 - the cost of bunching.
+    assert median_wait_seconds([120, 1080]) == 480
+    assert median_wait_seconds([]) is None

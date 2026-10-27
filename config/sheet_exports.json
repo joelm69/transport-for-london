@@ -6,6 +6,7 @@
     {"tab": "arrival_accuracy_daily", "sql": "analytics/exports/arrival_accuracy_daily.sql"},
     {"tab": "bus_routes_daily", "sql": "analytics/exports/bus_routes_daily.sql"},
     {"tab": "bus_vehicles_daily", "sql": "analytics/exports/bus_vehicles_daily.sql"},
-    {"tab": "bus_vehicle_routes_daily", "sql": "analytics/exports/bus_vehicle_routes_daily.sql"}
+    {"tab": "bus_vehicle_routes_daily", "sql": "analytics/exports/bus_vehicle_routes_daily.sql"},
+    {"tab": "bus_route_paths", "sql": "analytics/exports/bus_route_paths.sql"}
   ]
 }
