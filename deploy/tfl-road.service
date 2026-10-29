@@ -1,0 +1,25 @@
+# systemd unit for the always-on road disruptions and corridor status collector on the GCE VM.
+# Separate from the other collectors so a failure in one cannot stop the others.
+# Install:  sudo cp deploy/tfl-road.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now tfl-road
+# Logs:     journalctl -u tfl-road -f
+[Unit]
+Description=TfL road disruptions and corridor status collector (writes to GCS)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/home/joelmathooko/tfl-pipeline/.venv/bin/python -m src.collectors.road --forever --window continuous --lake gcs
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=30
+KillSignal=SIGTERM
+TimeoutStopSec=90
+# Two small responses (~0.3 MB) every 5 minutes: 38 MB at peak (measured 2026-10-29).
+MemoryMax=150M
+
+[Install]
+WantedBy=multi-user.target

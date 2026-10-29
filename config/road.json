@@ -1,0 +1,11 @@
+{
+  "dataset": "road",
+  "disruption_changes_name": "road_disruption_changes",
+  "corridor_changes_name": "road_corridor_changes",
+  "disruption_endpoint": "/Road/all/Disruption",
+  "corridor_endpoint": "/Road/all/Status",
+  "poll_interval_seconds": 300,
+  "known_severities": ["No impact", "Minimal", "Moderate", "Serious", "Severe"],
+  "known_corridor_statuses": ["Good", "Serious", "Severe", "Closure"],
+  "london_bounds": {"lat": [51.25, 51.75], "lon": [-0.6, 0.4]}
+}
