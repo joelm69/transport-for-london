@@ -1,6 +1,7 @@
 -- Serving table for the public portfolio, in its own dataset (tfl_portfolio).
 -- The portfolio's service account can read only this dataset: no bucket access, no raw data.
--- Refreshed hourly by a BigQuery scheduled query ("TfL portfolio hourly refresh").
+-- Refreshed hourly (:05) by the BigQuery scheduled query "tfl-portfolio-refresh: line status and
+-- stop disruptions" (moved off the VM on 2026-10-29).
 --
 -- Cost note: the source views read every change/coverage file in GCS. That is a few MB per
 -- month of collection; if the archive grows large, switch this to an incremental MERGE of

@@ -1,7 +1,6 @@
 -- Hourly arrivals refresh: load the newest GCS batches into the native tables, then recompute
--- the last 3 complete hours of the serving tables in tfl_portfolio. Run by the
--- tfl-portfolio-refresh timer (:05 past each hour) after the line status and stop disruption
--- refreshes. Idempotent: re-running replaces the same slices, never duplicates them.
+-- the last 3 complete hours of the serving tables in tfl_portfolio. Run hourly (:05) by the
+-- BigQuery scheduled query "tfl-portfolio-refresh: arrivals" (moved off the VM on 2026-10-29). Idempotent: re-running replaces the same slices, never duplicates them.
 -- The first run on empty tables backfills from 2026-10-22 (when arrivals collection started).
 --
 -- Cost stays flat as history grows: the load reads only today's external partition (and

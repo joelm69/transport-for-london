@@ -9,6 +9,8 @@
     {"tab": "bus_vehicle_routes_daily", "sql": "analytics/exports/bus_vehicle_routes_daily.sql"},
     {"tab": "bus_route_paths", "sql": "analytics/exports/bus_route_paths.sql"},
     {"tab": "bike_stations_daily", "sql": "analytics/exports/bike_stations_daily.sql"},
-    {"tab": "bike_station_hours", "sql": "analytics/exports/bike_station_hours.sql"}
+    {"tab": "bike_station_hours", "sql": "analytics/exports/bike_station_hours.sql"},
+    {"tab": "road_corridor_hours", "sql": "analytics/exports/road_corridor_hours.sql"},
+    {"tab": "road_disruptions", "sql": "analytics/exports/road_disruptions.sql"}
   ]
 }
