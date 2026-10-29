@@ -1,0 +1,25 @@
+# systemd unit for the always-on Santander Cycles (BikePoint) collector on the GCE VM.
+# Separate from the other collectors so a failure in one cannot stop the others.
+# Install:  sudo cp deploy/tfl-bikepoint.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now tfl-bikepoint
+# Logs:     journalctl -u tfl-bikepoint -f
+[Unit]
+Description=TfL Santander Cycles docking stations collector (writes to GCS)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=joelmathooko
+WorkingDirectory=/home/joelmathooko/tfl-pipeline
+ExecStart=/home/joelmathooko/tfl-pipeline/.venv/bin/python -m src.collectors.bikepoint --forever --window continuous --lake gcs
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=30
+KillSignal=SIGTERM
+TimeoutStopSec=90
+# One 2.2 MB response is parsed every 2 minutes: about 60 MB at peak (measured 2026-10-29).
+MemoryMax=200M
+
+[Install]
+WantedBy=multi-user.target

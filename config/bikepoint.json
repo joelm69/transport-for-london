@@ -1,0 +1,17 @@
+{
+  "dataset": "bikepoint",
+  "changes_name": "bikepoint_changes",
+  "endpoint": "/BikePoint",
+  "params": {},
+  "poll_interval_seconds": 120,
+  "min_stations": 700,
+  "count_fields": {
+    "NbBikes": "bikes",
+    "NbStandardBikes": "standard_bikes",
+    "NbEBikes": "e_bikes",
+    "NbEmptyDocks": "empty_docks",
+    "NbDocks": "docks"
+  },
+  "london_bounds": {"lat": [51.28, 51.70], "lon": [-0.52, 0.34]},
+  "future_modified_tolerance_seconds": 300
+}

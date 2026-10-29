@@ -1,0 +1,3032 @@
+[
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_1",
+  "url": "/Place/BikePoints_1",
+  "commonName": "River Street , Clerkenwell",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001023",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1278947280000",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "4",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "19",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "5",
+    "modified": "2026-10-29T16:57:15.96Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.529163,
+  "lon": -0.10997
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_10",
+  "url": "/Place/BikePoints_10",
+  "commonName": "Park Street, Bankside",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001024",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1278242460000",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "16",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:48:08.477Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.505974,
+  "lon": -0.092754
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_101",
+  "url": "/Place/BikePoints_101",
+  "commonName": "Queen Street 1, Bank",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000999",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279102680000",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "7",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "22",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:53:13.63Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.511553,
+  "lon": -0.09294
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_102",
+  "url": "/Place/BikePoints_102",
+  "commonName": "Jewry Street, Aldgate",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001045",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279102860000",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "17",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:46:03.323Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:46:03.323Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.513406,
+  "lon": -0.076793
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_103",
+  "url": "/Place/BikePoints_103",
+  "commonName": "Vicarage Gate, Kensington",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "003441",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279103520000",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:22:54.273Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:22:54.273Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.504723,
+  "lon": -0.192538
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_104",
+  "url": "/Place/BikePoints_104",
+  "commonName": "Crosswall, Tower",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000991",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279103760000",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "5",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "19",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "34",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "3",
+    "modified": "2026-10-29T16:57:15.96Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:57:15.96Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.511594,
+  "lon": -0.077121
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_105",
+  "url": "/Place/BikePoints_105",
+  "commonName": "Westbourne Grove, Bayswater",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001041",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279105320000",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "11",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "26",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:30:55.21Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.515529,
+  "lon": -0.19024
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_106",
+  "url": "/Place/BikePoints_106",
+  "commonName": "Woodstock Street, Mayfair",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001042",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279106880000",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "16",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "3",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "21",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "6",
+    "modified": "2026-10-29T16:40:01.167Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.514105,
+  "lon": -0.147301
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_107",
+  "url": "/Place/BikePoints_107",
+  "commonName": "Finsbury Leisure Centre, St. Luke's",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001049",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279107480000",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "7",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "20",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:51:11.083Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:51:11.083Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.526008,
+  "lon": -0.096317
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_109",
+  "url": "/Place/BikePoints_109",
+  "commonName": "Soho Square , Soho",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001052",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279108320000",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "36",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "57",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "32",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "4",
+    "modified": "2026-10-29T16:56:11.23Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.515631,
+  "lon": -0.132328
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_11",
+  "url": "/Place/BikePoints_11",
+  "commonName": "Brunswick Square, Bloomsbury",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001022",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1278340440000",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "24",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "15",
+    "modified": "2026-10-29T16:53:13.63Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:53:13.63Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.523951,
+  "lon": -0.122502
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_110",
+  "url": "/Place/BikePoints_110",
+  "commonName": "Wellington Road, St. John's Wood",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001055",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279108920000",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "12",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "17",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:30:55.21Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.533043,
+  "lon": -0.172528
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_111",
+  "url": "/Place/BikePoints_111",
+  "commonName": "Park Lane , Hyde Park",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001037",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279109160000",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "23",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "27",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:40:01.167Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:40:01.167Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.510017,
+  "lon": -0.157275
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_112",
+  "url": "/Place/BikePoints_112",
+  "commonName": "Stonecutter Street, Holborn",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001061",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279115460000",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "14",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "4",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "21",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:54:07.313Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.515809,
+  "lon": -0.10527
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_113",
+  "url": "/Place/BikePoints_113",
+  "commonName": "Gloucester Road (Central), South Kensington",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "003435",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279116600000",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "4",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "14",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "19",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:54:07.313Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:54:07.313Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.496462,
+  "lon": -0.183289
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_114",
+  "url": "/Place/BikePoints_114",
+  "commonName": "Park Road (Baker Street), The Regent's Park",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001050",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279119900000",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "17",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "22",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:23:55.07Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:23:55.07Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.524517,
+  "lon": -0.158963
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_115",
+  "url": "/Place/BikePoints_115",
+  "commonName": "Braham Street, Aldgate",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001062",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279120680000",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "23",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "34",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:52:08.95Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.514233,
+  "lon": -0.073537
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_116",
+  "url": "/Place/BikePoints_116",
+  "commonName": "Little Argyll Street, West End",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000995",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279122360000",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "12",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "21",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:52:08.95Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "3",
+    "modified": "2026-10-29T16:52:08.95Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.514499,
+  "lon": -0.141423
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_117",
+  "url": "/Place/BikePoints_117",
+  "commonName": "Lollard Street, Vauxhall",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000998",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279124220000",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "7",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "25",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "7",
+    "modified": "2026-10-29T15:38:17.97Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T15:38:17.97Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.49288,
+  "lon": -0.114934
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_118",
+  "url": "/Place/BikePoints_118",
+  "commonName": "Rochester Row, Westminster",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "003457",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279124520000",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:19:43.583Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:19:43.583Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.495827,
+  "lon": -0.135478
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_119",
+  "url": "/Place/BikePoints_119",
+  "commonName": "Bath Street, St. Luke's",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000964",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279124760000",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "14",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:55:13.29Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:55:13.29Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.525893,
+  "lon": -0.090847
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_12",
+  "url": "/Place/BikePoints_12",
+  "commonName": "Malet Street, Bloomsbury",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000980",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1278340620000",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "32",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "49",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:56:11.23Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.52168,
+  "lon": -0.130431
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_120",
+  "url": "/Place/BikePoints_120",
+  "commonName": "The Guildhall, Guildhall",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001044",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279187040000",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "6",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "17",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "6",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "4",
+    "modified": "2026-10-29T16:49:04.1Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.515735,
+  "lon": -0.09308
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_121",
+  "url": "/Place/BikePoints_121",
+  "commonName": "Baker Street, Marylebone",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001086",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279189200000",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "12",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "22",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "3",
+    "modified": "2026-10-29T16:48:08.477Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "6",
+    "modified": "2026-10-29T16:48:08.477Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.518913,
+  "lon": -0.156166
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_123",
+  "url": "/Place/BikePoints_123",
+  "commonName": "St. John Street, Finsbury",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000992",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279191300000",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "11",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "10",
+    "modified": "2026-10-29T16:36:01.597Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:36:01.597Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.52836,
+  "lon": -0.104724
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_124",
+  "url": "/Place/BikePoints_124",
+  "commonName": "Eaton Square, Belgravia",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001069",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279191540000",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "8",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "9",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "18",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "6",
+    "modified": "2026-10-29T16:56:11.23Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:56:11.23Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.496544,
+  "lon": -0.150905
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_125",
+  "url": "/Place/BikePoints_125",
+  "commonName": "Borough High Street, The Borough",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "000996",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279192200000",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "5",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "13",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "21",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "5",
+    "modified": "2026-10-29T16:49:04.1Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:49:04.1Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.500694,
+  "lon": -0.094524
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_126",
+  "url": "/Place/BikePoints_126",
+  "commonName": "Museum of London, Barbican",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001043",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279193340000",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "44",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "3",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "52",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "43",
+    "modified": "2026-10-29T16:30:55.21Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "1",
+    "modified": "2026-10-29T16:30:55.21Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.517821,
+  "lon": -0.096496
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_127",
+  "url": "/Place/BikePoints_127",
+  "commonName": "Wood Street, Guildhall",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001063",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279193520000",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "14",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "17",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "2",
+    "modified": "2026-10-29T16:50:09.197Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:50:09.197Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.517008,
+  "lon": -0.093885
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.Place, Tfl.Api.Presentation.Entities",
+  "id": "BikePoints_128",
+  "url": "/Place/BikePoints_128",
+  "commonName": "Emperor's Gate, South Kensington",
+  "placeType": "BikePoint",
+  "additionalProperties": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "TerminalName",
+    "sourceSystemKey": "BikePoints",
+    "value": "001116",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Installed",
+    "sourceSystemKey": "BikePoints",
+    "value": "true",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Locked",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "InstallDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "1279194060000",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "RemovalDate",
+    "sourceSystemKey": "BikePoints",
+    "value": "",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "Temporary",
+    "sourceSystemKey": "BikePoints",
+    "value": "false",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEmptyDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "22",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbDocks",
+    "sourceSystemKey": "BikePoints",
+    "value": "22",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbStandardBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:02:27.02Z"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.AdditionalProperties, Tfl.Api.Presentation.Entities",
+    "category": "Description",
+    "key": "NbEBikes",
+    "sourceSystemKey": "BikePoints",
+    "value": "0",
+    "modified": "2026-10-29T16:02:27.02Z"
+   }
+  ],
+  "children": [],
+  "childrenUrls": [],
+  "lat": 51.495362,
+  "lon": -0.185296
+ }
+]
