@@ -119,8 +119,27 @@ def test_d5_planned_work_must_end_after_it_starts(cfg, first):
 
 def test_d6_future_start(cfg, first):
     data = copy.deepcopy(first)
-    data[0]["fromDate"] = "2026-10-23T09:00:00Z"
+    live = next(d for d in data if d["appearance"] != "PlannedWork")
+    live["fromDate"] = "2026-10-23T09:00:00Z"
     assert "D6" in rules(validate_poll(data, cfg, FIRST_AT), WARN)
+
+
+def test_d6_allows_planned_work_announced_ahead(cfg, first):
+    data = copy.deepcopy(first)
+    for record in data:
+        if record["appearance"] != "PlannedWork":
+            record["fromDate"] = "2026-10-01T09:00:00Z"
+    planned = next(d for d in data if d["appearance"] == "PlannedWork")
+    planned["fromDate"] = "2026-10-23T09:00:00Z"
+    planned["toDate"] = "2026-11-05T09:00:00Z"
+    assert "D6" not in rules(validate_poll(data, cfg, FIRST_AT), WARN)
+
+
+def test_d4_names_the_unknown_label(cfg, first):
+    data = copy.deepcopy(first)
+    data[0]["appearance"] = "SomethingNew"
+    messages = [i.message for i in validate_poll(data, cfg, FIRST_AT) if i.rule == "D4"]
+    assert messages and "'SomethingNew'" in messages[0]
 
 
 # --- Identity, hashing, change detection (step 2) -----------------------------------

@@ -86,14 +86,16 @@ def validate_poll(data, config, collected_at):
         if record.get("mode") not in modes:
             issues.append(issue(WARN, "D3", f"Unknown mode {record.get('mode')!r}"))
         if record["type"] not in types or record.get("appearance") not in appearances:
-            issues.append(issue(WARN, "D4", "Unknown type or appearance"))
+            issues.append(issue(WARN, "D4", f"Unknown type {record['type']!r} or appearance "
+                                            f"{record.get('appearance')!r}"))
 
         from_date = parse_utc(record["fromDate"])
         if record.get("appearance") == "PlannedWork":
             to_date = parse_utc(record.get("toDate"))
             if to_date is None or to_date <= from_date:
                 issues.append(issue(WARN, "D5", "Planned work without a valid end after its start"))
-        if from_date > max_from:
+        # Planned works are announced before they start, so only live notices must have begun.
+        if from_date > max_from and record.get("appearance") != "PlannedWork":
             issues.append(issue(WARN, "D6", "fromDate is in the future"))
         names[record["atcoCode"]].add(record.get("commonName"))
 
