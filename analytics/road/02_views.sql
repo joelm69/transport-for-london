@@ -69,7 +69,8 @@ SELECT
                 WHEN 'Minimal' THEN 1 ELSE 0 END AS severity_rank,
   location,
   -- The borough is the last bracketed name in TfL's location: "[A10] GREAT CAMBRIDGE ROAD (EN1 ) (Enfield)".
-  REGEXP_EXTRACT(location, r'\(([A-Za-z][A-Za-z &.-]+)\)\s*$') AS borough,
+  -- Works crossing a boundary name both, "(Lambeth,Wandsworth)": kept as "Lambeth, Wandsworth".
+  REPLACE(REGEXP_EXTRACT(location, r'\(([A-Za-z][A-Za-z &.,-]+)\)\s*$'), ',', ', ') AS borough,
   comments,
   current_update,
   corridor_ids,
