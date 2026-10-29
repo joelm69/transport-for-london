@@ -1,0 +1,3236 @@
+[
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237243",
+  "url": "/Road/All/Disruption/TIMS-237243",
+  "point": "[-0.059532,51.656729]",
+  "severity": "Serious",
+  "ordinal": 3,
+  "category": "Emergency service incidents",
+  "subCategory": "Police activity",
+  "comments": "[A10] Great Cambridge Road (Northbound) southbury Road - Lane one (of two) is blocked due to a police incident.",
+  "currentUpdate": "Traffic is slow on approach. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:47:44Z",
+  "corridorIds": [
+   "a10"
+  ],
+  "startDateTime": "2026-10-29T16:03:21Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T17:47:44Z",
+  "levelOfInterest": "High",
+  "location": "[A10] GREAT CAMBRIDGE ROAD (EN1 ) (Enfield)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.059532,
+    51.656729
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236919",
+  "url": "/Road/All/Disruption/TIMS-236919",
+  "point": "[-0.305818,51.370782]",
+  "severity": "Moderate",
+  "ordinal": 19,
+  "category": "Hazards",
+  "subCategory": "Burst water main",
+  "comments": "[A243] Hook Road (Northbound) between Elm Road and Somerset Avenue - The road is closed due to a burst water main. ",
+  "currentUpdate": "Use an alternative route. Traffic is slow on Hook Road with tailbacks beyond Clayton Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T18:06:03Z",
+  "corridorIds": [
+   "a3"
+  ],
+  "startDateTime": "2026-10-24T05:43:17Z",
+  "endDateTime": "2026-10-24T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T18:06:36Z",
+  "levelOfInterest": "Medium",
+  "location": "[A243] HOOK ROAD (KT6 ,KT9 ) (Kingston upon Thames)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.305818,
+    51.370782
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.307372149,
+      51.3677218691
+     ],
+     [
+      -0.3073350229,
+      51.3675707418
+     ],
+     [
+      -0.3072191003,
+      51.3674361526
+     ],
+     [
+      -0.3070378001,
+      51.3673336805
+     ],
+     [
+      -0.3068713253,
+      51.3672852204
+     ],
+     [
+      -0.3065691029,
+      51.3672456021
+     ],
+     [
+      -0.3063675001,
+      51.3672532666
+     ],
+     [
+      -0.3061333111,
+      51.3673115098
+     ],
+     [
+      -0.3059456976,
+      51.3674168182
+     ],
+     [
+      -0.3057969288,
+      51.3676491942
+     ],
+     [
+      -0.3058054558,
+      51.3677755085
+     ],
+     [
+      -0.3058775727,
+      51.3679043986
+     ],
+     [
+      -0.3057199125,
+      51.368526791
+     ],
+     [
+      -0.3057936003,
+      51.3687182478
+     ],
+     [
+      -0.3060191078,
+      51.3688849008
+     ],
+     [
+      -0.3062741858,
+      51.3689574036
+     ],
+     [
+      -0.3065541742,
+      51.3689632862
+     ],
+     [
+      -0.3068164454,
+      51.368901653
+     ],
+     [
+      -0.3070210693,
+      51.3687818875
+     ],
+     [
+      -0.3071440785,
+      51.3686006288
+     ],
+     [
+      -0.307372149,
+      51.3677218691
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A243] HOOK ROAD (KT9)",
+    "closure": "Closed",
+    "directions": "Northbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.30624,51.369279],[-0.306227,51.369338]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306102,51.369891],[-0.306044,51.370151]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306654,51.367714],[-0.306511,51.367694]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306438,51.36852],[-0.306275,51.369137]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306044,51.370151],[-0.30591,51.370742]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306638,51.367777],[-0.306438,51.36852]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306654,51.367714],[-0.306638,51.367777]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306275,51.369137],[-0.30624,51.369279]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.306227,51.369338],[-0.306102,51.369891]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 236919,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237252",
+  "url": "/Road/All/Disruption/TIMS-237252",
+  "point": "[0.074182,51.537641]",
+  "severity": "Moderate",
+  "ordinal": 21,
+  "category": "Collisions",
+  "subCategory": "Vehicle collision",
+  "comments": "[A124] London Road (Westbound) at the junction of [A123] Abbey Road - The road is blocked due to a collision.",
+  "currentUpdate": "Use an alternative route. Traffic is slow moving westbound on London Road. In addition London Road has slow moving traffic eastbound to Abbey Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:59:45Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-29T17:59:44Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T18:00:19Z",
+  "levelOfInterest": "Medium",
+  "location": "[A124] LONDON ROAD (IG11 ) (Barking & Dagenham)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.074182,
+    51.537641
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237244",
+  "url": "/Road/All/Disruption/TIMS-237244",
+  "point": "[-0.288326,51.46768]",
+  "severity": "Minimal",
+  "ordinal": 35,
+  "category": "Collisions",
+  "subCategory": "Vehicle collision",
+  "comments": "[A316] Lower Richmond Road (Both directions) at the junction of [A316] Lower Mortlake Road - The pavement is obstructed by a vehicle.",
+  "currentUpdate": "Traffic is flowing well.",
+  "currentUpdateDateTime": "2026-10-29T16:16:54Z",
+  "corridorIds": [
+   "a316"
+  ],
+  "startDateTime": "2026-10-29T16:16:53Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T16:33:32Z",
+  "levelOfInterest": "Medium",
+  "location": "[A316] LOWER RICHMOND ROAD (TW9 ) (Richmond upon Thames)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.288326,
+    51.46768
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237238",
+  "url": "/Road/All/Disruption/TIMS-237238",
+  "point": "[-0.212917,51.505382]",
+  "severity": "Minimal",
+  "ordinal": 56,
+  "category": "Collisions",
+  "subCategory": "Vehicle collision",
+  "comments": "[A402] Holland Park Avenue (Both directions) between Royal Crescent and Addison Road - Traffic signals are damaged due to a collision. ",
+  "currentUpdate": "Approach with caution. Traffic is flowing well. ",
+  "currentUpdateDateTime": "2026-10-29T16:31:33Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-29T13:12:37Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T18:04:05Z",
+  "levelOfInterest": "Medium",
+  "location": "[A402] HOLLAND PARK AVENUE (W11 ) (Kensington & Chelsea)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.212917,
+    51.505382
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.2159218045,
+      51.5049785532
+     ],
+     [
+      -0.2158868109,
+      51.5048464184
+     ],
+     [
+      -0.2157909774,
+      51.5047265863
+     ],
+     [
+      -0.2154953234,
+      51.504574581
+     ],
+     [
+      -0.2151595061,
+      51.5045363143
+     ],
+     [
+      -0.2146148254,
+      51.5046043208
+     ],
+     [
+      -0.2114555497,
+      51.5052364378
+     ],
+     [
+      -0.2112602829,
+      51.5053300458
+     ],
+     [
+      -0.2111269624,
+      51.505459234
+     ],
+     [
+      -0.2110711749,
+      51.5056088993
+     ],
+     [
+      -0.2110902773,
+      51.5057402413
+     ],
+     [
+      -0.2112084635,
+      51.5058993236
+     ],
+     [
+      -0.2114152071,
+      51.5060180722
+     ],
+     [
+      -0.2116790337,
+      51.5060784085
+     ],
+     [
+      -0.2119597777,
+      51.5060711468
+     ],
+     [
+      -0.21550492,
+      51.5053925847
+     ],
+     [
+      -0.2156880348,
+      51.505316412
+     ],
+     [
+      -0.2158257359,
+      51.5052092848
+     ],
+     [
+      -0.2159218045,
+      51.5049785532
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A402] HOLLAND PARK AVENUE (W11)",
+    "closure": "Open",
+    "directions": "Both directions",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.214782,51.505042],[-0.212923,51.505418]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.211906,51.505609],[-0.21179,51.505634]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.212763,51.505451],[-0.211906,51.505609]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.215202,51.504985],[-0.214782,51.505042]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.212923,51.505418],[-0.212763,51.505451]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 237238,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237227",
+  "url": "/Road/All/Disruption/TIMS-237227",
+  "point": "[-0.180371,51.517963]",
+  "severity": "Minimal",
+  "ordinal": 61,
+  "category": "Asset issues",
+  "subCategory": "Traffic signal fault",
+  "comments": "[A4206] Bishops Bridge Road (All approaches) at the junction of Eastbourne Terrace - Traffic signals currently all out. ",
+  "currentUpdate": "Approach with caution. There are no reported delays.",
+  "currentUpdateDateTime": "2026-10-29T16:03:46Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-29T07:42:35Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T16:05:06Z",
+  "levelOfInterest": "Medium",
+  "location": "[A4206] BISHOPS BRIDGE ROAD (W2 ) (Westminster)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.180371,
+    51.517963
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237247",
+  "url": "/Road/All/Disruption/TIMS-237247",
+  "point": "[0.168283,51.583891]",
+  "severity": "Moderate",
+  "ordinal": 63,
+  "category": "Collisions",
+  "subCategory": "Vehicle collision",
+  "comments": "[A12] Eastern Avenue West (Eastbound) at the junction of King George Close - The road is closed due to an emergency services incident.",
+  "currentUpdate": "Use an alternative route. Traffic is slow moving eastbound on Eastern Avenue with tailback from after Whalebone Lane North. In addition diversions routes along Mawney Road is slow moving away from A12 towards Romford and Collier Row. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:42:04Z",
+  "corridorIds": [
+   "a12"
+  ],
+  "startDateTime": "2026-10-29T16:37:26Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T17:42:04Z",
+  "levelOfInterest": "Low",
+  "location": "[A12] EASTERN AVENUE WEST (RM1 ,RM5 ,RM7 ) (Havering)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.168283,
+    51.583891
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      0.1641954052,
+      51.5816677071
+     ],
+     [
+      0.1642297157,
+      51.5815403362
+     ],
+     [
+      0.1643207546,
+      51.5814243046
+     ],
+     [
+      0.1644610026,
+      51.5813291955
+     ],
+     [
+      0.1646388762,
+      51.5812628642
+     ],
+     [
+      0.1649953975,
+      51.5812309209
+     ],
+     [
+      0.165196065,
+      51.581263336
+     ],
+     [
+      0.1653736485,
+      51.5813299683
+     ],
+     [
+      0.1720894203,
+      51.5853704552
+     ],
+     [
+      0.1722167746,
+      51.5855020492
+     ],
+     [
+      0.1722656108,
+      51.5856747356
+     ],
+     [
+      0.1722181127,
+      51.5858255191
+     ],
+     [
+      0.1720918471,
+      51.5859575202
+     ],
+     [
+      0.1718703912,
+      51.5860657539
+     ],
+     [
+      0.1715993026,
+      51.5861129552
+     ],
+     [
+      0.171319853,
+      51.5860919379
+     ],
+     [
+      0.1710745872,
+      51.5860059018
+     ],
+     [
+      0.1643938416,
+      51.5819873091
+     ],
+     [
+      0.1642372496,
+      51.5818287704
+     ],
+     [
+      0.1641954052,
+      51.5816677071
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A12] EASTERN AVENUE WEST (RM1 ,RM5 ,RM7)",
+    "closure": "Closed",
+    "directions": "Eastbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.165035,51.581747],[0.164917,51.581678]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.166138,51.582427],[0.165641,51.582129]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.165641,51.582129],[0.165497,51.582036]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.16849,51.583834],[0.167807,51.583422]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.169464,51.584417],[0.169191,51.584256]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.165188,51.581845],[0.165035,51.581747]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.169687,51.584557],[0.169464,51.584417]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.171544,51.585665],[0.169687,51.584557]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.165497,51.582036],[0.165188,51.581845]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.167807,51.583422],[0.167496,51.583236]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.167496,51.583236],[0.166138,51.582427]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[0.169191,51.584256],[0.16849,51.583834]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 237247,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237245",
+  "url": "/Road/All/Disruption/TIMS-237245",
+  "point": "[0.032086,51.51712]",
+  "severity": "Moderate",
+  "ordinal": 67,
+  "category": "Breakdowns",
+  "subCategory": "Vehicle breakdown",
+  "comments": "[A112] Prince Regent Lane (Southbound) at the junction of [A13] Newham Way - Road is partially blocked due to a broken down vehicle.",
+  "currentUpdate": "Approach with care. Traffic is slow moving southbound on Prince Regent Lane with queues from Barking Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:52:58Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-29T16:26:49Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T17:53:07Z",
+  "levelOfInterest": "Low",
+  "location": "[A112] PRINCE REGENT LANE (E13 ,E16 ) (Newham)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.032086,
+    51.51712
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237218",
+  "url": "/Road/All/Disruption/TIMS-237218",
+  "point": "[0.00213,51.541044]",
+  "severity": "Minimal",
+  "ordinal": 107,
+  "category": "Asset issues",
+  "subCategory": "Traffic signal fault",
+  "comments": "[A118] Broadway (All directions) at the junction of [A112] Tramway Avenue - The traffic lights are damaged following an earlier  collision.",
+  "currentUpdate": "Approach with caution. There are no reported delays.",
+  "currentUpdateDateTime": "2026-10-29T17:04:57Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-29T04:25:58Z",
+  "endDateTime": "2026-10-29T23:59:59Z",
+  "lastModifiedTime": "2026-10-29T17:04:57Z",
+  "levelOfInterest": "Low",
+  "location": "[A118] BROADWAY (E15 ) (Newham)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.00213,
+    51.541044
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237184",
+  "url": "/Road/All/Disruption/TIMS-237184",
+  "point": "[-0.225519,51.579826]",
+  "severity": "Severe",
+  "ordinal": 1,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A41] Hendon Way (Northbound) at the junction of Elliot Road - The road is closed due to emergency Thames Water works. ",
+  "currentUpdate": "Use an alternative route. Traffic is slow on diversion . Eastbound traffic is slow moving on A406 North Circular Road from Staples Corner and beyond. Northbound traffic is slow along Golders Green Road from Golders Green Bus Station. Southbound traffic is slow on Golders Green Road from Brent Street at the junction of Queens Road. Northbound traffic is slow on diversion via Finchley Road Golders Green Bus Station. Traffic is slow moving within Brent Cross Shopping Centre. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T18:00:06Z",
+  "corridorIds": [
+   "a406",
+   "a41"
+  ],
+  "startDateTime": "2026-10-28T17:00:00Z",
+  "endDateTime": "2026-11-01T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T18:00:06Z",
+  "levelOfInterest": "High",
+  "location": "[A41] HENDON WAY (NW4 ) (Barnet)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.225519,
+    51.579826
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.2288350637,
+      51.579204245
+     ],
+     [
+      -0.2287264533,
+      51.5789687439
+     ],
+     [
+      -0.228435702,
+      51.5788037464
+     ],
+     [
+      -0.2280492463,
+      51.5787583033
+     ],
+     [
+      -0.2278558395,
+      51.5787862168
+     ],
+     [
+      -0.2276669042,
+      51.5788529038
+     ],
+     [
+      -0.2277874446,
+      51.5787381421
+     ],
+     [
+      -0.2278497925,
+      51.5785866682
+     ],
+     [
+      -0.2278394236,
+      51.5784693019
+     ],
+     [
+      -0.2277507698,
+      51.5783230066
+     ],
+     [
+      -0.2275870256,
+      51.578204495
+     ],
+     [
+      -0.2274265867,
+      51.5781426551
+     ],
+     [
+      -0.2271832821,
+      51.5781042731
+     ],
+     [
+      -0.2269949423,
+      51.578111092
+     ],
+     [
+      -0.2266381159,
+      51.5782084152
+     ],
+     [
+      -0.2264069935,
+      51.5783446045
+     ],
+     [
+      -0.2262679298,
+      51.5785016284
+     ],
+     [
+      -0.2262280397,
+      51.5787027553
+     ],
+     [
+      -0.2263161755,
+      51.5788862578
+     ],
+     [
+      -0.2265189568,
+      51.5790302244
+     ],
+     [
+      -0.2267995452,
+      51.5791085006
+     ],
+     [
+      -0.2271246965,
+      51.5791040705
+     ],
+     [
+      -0.2268130771,
+      51.5792377123
+     ],
+     [
+      -0.2256481524,
+      51.5796197369
+     ],
+     [
+      -0.2257227509,
+      51.5794427456
+     ],
+     [
+      -0.225669432,
+      51.5792486409
+     ],
+     [
+      -0.2255259484,
+      51.5791105338
+     ],
+     [
+      -0.2251148999,
+      51.578884303
+     ],
+     [
+      -0.2243029588,
+      51.5785207041
+     ],
+     [
+      -0.2211921415,
+      51.5773874849
+     ],
+     [
+      -0.2208916974,
+      51.5773263482
+     ],
+     [
+      -0.2205781462,
+      51.5773511167
+     ],
+     [
+      -0.2202873704,
+      51.577473061
+     ],
+     [
+      -0.2201325139,
+      51.5776447314
+     ],
+     [
+      -0.2201021632,
+      51.5777752489
+     ],
+     [
+      -0.2201451458,
+      51.5779265565
+     ],
+     [
+      -0.2202455541,
+      51.5780426541
+     ],
+     [
+      -0.2203957296,
+      51.5781355924
+     ],
+     [
+      -0.2235623407,
+      51.5792921063
+     ],
+     [
+      -0.2238867135,
+      51.5794233469
+     ],
+     [
+      -0.2246531379,
+      51.5798128578
+     ],
+     [
+      -0.2249036739,
+      51.5798648252
+     ],
+     [
+      -0.2251489685,
+      51.5798595672
+     ],
+     [
+      -0.2250535002,
+      51.5800369457
+     ],
+     [
+      -0.2250948707,
+      51.5802456053
+     ],
+     [
+      -0.2257768244,
+      51.5810887034
+     ],
+     [
+      -0.2263041241,
+      51.5818375459
+     ],
+     [
+      -0.2263461038,
+      51.5819807764
+     ],
+     [
+      -0.2263453272,
+      51.5824838463
+     ],
+     [
+      -0.2264759736,
+      51.5828784442
+     ],
+     [
+      -0.2266714011,
+      51.583059748
+     ],
+     [
+      -0.226946797,
+      51.5831564164
+     ],
+     [
+      -0.2272969667,
+      51.5831666259
+     ],
+     [
+      -0.2276135125,
+      51.5830727928
+     ],
+     [
+      -0.2278216771,
+      51.5828970772
+     ],
+     [
+      -0.2278749882,
+      51.5827029711
+     ],
+     [
+      -0.2277748277,
+      51.5823501703
+     ],
+     [
+      -0.2277848689,
+      51.5819072604
+     ],
+     [
+      -0.2276781994,
+      51.5815591526
+     ],
+     [
+      -0.2267402539,
+      51.5802771386
+     ],
+     [
+      -0.2277007586,
+      51.5799562387
+     ],
+     [
+      -0.2285785054,
+      51.5795495862
+     ],
+     [
+      -0.2287769013,
+      51.5793827048
+     ],
+     [
+      -0.2288350637,
+      51.579204245
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A41] HENDON WAY (NW4)",
+    "closure": "Closed",
+    "directions": "Northbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.223342,51.578693],[-0.223795,51.578857]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22552,51.579822],[-0.22577,51.580088]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.225414,51.579728],[-0.22552,51.579822]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.227094,51.582563],[-0.227155,51.582726]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.225002,51.57942],[-0.225118,51.579508]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.225118,51.579508],[-0.225414,51.579728]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.220823,51.577774],[-0.223342,51.578693]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.223795,51.578857],[-0.225002,51.57942]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22577,51.580088],[-0.22639,51.580852]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.227007,51.581736],[-0.227053,51.582346]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22639,51.580852],[-0.227007,51.581736]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.227053,51.582346],[-0.227094,51.582563]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 237184,
+    "sourceSystemKey": "TIMS"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "PARK ROAD (NW4)",
+    "closure": "Closed",
+    "directions": "Eastbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.226688,51.578821],[-0.226947,51.578669]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.226081,51.57901],[-0.226391,51.578932]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.226036,51.579021],[-0.226081,51.57901]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.227066,51.578589],[-0.227131,51.578553]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.226391,51.578932],[-0.226688,51.578821]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22574,51.579113],[-0.226036,51.579021]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.225002,51.57942],[-0.22574,51.579113]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.226947,51.578669],[-0.227066,51.578589]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 237184,
+    "sourceSystemKey": "TIMS"
+   },
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "ELLIOT ROAD (NW4)",
+    "closure": "Closed",
+    "directions": "Eastbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22681,51.579747],[-0.228114,51.579206]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.22577,51.580088],[-0.22681,51.579747]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 237184,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237092",
+  "url": "/Road/All/Disruption/TIMS-237092",
+  "point": "[-0.023341,51.60437]",
+  "severity": "Severe",
+  "ordinal": 2,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A406] Southend Road (Westbound) between the Crooked Billet Roundabout and Hall Lane - Lanes one and two (of three) closed for Thames Water works.",
+  "currentUpdate": "Traffic is slow moving westbound on North Circular Road with queues from Redbridge Roundabout. Additionally there are delays on Waterworks Corner and Crooked Billet interchanges. Expect queues northbound on M11  and in a wider area with vehicles seeking alternative routes. Expect an increase in journey times.",
+  "currentUpdateDateTime": "2026-10-29T18:06:31Z",
+  "corridorIds": [
+   "a406"
+  ],
+  "startDateTime": "2026-10-28T23:00:00Z",
+  "endDateTime": "2026-11-03T22:00:00Z",
+  "lastModifiedTime": "2026-10-29T18:06:31Z",
+  "levelOfInterest": "High",
+  "location": "[A406] SOUTHEND ROAD (E17 ,E4 ) (Waltham Forest)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.023341,
+    51.60437
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236081",
+  "url": "/Road/All/Disruption/TIMS-236081",
+  "point": "[0.023201,51.573838]",
+  "severity": "Serious",
+  "ordinal": 4,
+  "category": "Works",
+  "subCategory": "Borough works",
+  "comments": "[A1008] Cambridge Park (Both directions) at the junction of [A1008] Blake Hall Road - Lane restrictions and temporary signals are in place for to resurfacing works. ",
+  "currentUpdate": "Approach with care. There are reports the temporary traffic signals are faulty. Traffic is slow in both directions on Cambridge Road and northbound on Blake Hall Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:36:47Z",
+  "corridorIds": [
+   "a12"
+  ],
+  "startDateTime": "2026-10-13T07:00:00Z",
+  "endDateTime": "2026-11-07T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T17:36:47Z",
+  "levelOfInterest": "High",
+  "location": "[A1008] CAMBRIDGE PARK (E11 ) (Redbridge)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.023201,
+    51.573838
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236633",
+  "url": "/Road/All/Disruption/TIMS-236633",
+  "point": "[-0.053313,51.514179]",
+  "severity": "Serious",
+  "ordinal": 5,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A13] Commercial Road (All directions) at the junction of Jubilee Street - Temporary traffic lights in operation to facilitate works by Thames Water. ",
+  "currentUpdate": "Traffic is slow moving westbound on Commercial Road with tailbacks from Devonport Street and eastbound from New Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:48:43Z",
+  "corridorIds": [
+   "a13"
+  ],
+  "startDateTime": "2026-10-20T08:30:00Z",
+  "endDateTime": "2026-11-01T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T17:48:43Z",
+  "levelOfInterest": "High",
+  "location": "[A13] COMMERCIAL ROAD (E1 ) (Tower Hamlets)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.053313,
+    51.514179
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236204",
+  "url": "/Road/All/Disruption/TIMS-236204",
+  "point": "[-0.194259,51.45711]",
+  "severity": "Serious",
+  "ordinal": 6,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A3] Wandsworth High Street (Both directions) at the junction of [A218] Buckhold Road - The temporary traffic signals in operation. Additionally Buckhold Road is closed southbound, due to Thames Water works. ",
+  "currentUpdate": "Use an alternative route. Traffic is slow around Wandsworth High Street and surrounding roads with tailbacks towards Huguenot Place. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:46:39Z",
+  "corridorIds": [
+   "a205"
+  ],
+  "startDateTime": "2026-10-24T23:11:00Z",
+  "endDateTime": "2026-10-29T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T17:46:39Z",
+  "levelOfInterest": "High",
+  "location": "[A3] WANDSWORTH HIGH STREET (SW18 ) (Wandsworth)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.194259,
+    51.45711
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "MultiPolygon",
+   "coordinates": [
+    [
+     [
+      [
+       -0.1951589658,
+       51.4571785875
+      ],
+      [
+       -0.1950549538,
+       51.4567786148
+      ],
+      [
+       -0.1949216039,
+       51.4566580751
+      ],
+      [
+       -0.1947029918,
+       51.4565615694
+      ],
+      [
+       -0.1944093987,
+       51.4565210404
+      ],
+      [
+       -0.1941460509,
+       51.4565510142
+      ],
+      [
+       -0.1939184769,
+       51.4566390638
+      ],
+      [
+       -0.1937441142,
+       51.4567920948
+      ],
+      [
+       -0.193653849,
+       51.4570347688
+      ],
+      [
+       -0.1937148388,
+       51.457272938
+      ],
+      [
+       -0.1938870724,
+       51.4574564817
+      ],
+      [
+       -0.1941551443,
+       51.457581555
+      ],
+      [
+       -0.1945407608,
+       51.457613775
+      ],
+      [
+       -0.1948520246,
+       51.4575371077
+      ],
+      [
+       -0.1950741064,
+       51.4573807722
+      ],
+      [
+       -0.1951589658,
+       51.4571785875
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       -0.1982907242,
+       51.4525815931
+      ],
+      [
+       -0.1982512292,
+       51.4524299243
+      ],
+      [
+       -0.1981322616,
+       51.4522954346
+      ],
+      [
+       -0.1979477308,
+       51.4521938474
+      ],
+      [
+       -0.1977192108,
+       51.4521370394
+      ],
+      [
+       -0.1975349172,
+       51.4521280378
+      ],
+      [
+       -0.1972950438,
+       51.4521619677
+      ],
+      [
+       -0.1970874873,
+       51.4522444038
+      ],
+      [
+       -0.1969365134,
+       51.4523657085
+      ],
+      [
+       -0.1966401879,
+       51.452841016
+      ],
+      [
+       -0.1965109236,
+       51.4532205401
+      ],
+      [
+       -0.1964693397,
+       51.4538429218
+      ],
+      [
+       -0.1966768639,
+       51.4544633797
+      ],
+      [
+       -0.1966606829,
+       51.4545437953
+      ],
+      [
+       -0.1965301387,
+       51.4547280843
+      ],
+      [
+       -0.1961279976,
+       51.4550998026
+      ],
+      [
+       -0.1955305591,
+       51.4554434634
+      ],
+      [
+       -0.1951689405,
+       51.4555888186
+      ],
+      [
+       -0.1949818253,
+       51.4557473004
+      ],
+      [
+       -0.1949210422,
+       51.4559184887
+      ],
+      [
+       -0.194969747,
+       51.456091178
+      ],
+      [
+       -0.195120526,
+       51.456239078
+      ],
+      [
+       -0.195318468,
+       51.4563302932
+      ],
+      [
+       -0.1955540278,
+       51.4563745161
+      ],
+      [
+       -0.1958338925,
+       51.456361161
+      ],
+      [
+       -0.1964109636,
+       51.4561565967
+      ],
+      [
+       -0.1968473333,
+       51.4559274145
+      ],
+      [
+       -0.1972389981,
+       51.4556724103
+      ],
+      [
+       -0.1978095232,
+       51.4551397373
+      ],
+      [
+       -0.198002596,
+       51.4548773464
+      ],
+      [
+       -0.1981137758,
+       51.4545185377
+      ],
+      [
+       -0.1980918755,
+       51.4542974747
+      ],
+      [
+       -0.1979024173,
+       51.4537538144
+      ],
+      [
+       -0.1979414227,
+       51.4533207719
+      ],
+      [
+       -0.1982907242,
+       51.4525815931
+      ]
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A218] BUCKHOLD ROAD (SW18)",
+    "closure": "Closed",
+    "directions": "Southbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.194804,51.456532],[-0.194946,51.456376]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.194404,51.45697],[-0.19444,51.457169]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.195039,51.456267],[-0.195305,51.45604]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.197571,51.452577],[-0.197449,51.452764]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.197449,51.452764],[-0.197184,51.453655]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.196276,51.455641],[-0.195984,51.455795]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.19542,51.455993],[-0.19564,51.455928]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.194946,51.456376],[-0.195039,51.456267]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.194404,51.45697],[-0.194574,51.456785]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.194574,51.456785],[-0.194804,51.456532]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.197184,51.453655],[-0.19736,51.454651]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.195305,51.45604],[-0.19542,51.455993]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.19736,51.454651],[-0.196988,51.455121]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.195984,51.455795],[-0.19564,51.455928]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.196988,51.455121],[-0.196359,51.455598]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.196359,51.455598],[-0.196276,51.455641]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 236204,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-235602",
+  "url": "/Road/All/Disruption/TIMS-235602",
+  "point": "[-0.218543,51.576563]",
+  "severity": "Serious",
+  "ordinal": 7,
+  "category": "Works",
+  "subCategory": "TfL works",
+  "comments": "A41 Brent Cross flyover renewals - [A406] North Circular Road (Westbound) at the junction of [A41] Hendon Way - From 05:00 on Thursday 01 October until 05:00 on Friday 13 November, lane one is closed on the westbound A406 North Circular Road from Golders Green Road. In addition, lane one (of three) is closed in both directions on A41 Hendon Way until Saturday 21 November. Furthermore Lane one (of two) the exit slip road on the eastbound A406 is closed. From 07:00 on Friday 30 October until 18:00 Friday 30 November, a contraflow on A41 Hendon Way will be in place. ",
+  "currentUpdate": "Northbound traffic is slow moving on A41 from the junction of The vale. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:53:15Z",
+  "corridorIds": [
+   "a406"
+  ],
+  "startDateTime": "2026-10-01T04:00:00Z",
+  "endDateTime": "2026-11-20T18:00:00Z",
+  "lastModifiedTime": "2026-10-29T17:53:15Z",
+  "levelOfInterest": "High",
+  "location": "[A406] NORTH CIRCULAR ROAD (NW10 ,NW2 ,NW4 ) (Barnet)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.218543,
+    51.576563
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236539",
+  "url": "/Road/All/Disruption/TIMS-236539",
+  "point": "[0.058788,51.554479]",
+  "severity": "Serious",
+  "ordinal": 8,
+  "category": "Works",
+  "subCategory": "Borough works",
+  "comments": "[A118] Romford Road (All directions) at the junction of [B165] Little Ilford Lane - Temporary traffic signals are in place due to Borough works.",
+  "currentUpdate": "Traffic is slow moving in both directions on Romford Road with westbound tailbacks from North Circular Road and eastbound queues from after Rabbits Road. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:49:13Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-17T17:49:00Z",
+  "endDateTime": "2026-11-01T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T17:49:13Z",
+  "levelOfInterest": "High",
+  "location": "[A118] ROMFORD ROAD (E12 ) (Newham,Redbridge)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    0.058788,
+    51.554479
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236890",
+  "url": "/Road/All/Disruption/TIMS-236890",
+  "point": "[-0.035483,51.566446]",
+  "severity": "Serious",
+  "ordinal": 9,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A104] Lea Bridge Road (Both directions) at the junction of Argall Way - Temporary signals in operation to facilitate utility works.",
+  "currentUpdate": "Traffic is slow moving in both directions on Lea Bridge Road with eastbound queues from Chatsworth Road and westbound queues from Seymor Road. In addition Orient Way has northbound queues. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T17:32:05Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-23T17:15:00Z",
+  "endDateTime": "2026-11-18T19:00:00Z",
+  "lastModifiedTime": "2026-10-29T17:32:05Z",
+  "levelOfInterest": "High",
+  "location": "[A104] LEA BRIDGE ROAD (E10 ,E5 ) (Waltham Forest)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.035483,
+    51.566446
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236170",
+  "url": "/Road/All/Disruption/TIMS-236170",
+  "point": "[-0.061562,51.440523]",
+  "severity": "Moderate",
+  "ordinal": 10,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A205] London Road (Both directions) at the junction of Sydenham Rise - Temporary traffic signals in place to facilitate emergency Thames Water works.",
+  "currentUpdate": "Delays are possible.",
+  "currentUpdateDateTime": "2026-10-29T05:10:14Z",
+  "corridorIds": [
+   "a205"
+  ],
+  "startDateTime": "2026-10-09T11:30:00Z",
+  "endDateTime": "2026-11-06T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T14:42:17Z",
+  "levelOfInterest": "High",
+  "location": "[A205] LONDON ROAD (SE23 ) (Lewisham)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.061562,
+    51.440523
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-233906",
+  "url": "/Road/All/Disruption/TIMS-233906",
+  "point": "[-0.303563,51.37594]",
+  "severity": "Moderate",
+  "ordinal": 11,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A243] Hook Road (Both directions) between Gladstone Road and Hunters Road - Various restrictions in place to facilitate UKPN works.",
+  "currentUpdate": "Delays are possible.",
+  "currentUpdateDateTime": "2026-10-29T05:08:42Z",
+  "corridorIds": [
+   "a3"
+  ],
+  "startDateTime": "2026-10-24T19:16:00Z",
+  "endDateTime": "2026-10-31T18:00:00Z",
+  "lastModifiedTime": "2026-10-29T05:08:49Z",
+  "levelOfInterest": "High",
+  "location": "[A243] HOOK ROAD (KT6 ,KT9 ) (Kingston upon Thames)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.303563,
+    51.37594
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.3045202929,
+      51.3753075978
+     ],
+     [
+      -0.3044951132,
+      51.3751890422
+     ],
+     [
+      -0.3043860205,
+      51.375045341
+     ],
+     [
+      -0.304255071,
+      51.3749582365
+     ],
+     [
+      -0.3040325275,
+      51.374881341
+     ],
+     [
+      -0.3037811203,
+      51.3748577911
+     ],
+     [
+      -0.303592551,
+      51.3748771793
+     ],
+     [
+      -0.3033663962,
+      51.3749498307
+     ],
+     [
+      -0.3032313006,
+      51.3750344188
+     ],
+     [
+      -0.3031366369,
+      51.3751383119
+     ],
+     [
+      -0.3029754381,
+      51.3754617259
+     ],
+     [
+      -0.3026473133,
+      51.3762767892
+     ],
+     [
+      -0.3027161976,
+      51.3765126096
+     ],
+     [
+      -0.302940006,
+      51.3766801773
+     ],
+     [
+      -0.3031943681,
+      51.3767537173
+     ],
+     [
+      -0.303474337,
+      51.37676074
+     ],
+     [
+      -0.303737288,
+      51.3767001763
+     ],
+     [
+      -0.3039431875,
+      51.3765812469
+     ],
+     [
+      -0.3040515956,
+      51.37644337
+     ],
+     [
+      -0.3045202929,
+      51.3753075978
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A243] HOOK ROAD (KT6 ,KT9)",
+    "closure": "Open",
+    "directions": "Southbound",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.303632,51.375661],[-0.303802,51.375307]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.303465,51.37606],[-0.303508,51.375956]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.303363,51.376317],[-0.303465,51.37606]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.3036,51.375736],[-0.303632,51.375661]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.303508,51.375956],[-0.3036,51.375736]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 233906,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-235807",
+  "url": "/Road/All/Disruption/TIMS-235807",
+  "point": "[-0.142152,51.515172]",
+  "severity": "Moderate",
+  "ordinal": 12,
+  "category": "Works",
+  "subCategory": "TfL works",
+  "comments": "Oxford Street Pedestrianisation Works - [A40] Oxford Street (Both directions) between Portman Street and Portland Street - The road is closed permanently to facilitate pedestrianisation works.",
+  "currentUpdate": "Traffic is flowing well.",
+  "currentUpdateDateTime": "2026-10-29T16:03:10Z",
+  "corridorIds": [
+   "a40"
+  ],
+  "startDateTime": "2026-10-25T18:00:00Z",
+  "endDateTime": "2026-12-31T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T16:03:24Z",
+  "levelOfInterest": "High",
+  "location": "[A40] OXFORD STREET (W1B ,W1C ,W1D ,W1F ,W1G ,W1S ,W1T ,W1W ) (Westminster)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.142152,
+    51.515172
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "MultiPolygon",
+   "coordinates": [
+    [
+     [
+      [
+       -0.1476476219,
+       51.5146431641
+      ],
+      [
+       -0.1475771142,
+       51.5144512121
+      ],
+      [
+       -0.1473818409,
+       51.5142964977
+      ],
+      [
+       -0.1470992984,
+       51.5142087284
+      ],
+      [
+       -0.1467837388,
+       51.5142047571
+      ],
+      [
+       -0.1424840734,
+       51.5147720792
+      ],
+      [
+       -0.142272465,
+       51.5148506937
+      ],
+      [
+       -0.142115673,
+       51.5149691911
+      ],
+      [
+       -0.1420320279,
+       51.5151137181
+      ],
+      [
+       -0.1420313094,
+       51.5152673783
+      ],
+      [
+       -0.142131689,
+       51.5154311599
+      ],
+      [
+       -0.142324884,
+       51.5155585076
+      ],
+      [
+       -0.1425814829,
+       51.5156300338
+      ],
+      [
+       -0.1428624208,
+       51.5156348493
+      ],
+      [
+       -0.1471310047,
+       51.5150762064
+      ],
+      [
+       -0.1473518537,
+       51.5150082006
+      ],
+      [
+       -0.1475230725,
+       51.5148977492
+      ],
+      [
+       -0.1476065859,
+       51.5147946769
+      ],
+      [
+       -0.1476476219,
+       51.5146431641
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       -0.1520911809,
+       51.5141820349
+      ],
+      [
+       -0.1520299844,
+       51.5139943352
+      ],
+      [
+       -0.1518772939,
+       51.5138560765
+      ],
+      [
+       -0.1516179771,
+       51.513753556
+      ],
+      [
+       -0.1513137914,
+       51.5137277237
+      ],
+      [
+       -0.1501209988,
+       51.5138229459
+      ],
+      [
+       -0.149920209,
+       51.5138641465
+      ],
+      [
+       -0.1497472326,
+       51.5139399395
+      ],
+      [
+       -0.1496169658,
+       51.514043798
+      ],
+      [
+       -0.1495406269,
+       51.5141667781
+      ],
+      [
+       -0.1495247905,
+       51.514298289
+      ],
+      [
+       -0.1495993767,
+       51.5144673484
+      ],
+      [
+       -0.1497719766,
+       51.5146057304
+      ],
+      [
+       -0.1500163142,
+       51.5146923675
+      ],
+      [
+       -0.1502951915,
+       51.5147140699
+      ],
+      [
+       -0.1516515391,
+       51.5145896209
+      ],
+      [
+       -0.1518165754,
+       51.5145287939
+      ],
+      [
+       -0.1519858221,
+       51.5144098015
+      ],
+      [
+       -0.1520911809,
+       51.5141820349
+      ]
+     ]
+    ],
+    [
+     [
+      [
+       -0.156697545,
+       51.5137302225
+      ],
+      [
+       -0.1566357363,
+       51.513542601
+      ],
+      [
+       -0.1564543222,
+       51.5133880805
+      ],
+      [
+       -0.1561862591,
+       51.5132947309
+      ],
+      [
+       -0.1559186811,
+       51.5132769006
+      ],
+      [
+       -0.1535439378,
+       51.5134927636
+      ],
+      [
+       -0.1533354596,
+       51.5135745632
+      ],
+      [
+       -0.1532008551,
+       51.5136762451
+      ],
+      [
+       -0.1531114979,
+       51.5138194345
+      ],
+      [
+       -0.1531004599,
+       51.5139511362
+      ],
+      [
+       -0.1531811893,
+       51.5141190934
+      ],
+      [
+       -0.153358788,
+       51.51425499
+      ],
+      [
+       -0.1536062189,
+       51.5143381371
+      ],
+      [
+       -0.153885813,
+       51.5143558762
+      ],
+      [
+       -0.156199232,
+       51.5141523598
+      ],
+      [
+       -0.1564240754,
+       51.5140773299
+      ],
+      [
+       -0.1565572721,
+       51.5139913282
+      ],
+      [
+       -0.156669757,
+       51.5138485541
+      ],
+      [
+       -0.156697545,
+       51.5137302225
+      ]
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A40] OXFORD STREET (W1B ,W1C ,W1D ,W1F ,W1G ,W1H ,W1K ,W1S ,W1W)",
+    "closure": "Closed",
+    "directions": "Both directions",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.149529,51.514347],[-0.149898,51.514305]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.147791,51.514553],[-0.148019,51.514529]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.149159,51.514387],[-0.149529,51.514347]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.148174,51.514512],[-0.148481,51.514479]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.151371,51.514176],[-0.151982,51.514106]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.146491,51.5147],[-0.146927,51.514645]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.153817,51.513909],[-0.155977,51.513725]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.152576,51.51404],[-0.152648,51.514032]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.150805,51.514223],[-0.151371,51.514176]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.150735,51.514229],[-0.150805,51.514223]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.150243,51.514266],[-0.150735,51.514229]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.152648,51.514032],[-0.153817,51.513909]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.148808,51.514436],[-0.149159,51.514387]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.148019,51.514529],[-0.148174,51.514512]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.146927,51.514645],[-0.147791,51.514553]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.151982,51.514106],[-0.152576,51.51404]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.149898,51.514305],[-0.150243,51.514266]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.148481,51.514479],[-0.148808,51.514436]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.145742,51.514795],[-0.146241,51.514732]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.144334,51.514973],[-0.145742,51.514795]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.141846,51.515341],[-0.140856,51.515471]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.142741,51.515192],[-0.142244,51.515289]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.146241,51.514732],[-0.146491,51.5147]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.142244,51.515289],[-0.142089,51.51531]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.142741,51.515192],[-0.144334,51.514973]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.142089,51.51531],[-0.141986,51.515323]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.140856,51.515471],[-0.140711,51.51545]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.141986,51.515323],[-0.141846,51.515341]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 235807,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-230857",
+  "url": "/Road/All/Disruption/TIMS-230857",
+  "point": "[-0.174278,51.520091]",
+  "severity": "Moderate",
+  "ordinal": 13,
+  "category": "Works",
+  "subCategory": "TfL works",
+  "comments": "[A40] Westway (Westbound) between [A5] Edgware Road and [A3220] Northern Roundabout  - [A40] Westway (Westbound) between [A5] Edgware Road and [A3220] Northern Roundabout is reduced to two lanes for infrastructure inspection works. ",
+  "currentUpdate": "Delays are possible. ",
+  "currentUpdateDateTime": "2026-10-29T03:12:23Z",
+  "corridorIds": [
+   "a40"
+  ],
+  "startDateTime": "2026-06-24T23:04:00Z",
+  "endDateTime": "2026-12-05T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T03:12:31Z",
+  "levelOfInterest": "High",
+  "location": "[A40] WESTWAY (W2 ) (Westminster)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.174278,
+    51.520091
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-224034",
+  "url": "/Road/All/Disruption/TIMS-224034",
+  "point": "[-0.167217,51.48322]",
+  "severity": "Moderate",
+  "ordinal": 14,
+  "category": "Works",
+  "subCategory": "Borough works",
+  "comments": "[A3031] Albert Bridge Road (Both directions) at the junction of [A3212] Chelsea Embankment - The bridge is closed to facilitate local borough works.",
+  "currentUpdate": "Use an alternative route. There are no reported delays on diversion.",
+  "currentUpdateDateTime": "2026-10-29T17:30:15Z",
+  "corridorIds": [],
+  "startDateTime": "2026-09-23T04:45:00Z",
+  "endDateTime": "2027-02-28T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T17:30:57Z",
+  "levelOfInterest": "High",
+  "location": "[A3031] ALBERT BRIDGE ROAD (SW11 ,SW3 ) (Kensington & Chelsea,Wandsworth)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.167217,
+    51.48322
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.1680866895,
+      51.4835739778
+     ],
+     [
+      -0.1680555348,
+      51.4834435374
+     ],
+     [
+      -0.1669167282,
+      51.4811271329
+     ],
+     [
+      -0.1661777522,
+      51.4793933895
+     ],
+     [
+      -0.1660192267,
+      51.4792486511
+     ],
+     [
+      -0.1657840634,
+      51.4791528106
+     ],
+     [
+      -0.1655080638,
+      51.4791204588
+     ],
+     [
+      -0.1652332461,
+      51.4791565208
+     ],
+     [
+      -0.1650267688,
+      51.4792401253
+     ],
+     [
+      -0.164877468,
+      51.4793622772
+     ],
+     [
+      -0.1648027992,
+      51.4795086955
+     ],
+     [
+      -0.1648114931,
+      51.479662262
+     ],
+     [
+      -0.1655321174,
+      51.4813730189
+     ],
+     [
+      -0.1666996028,
+      51.4837427757
+     ],
+     [
+      -0.1668354231,
+      51.4838773848
+     ],
+     [
+      -0.1670378524,
+      51.4839740126
+     ],
+     [
+      -0.1672815211,
+      51.4840205492
+     ],
+     [
+      -0.167535891,
+      51.4840111621
+     ],
+     [
+      -0.1677144503,
+      51.483967865
+     ],
+     [
+      -0.1679122902,
+      51.4838676002
+     ],
+     [
+      -0.1680417791,
+      51.4837305805
+     ],
+     [
+      -0.1680866895,
+      51.4835739778
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A3031] ALBERT BRIDGE ROAD (SW11 ,SW3)",
+    "closure": "Closed",
+    "directions": "Both directions",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.166069,51.480855],[-0.165989,51.480692]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.166148,51.481077],[-0.166101,51.48105]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.166101,51.48105],[-0.166069,51.480855]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.167367,51.483574],[-0.16733,51.483498]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.16733,51.483498],[-0.167211,51.483256]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.16625,51.481302],[-0.166148,51.481077]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.165516,51.47957],[-0.165989,51.480692]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.167187,51.483208],[-0.166773,51.482361]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.167211,51.483256],[-0.167187,51.483208]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.166773,51.482361],[-0.16625,51.481302]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 224034,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236323",
+  "url": "/Road/All/Disruption/TIMS-236323",
+  "point": "[-0.201629,51.524189]",
+  "severity": "Moderate",
+  "ordinal": 15,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A404] Harrow Road (All approaches) at the junction of [A4207] Great Western Road - Temporary signals are in place to facilitate UKPN works.",
+  "currentUpdate": "Traffic is flowing well. ",
+  "currentUpdateDateTime": "2026-10-29T16:43:18Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-14T07:00:00Z",
+  "endDateTime": "2026-11-02T17:00:00Z",
+  "lastModifiedTime": "2026-10-29T16:43:18Z",
+  "levelOfInterest": "High",
+  "location": "[A404] HARROW ROAD (W10 ,W9 ) (Westminster)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.201629,
+    51.524189
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236007",
+  "url": "/Road/All/Disruption/TIMS-236007",
+  "point": "[-0.068175,51.605584]",
+  "severity": "Moderate",
+  "ordinal": 16,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A1010] High Road (Both directions) at the junction of White Hart Lane - Temporary traffic signals in operation to facilitate UKPN works.",
+  "currentUpdate": "Possible delays.",
+  "currentUpdateDateTime": "2026-10-28T23:52:00Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-06T14:20:00Z",
+  "endDateTime": "2026-12-04T23:59:00Z",
+  "lastModifiedTime": "2026-10-28T23:52:50Z",
+  "levelOfInterest": "High",
+  "location": "[A1010] HIGH ROAD (N17 ,N18 ) (Enfield,Haringey)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.068175,
+    51.605584
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-235951",
+  "url": "/Road/All/Disruption/TIMS-235951",
+  "point": "[-0.296919,51.544204]",
+  "severity": "Moderate",
+  "ordinal": 17,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A4089] Ealing Road (Both directions) between Mount Pleasant and Braemar Avenue - Temporary two-way traffic lights are in place to facilitate Cadent Gas works. ",
+  "currentUpdate": "Delays are possible.",
+  "currentUpdateDateTime": "2026-10-29T00:55:22Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-05T08:54:00Z",
+  "endDateTime": "2026-12-13T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T00:55:35Z",
+  "levelOfInterest": "High",
+  "location": "[A4089] EALING ROAD (HA0 ) (Brent)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.296919,
+    51.544204
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-236836",
+  "url": "/Road/All/Disruption/TIMS-236836",
+  "point": "[-0.335612,51.596713]",
+  "severity": "Moderate",
+  "ordinal": 18,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A409] High Street (All directions) at the junction of Locket Road - The road is closed due to a burst water main",
+  "currentUpdate": "Use alternative route. Possible delays on diversion. ",
+  "currentUpdateDateTime": "2026-10-29T00:54:17Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-23T03:20:00Z",
+  "endDateTime": "2026-10-30T18:00:00Z",
+  "lastModifiedTime": "2026-10-29T00:54:29Z",
+  "levelOfInterest": "High",
+  "location": "[A409] HIGH STREET (HA3 ) (Harrow)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.335612,
+    51.596713
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "geometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      -0.3366437563,
+      51.5970672843
+     ],
+     [
+      -0.3365958142,
+      51.5969165542
+     ],
+     [
+      -0.3363182277,
+      51.5966276975
+     ],
+     [
+      -0.3362042515,
+      51.5964352913
+     ],
+     [
+      -0.3359430481,
+      51.5962592198
+     ],
+     [
+      -0.3356794137,
+      51.5961976824
+     ],
+     [
+      -0.3353980357,
+      51.596203663
+     ],
+     [
+      -0.3351417509,
+      51.5962762512
+     ],
+     [
+      -0.3349495761,
+      51.5964043961
+     ],
+     [
+      -0.3348459077,
+      51.5965904376
+     ],
+     [
+      -0.3348799117,
+      51.5967862221
+     ],
+     [
+      -0.3349993764,
+      51.5969974532
+     ],
+     [
+      -0.3352380543,
+      51.5972626423
+     ],
+     [
+      -0.3355237704,
+      51.5974525592
+     ],
+     [
+      -0.3358797635,
+      51.5975265662
+     ],
+     [
+      -0.336247285,
+      51.5974792176
+     ],
+     [
+      -0.3365269137,
+      51.5973233221
+     ],
+     [
+      -0.3366164714,
+      51.5972008145
+     ],
+     [
+      -0.3366437563,
+      51.5970672843
+     ]
+    ]
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "streets": [
+   {
+    "$type": "Tfl.Api.Presentation.Entities.Street, Tfl.Api.Presentation.Entities",
+    "name": "[A409] HIGH STREET (HA3)",
+    "closure": "Closed",
+    "directions": "All directions",
+    "segments": [
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.33564,51.596781],[-0.335626,51.596756]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.335581,51.596674],[-0.335626,51.596756]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.335922,51.597078],[-0.33564,51.596781]]",
+      "sourceSystemId": 0
+     },
+     {
+      "$type": "Tfl.Api.Presentation.Entities.StreetSegment, Tfl.Api.Presentation.Entities",
+      "toid": "0",
+      "lineString": "[[-0.335581,51.596674],[-0.335563,51.596641]]",
+      "sourceSystemId": 0
+     }
+    ],
+    "sourceSystemId": 236836,
+    "sourceSystemKey": "TIMS"
+   }
+  ],
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237034",
+  "url": "/Road/All/Disruption/TIMS-237034",
+  "point": "[-0.15305,51.367551]",
+  "severity": "Moderate",
+  "ordinal": 20,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A232] Croydon Road (Westbound) at the junction of [A237] Manor Road - Lane restrictions in place to facilitate emergency SES works. ",
+  "currentUpdate": "Traffic is slow on Acre Lane with tailbacks towards Pound Street. Expect delays.",
+  "currentUpdateDateTime": "2026-10-29T18:07:26Z",
+  "corridorIds": [],
+  "startDateTime": "2026-10-26T15:33:00Z",
+  "endDateTime": "2026-11-01T23:59:00Z",
+  "lastModifiedTime": "2026-10-29T18:07:38Z",
+  "levelOfInterest": "Medium",
+  "location": "[A232] CROYDON ROAD (SM6 ) (Sutton)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.15305,
+    51.367551
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-237029",
+  "url": "/Road/All/Disruption/TIMS-237029",
+  "point": "[-0.068023,51.598213]",
+  "severity": "Minimal",
+  "ordinal": 22,
+  "category": "Works",
+  "subCategory": "Utility works",
+  "comments": "[A1010] High Road (Both directions) at the junction of Lansdowne Road - Lane restrictions in place to facilitate emergency UKPN works. ",
+  "currentUpdate": "Traffic is flowing well.",
+  "currentUpdateDateTime": "2026-10-29T16:28:14Z",
+  "corridorIds": [
+   "a10"
+  ],
+  "startDateTime": "2026-10-26T14:30:00Z",
+  "endDateTime": "2026-10-30T18:00:00Z",
+  "lastModifiedTime": "2026-10-29T16:28:14Z",
+  "levelOfInterest": "Medium",
+  "location": "[A1010] HIGH ROAD (N17 ) (Haringey)",
+  "status": "Active",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.068023,
+    51.598213
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ },
+ {
+  "$type": "Tfl.Api.Presentation.Entities.RoadDisruption, Tfl.Api.Presentation.Entities",
+  "id": "TIMS-230452",
+  "url": "/Road/All/Disruption/TIMS-230452",
+  "point": "[-0.194854,51.458633]",
+  "severity": "Minimal",
+  "ordinal": 23,
+  "category": "Works",
+  "subCategory": "Construction activity",
+  "comments": "[A217] Armoury Way (Eastbound) between [A217] Ram Street and [A3209] Putney Bridge Road - Lane four (of four) closed to facilitate collaborative works. ",
+  "currentUpdate": "Delays are possible.",
+  "currentUpdateDateTime": "2026-10-29T04:59:00Z",
+  "corridorIds": [
+   "a205"
+  ],
+  "startDateTime": "2026-06-16T07:00:00Z",
+  "endDateTime": "2027-03-11T15:00:00Z",
+  "lastModifiedTime": "2026-10-29T04:59:07Z",
+  "levelOfInterest": "Medium",
+  "location": "[A217] ARMOURY WAY (SW18 ) (Wandsworth)",
+  "status": "Active Long Term",
+  "geography": {
+   "type": "Point",
+   "coordinates": [
+    -0.194854,
+    51.458633
+   ],
+   "crs": {
+    "type": "name",
+    "properties": {
+     "name": "EPSG:4326"
+    }
+   }
+  },
+  "isProvisional": false,
+  "hasClosures": false,
+  "roadDisruptionLines": [],
+  "roadDisruptionImpactAreas": [],
+  "recurringSchedules": []
+ }
+]
