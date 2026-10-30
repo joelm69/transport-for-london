@@ -15,3 +15,10 @@ SELECT
   observed_minutes, in_service_minutes, disrupted_minutes, disrupted_share,
   incidents, incident_keys, worst_status, main_cause, causes, flaps
 FROM `transport-for-london-511318.tfl_transport_analytics.line_disruption_hourly`;
+
+-- The rail business recommendation's figures (last 7 complete London days), read by the portfolio
+-- to write its findings. Definitions in analytics/line_status/04_recommendation.sql.
+CREATE OR REPLACE TABLE `transport-for-london-511318.tfl_portfolio.rail_recommendation`
+OPTIONS (description = "Rail recommendation figures over the last 7 complete London days, refreshed hourly")
+AS
+SELECT * FROM `transport-for-london-511318.tfl_transport_analytics.rail_recommendation`;
