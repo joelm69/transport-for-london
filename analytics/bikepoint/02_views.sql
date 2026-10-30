@@ -141,6 +141,7 @@ SELECT
   SUM(observed_minutes) AS observed_minutes,
   SUM(empty_minutes) AS empty_minutes,
   SUM(full_minutes) AS full_minutes,
+  SUM(IF(is_peak, observed_minutes, 0)) AS peak_observed_minutes,
   SUM(IF(is_peak, empty_minutes, 0)) AS peak_empty_minutes,
   SUM(IF(is_peak, full_minutes, 0)) AS peak_full_minutes,
   SAFE_DIVIDE(SUM(avg_bikes * observed_minutes), SUM(observed_minutes)) AS avg_bikes,

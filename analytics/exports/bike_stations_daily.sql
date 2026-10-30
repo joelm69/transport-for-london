@@ -19,6 +19,7 @@ SELECT
   ROUND(observed_minutes, 1) AS observed_minutes,
   ROUND(empty_minutes, 1) AS empty_minutes,
   ROUND(full_minutes, 1) AS full_minutes,
+  ROUND(peak_observed_minutes, 1) AS peak_observed_minutes,
   ROUND(peak_empty_minutes, 1) AS peak_empty_minutes,
   ROUND(peak_full_minutes, 1) AS peak_full_minutes,
   ROUND(avg_bikes, 1) AS avg_bikes,
