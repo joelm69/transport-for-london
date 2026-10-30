@@ -33,8 +33,8 @@ def test_findings_as_on_the_page():
     assert t1 == "of 1,047 disrupted line-hours, 564 were unplanned. Without planned works, good service rises to 81.3%."
     assert h2 == "Trains, not track" and "caused 45% of unplanned disruption" in t2 and "caused 30%" in t2
     assert h3 == "Three lines, 41%"
-    assert t3.startswith("Central (57%, cancellations), Suffragette (53%, an operational incident) and "
-                         "Metropolitan (44%, cancellations) carried 41%")
+    assert t3 == ("Central (57%, cancellations), Suffragette (53%, an operational incident) and "
+                  "Metropolitan (44%, cancellations).")
 
 
 def test_headlines_follow_the_data():
@@ -50,7 +50,7 @@ def test_fewer_lines_and_unknown_cause():
     row = copy.deepcopy(ROW)
     row["top_lines"] = [{"line_name": "Jubilee", "unplanned_share": 0.2, "main_cause": "Faulty Platform Edge Doors"}]
     _, _, (h3, t3) = findings(row)
-    assert h3.startswith("One line") and t3.startswith("Jubilee (20%, faulty platform edge doors) carried")
+    assert h3.startswith("One line") and t3 == "Jubilee (20%, faulty platform edge doors)."
     row["top_lines"] = []
     assert findings(row)[2][1] == "no unplanned disruption this week."
 

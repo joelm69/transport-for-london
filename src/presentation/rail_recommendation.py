@@ -72,8 +72,7 @@ def findings(row):
     names = parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + f" and {parts[-1]}" if parts else ""
     count = {1: "One line", 2: "Two lines", 3: "Three lines"}.get(len(lines), f"{len(lines)} lines")
     third = (f"{count}, {_pct(row['top_lines_share'])}",
-             f"{names} carried {_pct(row['top_lines_share'])} of unplanned disruption; each line's share is of "
-             "its own service time." if names else "no unplanned disruption this week.")
+             f"{names}." if names else "no unplanned disruption this week.")
     return [first, second, third]
 
 
