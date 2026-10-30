@@ -69,3 +69,15 @@ def test_export_views_match_the_exports():
     spec.loader.exec_module(module)
     generated = (ROOT / "analytics" / "bus_network" / "02_export_views.sql").read_text()
     assert generated == module.render(), "an export changed: run python scripts/bus_export_views.py"
+
+
+def test_recommendations_name_this_weeks_routes():
+    from src.presentation.bus_recommendation import recommendations
+    assert recommendations(ROW) == [
+        ("Pilot headway control", "on routes 29, 141, 18, 38 and 55 (low cost)."),
+        ("Review bus priority", "on routes 189, 19, 98, W7 and 390 (analysis only)."),
+        ("Don't add buses yet:", "long waits are mostly by design, and slow routes need road space."),
+    ]
+    row = copy.deepcopy(ROW)
+    row["most_bunched"], row["slowest"] = [], []
+    assert [b[0] for b in recommendations(row)] == ["Don't add buses yet:"]

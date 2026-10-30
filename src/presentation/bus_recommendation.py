@@ -3,8 +3,8 @@
 
 Pure functions, shared by the portfolio and future MCP tools. Numbers come from the row; where
 a headline is a conclusion ("Bunching is steady", "about half the London average"), a simple
-rule picks wording the figures support. The recommendations are the analyst's and are not
-written here.
+rule picks wording the figures support. The recommendations keep the analyst's wording; only the
+routes they name come from the data, so they always point at the routes in the findings.
 """
 
 from datetime import date
@@ -91,6 +91,17 @@ def findings(row):
     else:
         third = ("The slowest routes need speed, not buses", "no route had enough data this week.")
     return [first, second, third]
+
+
+def recommendations(row):
+    """(action, detail) bullets in the analyst's wording, naming this week's routes."""
+    bullets = []
+    if row.get("most_bunched"):
+        bullets.append(("Pilot headway control", f"on routes {_routes(row['most_bunched'])} (low cost)."))
+    if row.get("slowest"):
+        bullets.append(("Review bus priority", f"on routes {_routes(row['slowest'])} (analysis only)."))
+    bullets.append(("Don't add buses yet:", "long waits are mostly by design, and slow routes need road space."))
+    return bullets
 
 
 def period(row):

@@ -58,3 +58,27 @@ def test_fewer_lines_and_unknown_cause():
 def test_period():
     assert period(ROW) == "23–29 October 2026"
     assert period({"first_day": "2026-10-28", "last_day": "2026-11-03"}) == "28 October–3 November 2026"
+
+
+def test_recommendations_name_this_weeks_lines():
+    from src.presentation.rail_recommendation import recommendations, summary_recommendation
+    assert summary_recommendation(ROW) == "We recommend fixing train availability on the Central and Metropolitan lines first."
+    assert recommendations(ROW) == [
+        ("Investigate fleet and crew availability", "on the Central and Metropolitan lines."),
+        ("Review the Suffragette line's incident response.", ""),
+        ("Report planned and unplanned disruption separately.", ""),
+    ]
+
+
+def test_recommendations_follow_the_causes():
+    from src.presentation.rail_recommendation import recommendations, summary_recommendation
+    row = copy.deepcopy(ROW)
+    row["top_lines"] = [
+        {"line_name": "Elizabeth line", "unplanned_share": 0.3, "main_cause": "Signal failure"},
+        {"line_name": "Jubilee", "unplanned_share": 0.2, "main_cause": "Customer incident"},
+    ]
+    assert summary_recommendation(row) == ("We recommend prioritising signal and track reliability on "
+                                           "the Elizabeth line first.")
+    assert [b[0] for b in recommendations(row)] == [
+        "Review signal and track reliability", "Review the Jubilee line's incident response.",
+        "Report planned and unplanned disruption separately."]

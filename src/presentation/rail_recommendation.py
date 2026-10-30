@@ -37,6 +37,52 @@ def _cause(name):
     return CAUSE_WORDS.get(name, (name or "unstated causes").lower())
 
 
+TRAIN_CAUSES = {"Train cancellations", "Train fault"}
+ASSET_CAUSES = {"Signal failure", "Track fault", "Points failure", "Power failure", "Track Circuit Failure"}
+
+
+def _lines(names):
+    """'the Suffragette line', 'the Central and Metropolitan lines' (no doubled 'line')."""
+    bare = [n[:-5] if n.lower().endswith(" line") else n for n in names]
+    if len(bare) == 1:
+        return f"the {bare[0]} line"
+    return f"the {', '.join(bare[:-1])} and {bare[-1]} lines"
+
+
+def _top_lines_by_cause(row):
+    """The top lines grouped by what mainly disrupted them: trains, assets or incidents."""
+    groups = {"trains": [], "assets": [], "incidents": []}
+    for line in row.get("top_lines") or []:
+        cause = line.get("main_cause")
+        key = "trains" if cause in TRAIN_CAUSES else "assets" if cause in ASSET_CAUSES else "incidents"
+        groups[key].append(line["line_name"])
+    return groups
+
+
+def summary_recommendation(row):
+    """The summary's closing sentence: what to fix first, on the lines the findings name."""
+    groups = _top_lines_by_cause(row)
+    if groups["trains"]:
+        return f"We recommend fixing train availability on {_lines(groups['trains'])} first."
+    if groups["assets"]:
+        return f"We recommend prioritising signal and track reliability on {_lines(groups['assets'])} first."
+    return "We recommend reviewing incident response on the most disrupted lines first."
+
+
+def recommendations(row):
+    """(action, detail) bullets in the analyst's wording, naming this week's lines."""
+    groups = _top_lines_by_cause(row)
+    bullets = []
+    if groups["trains"]:
+        bullets.append(("Investigate fleet and crew availability", f"on {_lines(groups['trains'])}."))
+    if groups["assets"]:
+        bullets.append(("Review signal and track reliability", f"on {_lines(groups['assets'])}."))
+    for name in groups["incidents"]:
+        bullets.append((f"Review {_lines([name])}'s incident response.", ""))
+    bullets.append(("Report planned and unplanned disruption separately.", ""))
+    return bullets
+
+
 def _trains_lead(row):
     return (row["train_share"] or 0) >= (row["infrastructure_share"] or 0)
 
