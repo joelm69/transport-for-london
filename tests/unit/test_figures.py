@@ -51,6 +51,7 @@ def test_the_wait_comparison_and_the_callout():
     bars, callout = result["charts"]
     assert bars["kind"] == "bar" and [d["x"] for d in bars["data"]] == ["Even spacing (theory)", "Actual (experienced)"]
     assert [round(d["y"], 2) for d in bars["data"]] == [6.24, 7.04]
+    assert [d["colour"] for d in bars["data"]] == ["#8E8E93", "#FF9F0A"]
     assert callout == {"kind": "callout", "value": "67,293", "label": "passenger-hours lost every day",
                        "detail": "to uneven bus spacing: 0.8 extra minutes (12.8%) on each of about 5.05 million "
                                  "daily journeys"}

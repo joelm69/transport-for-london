@@ -110,8 +110,9 @@ def _bus_excess_wait(row):
             "estimate: it assumes passengers arrive at random, which holds on frequent routes but not on "
             "infrequent ones, where people time their arrival.")
     charts = [
-        _bar("Bus wait: even spacing against actual", [{"x": "Even spacing (theory)", "y": even},
-                                                         {"x": "Actual (experienced)", "y": actual}],
+        _bar("Bus wait: even spacing against actual",
+             [{"x": "Even spacing (theory)", "y": even, "colour": "#8E8E93"},
+              {"x": "Actual (experienced)", "y": actual, "colour": "#FF9F0A"}],
              "minutes", y_title="Average wait (minutes)"),
         _callout(f"{hours:,.0f}", "passenger-hours lost every day",
                  f"to uneven bus spacing: {extra:.1f} extra minutes ({_pct(share, 1)}) on each of about "
