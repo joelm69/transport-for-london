@@ -6,8 +6,12 @@ have this repository's docs (the portfolio vendors the file as tfl_live/agent_do
 
 import json
 import sys
+from pathlib import Path
 
-from src.agent.docs_search import load_chunks
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from src.agent.docs_search import load_chunks  # noqa: E402
 
 if __name__ == "__main__":
     chunks = load_chunks()
