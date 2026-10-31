@@ -80,7 +80,6 @@ def test_history_and_definitions():
     assert ask("Which bus routes bunch most?").startswith("Uneven bus spacing adds about 0.8 minutes")
     assert ask("What does bunching mean?").startswith("**Buses: bunching**")
     assert "aren't available" in ask("Which lines were least reliable this week?")
-    assert ask("hello").startswith("I'm not sure what you're asking. Try:")
 
 
 def test_a_failing_source_does_not_break_the_chat():
@@ -88,3 +87,28 @@ def test_a_failing_source_does_not_break_the_chat():
         def line_cards(self):
             raise TimeoutError
     assert "isn't responding" in assistant.answer("Is the Central line running?", Broken())["answer"]
+
+
+def test_greetings_get_a_reply_and_suggestions():
+    hello = assistant.answer("Hello!", Sources())
+    assert hello["answer"].startswith("Hello! I can answer questions about London's transport")
+    assert hello["suggestions"] == assistant.SUGGESTIONS
+    assert assistant.answer("good morning", Sources())["answer"].startswith("Hello!")
+    assert assistant.answer("thanks", Sources())["answer"].startswith("You're welcome!")
+    assert assistant.answer("bye", Sources())["suggestions"] == []
+    # A greeting with a question is answered as the question
+    assert ask("Hi, is the Central line running?").startswith("**Central: Minor Delays**")
+
+
+def test_off_topic_questions_are_declined_with_suggestions():
+    for question in ("What's the weather like?", "Who won the football?", "Write me a poem", "What is love?"):
+        result = assistant.answer(question, Sources())
+        assert result["answer"].startswith("Sorry, I can only answer questions about this TfL project"), question
+        assert result["suggestions"] == assistant.SUGGESTIONS
+
+
+def test_questions_about_the_platform_are_in_scope():
+    assert route("How does the platform collect data?")[0] == "definition"
+    assert route("What is a headway?")[0] == "definition"
+    answered = assistant.answer("What does bunching mean?", Sources())
+    assert answered["source"] == "documentation search" and answered["suggestions"] == []

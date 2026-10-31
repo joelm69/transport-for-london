@@ -4,8 +4,9 @@ paid AI model.
 It reads the question for what it is about (rail, buses, bikes, roads, or what a figure means)
 and whether it asks about now or about the past week, then answers from the matching source:
 the live TfL feeds, the business recommendation figures (last 7 complete London days) or the
-documentation search (the retrieval half of RAG). It is rule-based, so it says so when it can't
-tell what was asked, and suggests questions it can answer.
+documentation search (the retrieval half of RAG). It is rule-based: it answers greetings, says
+when a question is outside this project, and returns clickable suggestions (`suggestions`) of
+questions it can answer.
 
 Pure functions, shared by the portfolio and the TfL repository: the caller passes `sources`, an
 object that fetches the data (so the portfolio reuses its cached live feeds):
@@ -43,6 +44,25 @@ WORDS = {
     "history": r"\b(week|weekly|days|recommend\w*|trends?|history|historically|usually|typically|typical|"
                r"most|least|worst|best|reliable|unreliable|often|average|overall|slowest|fastest|longest)\b",
 }
+# Questions about the platform itself, answered from its documentation.
+PLATFORM = (r"\b(platform|pipeline|collect\w*|kafka|bigquery|tableau|dashboards?|mcp|rag|agent|"
+            r"google sheets?|cloud run|vm|this project|recommendations?)\b")
+# Terms the documentation defines: a "what is ..." question about one of them is in scope.
+TERMS = (r"\b(bunch\w*|headways?|headroom|delayed share|problem share|out of use|serious|severe|median|"
+         r"overrun\w*|disrupt\w*|good service|planned works|incidents?|roadworks?|peaks?|docks?|tfl|"
+         r"transport|london|stations?|lifts?|step[- ]free|accessib\w*|waits?|gaps?|speed|reliab\w*)\b")
+GREETING = (r"^\s*(hi+|hello|hey+|hiya|howdy|yo|greetings|good (morning|afternoon|evening|day)|"
+            r"thanks?|thank you|cheers|ok(ay)?|great|cool|bye|goodbye)\b")
+SUGGESTIONS = [
+    "Which Tube lines have problems right now?",
+    "How many bikes are at Waterloo?",
+    "Which main roads are delayed?",
+    "Which bus routes bunch most?",
+    "What does bunching mean?",
+]
+OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
+             "and roads, and how this platform measures them. Try one of these:")
+
 LINE_NAMES = ["bakerloo", "central", "circle", "district", "hammersmith", "jubilee", "metropolitan",
               "northern", "piccadilly", "victoria", "waterloo & city", "elizabeth", "dlr", "tram",
               "liberty", "lioness", "mildmay", "suffragette", "weaver", "windrush"]
@@ -69,8 +89,19 @@ def _pct(value):
     return "–" if value is None else f"{value * 100:.0f}%"
 
 
-def help_text(intro="I can answer questions about London's transport from this platform's data."):
-    return intro + " Try:\n" + "\n".join(f"- {q}" for q in EXAMPLES)
+def greeting(question):
+    """A reply to a message that is only a greeting or thanks, else None."""
+    text = question.lower().strip()
+    if not re.match(GREETING, text) or len(text.split()) > 6 or route(question)[0] not in (None,):
+        return None
+    if re.match(r"^\s*(thanks?|thank you|cheers)\b", text):
+        return "You're welcome! Anything else you'd like to know? Try one of these:"
+    if re.match(r"^\s*(bye|goodbye)\b", text):
+        return "Goodbye! Come back any time for live TfL data."
+    if re.match(r"^\s*(ok(ay)?|great|cool)\b", text):
+        return "Anything else you'd like to know? Try one of these:"
+    return ("Hello! I can answer questions about London's transport from this platform's live TfL "
+            "feeds, its history and its documentation. Try one of these:")
 
 
 def route(question):
@@ -78,12 +109,14 @@ def route(question):
     when is "now" or "history"."""
     text = question.lower()
     when = "history" if _has("history", text) else "now"
+    in_scope = re.search(TERMS, text) or re.search(PLATFORM, text)
     if _has("definition", text):
-        return "definition", when
+        return ("definition" if in_scope or any(_has(t, text) for t in ("bikes", "roads", "bus", "rail"))
+                else None), when
     for topic in ("bikes", "roads", "bus", "rail"):
         if _has(topic, text):
             return topic, when
-    if re.match(r"\s*what (is|are|does)\b", text):
+    if in_scope:
         return "definition", when
     return None, when
 
@@ -185,35 +218,35 @@ def _history(area, sources):
 def _definition(question, sources):
     hits = sources.docs(question)
     if not hits:
-        return help_text("I couldn't find that in the platform's documentation.")
+        return "I couldn't find that in the platform's documentation. Try one of these:"
     best = hits[0]
     return f"**{best['title']}**\n\n{best['text']}\n\n_From the platform's documentation ({best['source']})._"
 
 
 def answer(question, sources):
-    """{"answer": markdown, "source": what was used} for a typed question."""
+    """{"answer": markdown, "source": what was used, "suggestions": questions to offer as buttons}
+    for a typed question."""
     question = (question or "").strip()
-    if not question:
-        return {"answer": help_text(), "source": None}
+    reply = greeting(question) if question else (
+        "I can answer questions about London's transport from this platform's data. Try one of these:")
+    if reply:
+        return {"answer": reply, "source": None, "suggestions": [] if "Goodbye" in reply else SUGGESTIONS}
     topic, when = route(question)
     labels = {"rail": "live TfL line status", "bikes": "live TfL BikePoint feed", "roads": "live TfL road feeds"}
+    result = {"source": None, "suggestions": []}
     try:
+        if topic is None:
+            return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}
         if topic == "definition":
-            return {"answer": _definition(question, sources), "source": "documentation search"}
+            text = _definition(question, sources)
+            found = not text.startswith("I couldn't find")
+            return {**result, "answer": text, "source": "documentation search" if found else None,
+                    "suggestions": [] if found else SUGGESTIONS}
         if topic == "bus":   # no live bus tool here: live buses by route and stop are on the page
-            return {"answer": _history("bus", sources), "source": "bus recommendation figures"}
-        if topic in ("rail", "bikes", "roads") and when == "history":
-            return {"answer": _history(topic, sources), "source": f"{topic} recommendation figures"}
-        if topic == "rail":
-            return {"answer": _rail_now(question, sources), "source": labels["rail"]}
-        if topic == "bikes":
-            return {"answer": _bikes_now(question, sources), "source": labels["bikes"]}
-        if topic == "roads":
-            return {"answer": _roads_now(question, sources), "source": labels["roads"]}
+            return {**result, "answer": _history("bus", sources), "source": "bus recommendation figures"}
+        if when == "history":
+            return {**result, "answer": _history(topic, sources), "source": f"{topic} recommendation figures"}
+        live = {"rail": _rail_now, "bikes": _bikes_now, "roads": _roads_now}[topic]
+        return {**result, "answer": live(question, sources), "source": labels[topic]}
     except Exception:   # noqa: BLE001 - one source failing shouldn't break the chat
-        return {"answer": "That data source isn't responding right now. Please try again in a minute.",
-                "source": None}
-    hits = sources.docs(question)
-    if hits:
-        return {"answer": _definition(question, sources), "source": "documentation search"}
-    return {"answer": help_text("I'm not sure what you're asking."), "source": None}
+        return {**result, "answer": "That data source isn't responding right now. Please try again in a minute."}
