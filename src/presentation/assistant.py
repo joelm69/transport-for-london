@@ -344,6 +344,14 @@ def answer_read(question, sources):
         declined = analysis.cannot_analyse(question)
         if declined:
             return {**result, **declined}
+        where = analysis.map_plan(question)
+        if where:
+            ran = analysis.run_map(where, sources)
+            return {**result, **ran, "charts": ran.get("charts"),
+                    "source": "BigQuery bike history, mapped with the live BikePoint feed",
+                    "suggestions": ["Where in London do bike stations fill up during the morning rush?",
+                                    "Cluster bike stations by when they run empty",
+                                    "Heatmap of empty bike stations by hour and day of week"]}
         stat = analysis.stat_plan(question)
         if stat:
             ran = analysis.run_stat(stat, sources)

@@ -1505,3 +1505,124 @@ def _stat_clusters(p, rows):
              "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour of day (London time)",
              "y_title": _label(name)}
     return {"answer": text, "chart": chart}
+
+
+# Where in London: a map of the bike stations, with spatial statistics ---------------------------
+# Station history (bike_station_hourly) joined to the live BikePoint feed's coordinates by station
+# id. Two spatial measures: how much of the problem lies near the centre (Charing Cross), and
+# Moran's I, whether stations with the problem sit next to each other (spatial autocorrelation).
+
+MAP_WORDS = (r"\b(maps?|where in london|which (areas?|parts?) of london|geograph\w*|spatial\w*|neighbou?rhoods?|"
+             r"concentrated in the (centre|center)|where are)\b")
+CENTRE = (51.5074, -0.1278)   # Charing Cross, the traditional centre of London
+PERIODS = [   # question words, label, SQL filter on London time
+    (r"\b(evening (rush|peak)|after work|16-19|4 ?pm)\b", "the weekday evening rush (16:00–19:00)",
+     f"EXTRACT(HOUR FROM {LONDON}) BETWEEN 16 AND 18 AND EXTRACT(DAYOFWEEK FROM {LONDON}) NOT IN (1, 7)"),
+    (r"\b(morning (rush|peak)|before work|07-10|7 ?am|commute)\b", "the weekday morning rush (07:00–10:00)",
+     f"EXTRACT(HOUR FROM {LONDON}) BETWEEN 7 AND 9 AND EXTRACT(DAYOFWEEK FROM {LONDON}) NOT IN (1, 7)"),
+    (r"\b(night|overnight)\b", "overnight (00:00–05:00)", f"EXTRACT(HOUR FROM {LONDON}) < 5"),
+    (r"\bweekends?\b", "weekends", f"EXTRACT(DAYOFWEEK FROM {LONDON}) IN (1, 7)"),
+]
+
+
+def map_plan(question):
+    """{"measure", "period", "label"} for a "where in London" bike question, else None."""
+    text = question.lower()
+    if not _has(MAP_WORDS, text) or _mode(text) != "bike":
+        return None
+    found = sorted((m.start(), subject) for subject, p in SUBJECTS for m in [re.search(p, text)] if m)
+    measures = [m for m in (_measure(subject, text) for _, subject in found) if m]
+    if _has(r"\bout of bikes\b|\brun(s)? out\b", text) and not measures:
+        measures = ["bike_empty"]
+    period = next(((label, sql) for pattern, label, sql in PERIODS if _has(pattern, text)), ("all day", "TRUE"))
+    return {"measure": measures[0] if measures else "bike_empty", "label": period[0], "period": period[1]}
+
+
+def map_sql(p):
+    _, where, expr, *_ = MEASURES[p["measure"]]
+    return f"""
+        SELECT station_id, ANY_VALUE(station_name) AS name, {expr} AS v, SUM(observed_minutes) AS w,
+               COUNT(DISTINCT DATE(hour_start, 'Europe/London')) AS days
+        FROM `{DATASET}.bike_station_hourly` WHERE {WINDOW} AND {where} AND {p["period"]}
+        GROUP BY station_id HAVING SUM(observed_minutes) > 0"""
+
+
+def _km(a, b):
+    """Great-circle distance in km between (lat, lon) points."""
+    lat1, lon1, lat2, lon2 = map(math.radians, (*a, *b))
+    h = math.sin((lat2 - lat1) / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+    return 2 * 6371 * math.asin(math.sqrt(h))
+
+
+def morans_i(points, band_km=0.8, rounds=199):
+    """(Moran's I, permutation p-value): do neighbouring stations (within band_km) have similar
+    values? I > 0: alike values cluster; ~0: scattered at random. p: share of random reshuffles of
+    the values across the same stations giving an I at least as large."""
+    from random import Random
+    n = len(points)
+    neighbours = [[j for j in range(n) if j != i and _km(points[i][:2], points[j][:2]) <= band_km] for i in range(n)]
+    links = sum(len(nb) for nb in neighbours)
+    if not links:
+        return None, None
+
+    def stat(values):
+        mean = sum(values) / n
+        dev = [v - mean for v in values]
+        denom = sum(d * d for d in dev)
+        if not denom:
+            return 0.0
+        return (n / links) * sum(dev[i] * dev[j] for i in range(n) for j in neighbours[i]) / denom
+
+    values = [p[2] for p in points]
+    observed = stat(values)
+    rng, shuffled, extreme = Random(5), list(values), 0
+    for _ in range(rounds):
+        rng.shuffle(shuffled)
+        if stat(shuffled) >= observed:
+            extreme += 1
+    return observed, (extreme + 1) / (rounds + 1)
+
+
+def run_map(p, sources):
+    name = p["measure"]
+    fmt = MEASURES[name][3]
+    rows = [dict(r) for r in sources.query(map_sql(p))]
+    try:
+        places = {s["station_id"]: (s["lat"], s["lon"]) for s in sources.bike_rows()}
+    except Exception:   # noqa: BLE001 - the coordinates come from the live feed
+        places = {}
+    points = [(places[r["station_id"]][0], places[r["station_id"]][1], float(r["v"]), float(r["w"]), r["name"])
+              for r in rows if r["station_id"] in places and r.get("v") is not None]
+    if len(points) < 20:
+        return {"answer": "The map needs the live station locations, which aren't available right now; please try "
+                          "again in a minute.", "chart": None}
+    total = sum(v * w for _, _, v, w, _ in points) or 1
+    near = [pt for pt in points if _km(pt[:2], CENTRE) <= 3]
+    near_share = sum(v * w for _, _, v, w, _ in near) / total
+    station_share = len(near) / len(points)
+    overall = sum(v * w for _, _, v, w, _ in points) / sum(w for *_, w, _ in points)
+    moran, p_value = morans_i([(lat, lon, v) for lat, lon, v, _, _ in points])
+    worst = sorted(points, key=lambda pt: -pt[2])[:10]
+    days = int(max(r["days"] for r in rows))
+    what = _mid(name)
+    text = (f"During {p['label']}, {what} averaged **{_fmt(overall, fmt)}** across {len(points)} stations. "
+            f"**{near_share:.0%} of it was within 3 km of Charing Cross**, where {station_share:.0%} of the stations "
+            "are, so the problem is " + ("concentrated in the centre." if near_share > station_share * 1.2 else
+                                         "concentrated outside the centre." if near_share < station_share * 0.8 else
+                                         "spread roughly in line with where stations are."))
+    if moran is not None:
+        text += (f" Spatial autocorrelation (Moran's I, neighbours within 800 m) is **{moran:.2f}** (p = "
+                 f"{p_value:.3f}): " + ("stations with the problem **cluster together** in hotspots rather than "
+                                        "being scattered." if moran > 0.05 and p_value < 0.05 else
+                                        "no clear clustering; affected stations are scattered."))
+    text += (" Worst: " + "; ".join(f"{n} ({_fmt(v, fmt)})" for _, _, v, _, n in worst[:5]) + "."
+             f"\n\n_Based on {days} days of history; station locations from the live TfL BikePoint feed._")
+    data = [{"lat": lat, "lon": lon, "value": v, "name": n} for lat, lon, v, _, n in points]
+    charts = [
+        {"kind": "map", "title": f"{_name(name)} during {p['label']}, by station", "data": data, "format": fmt,
+         "x": "lon", "y": "lat", "series": None, "horizontal": False, "x_title": "", "y_title": _label(name)},
+        {"kind": "bar", "title": "The 10 worst stations", "x": "x", "y": "y",
+         "data": [{"x": n, "y": v} for _, _, v, _, n in worst], "format": fmt, "series": None, "horizontal": True,
+         "x_title": "", "y_title": _label(name)},
+    ]
+    return {"answer": text, "chart": charts[0], "charts": charts}

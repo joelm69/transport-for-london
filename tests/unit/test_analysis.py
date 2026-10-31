@@ -264,3 +264,13 @@ def test_kmeans_groups_alike_profiles():
     labels, _ = kmeans(vectors, 3)
     assert labels[0] == labels[1] and labels[2] == labels[3] and labels[4] == labels[5]
     assert len(set(labels)) == 3
+
+
+def test_map_plan_and_morans_i():
+    p = analysis.map_plan("Where in London do bike stations run out of bikes during the evening rush?")
+    assert p["measure"] == "bike_empty" and p["label"].startswith("the weekday evening rush")
+    assert analysis.map_plan("Where is the Central line disrupted?") is None   # maps are for bike stations
+    # Two tight groups with alike values -> positive autocorrelation
+    points = [(51.50 + i * 0.001, -0.10, 0.9) for i in range(6)] + [(51.60 + i * 0.001, -0.20, 0.0) for i in range(6)]
+    moran, p_value = analysis.morans_i(points, rounds=99)
+    assert moran > 0.5 and p_value < 0.05
