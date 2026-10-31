@@ -294,3 +294,18 @@ def test_relationship_follow_ups_stay_on_topic():
     ups = analysis.follow_ups(plan("Do more road incidents make London's main roads more delayed?"))
     assert ups and all("road" in q for q in ups)
     assert all(plan(q) for q in ups)
+
+
+def test_roads_and_buses_are_compared_across_london():
+    p = plan("Is there a relationship between road disruptions and bus traffic?")
+    assert p["measures"] == ["road_delayed", "bus_bunching"]
+    assert plan("Do road incidents make buses bunch more?")["measures"] == ["road_incidents", "bus_bunching"]
+    assert plan("Is bus waiting time related to main road delays?")["measures"] == ["road_delayed", "bus_wait"]
+    assert "'London' AS entity" in build_sql(p)   # roads and bus routes meet at London level
+    assert plan("Is bunching related to waiting time on the Tube?")["measures"] == ["tube_bunching", "tube_wait"]
+
+    class Pairs(Sources):
+        def query(self, sql):
+            return [{"x": 0.3 + 0.01 * (i % 5), "y": 0.1 + 0.02 * (i % 5) + 0.001 * (i % 3)} for i in range(30)]
+    text = analysis.run(p, Pairs())["answer"]
+    assert "over 30 hours" in text and "time of day rather than" in text and "a weak link" not in text

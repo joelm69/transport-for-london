@@ -194,10 +194,10 @@ def _mode(text):
     return "bus" if _has(BUS, text) and not _has(TUBE, text) else "tube"
 
 
-def _measure(subject, text):
+def _measure(subject, text, mode=None):
     """The catalogue measure for a subject, using the question's mode (bus, Tube, bike or road), or
     None when that mode has no such measure."""
-    mode = _mode(text)
+    mode = mode or _mode(text)
     if mode == "bike":
         return {"empty": "bike_empty", "full": "bike_full", "out_of_use": "bike_out_of_use",
                 "availability": "bike_available", "disruption": "bike_empty"}.get(subject)
@@ -246,9 +246,27 @@ def plan(question):
     return {**found, "kind": kind} if found else None
 
 
+ROAD_SUBJECTS = ("incidents", "disruption", "congestion")
+
+
+def _cross_mode(text, subjects):
+    """[road measure, bus or Tube measure] when a question relates the roads to buses or the Tube
+    (e.g. "do road incidents make buses bunch?"), else None. Compared hour by hour across London."""
+    other = "bus" if _has(BUS, text) else "tube" if _has(TUBE, text) else None
+    if not (other and _has(ROAD, text) and _has(RELATION, text)) or _has(BIKE, text):
+        return None
+    road = "road_incidents" if "incidents" in subjects else "road_delayed"
+    names = [_measure(s, text, other) for s in subjects if s not in ROAD_SUBJECTS]
+    names = [n for n in names if n and not n.startswith("bus_network")]   # bands, not hours
+    return [road, names[0] if names else ("bus_bunching" if other == "bus" else "tube_wait")]
+
+
 def plan_without_kind(text):
     """The measures and dimension a (lower-case) question asks about, or None."""
     found = sorted((m.start(), subject) for subject, pattern in SUBJECTS for m in [re.search(pattern, text)] if m)
+    cross = _cross_mode(text, [subject for _, subject in found])
+    if cross:
+        return {"measures": cross, "dimension": None, "series": None}
     measures = []
     for _, subject in found:
         name = _measure(subject, text)
@@ -333,8 +351,14 @@ def build_sql(p):
         ORDER BY {order} LIMIT {limit}"""   # room for every hour × day of week cell (168)
 
 
+def london_wide(first, second):
+    """Whether a pair is compared for all London hour by hour: when either is London-wide (e.g.
+    road incidents) or they are counted for different things (main roads and bus routes)."""
+    return "network" in (MEASURES[first][5], MEASURES[second][5]) or MEASURES[first][0] != MEASURES[second][0]
+
+
 def _pair_sql(first, second):
-    network = "network" in (MEASURES[first][5], MEASURES[second][5])   # e.g. incidents for all London
+    network = london_wide(first, second)
     parts = []
     for i, name in enumerate((first, second)):
         table_key, where, expr, *_ = MEASURES[name]
@@ -673,7 +697,7 @@ def _by_hour_and_day_type(p, rows):
 
 
 def unit_word(rows, first, second):
-    return "hours" if "network" in (MEASURES[first][5], MEASURES[second][5]) else f"{MEASURES[first][5]}-hours"
+    return "hours" if london_wide(first, second) else f"{MEASURES[first][5]}-hours"
 
 
 def _relationship(p, rows):
@@ -683,7 +707,7 @@ def _relationship(p, rows):
     if r is None:
         return {"answer": "There isn't enough overlapping data to compare those two yet.", "chart": None}
     entity = MEASURES[first][5]
-    unit = "hours" if "network" in (entity, MEASURES[second][5]) else f"{entity}-hours"
+    unit = "hours" if london_wide(p["measures"][0], second) else f"{entity}-hours"
     change = ("tends to rise" if r > 0 else "tends to fall") if abs(r) >= 0.1 else "shows no consistent change"
     text = (f"**There is {_strength(r)} relationship** (correlation r = {r:.2f}, over {len(rows):,} "
             f"{unit}): when {_mid(first)} is higher, {_mid(second)} {change}. "
@@ -700,8 +724,12 @@ def _relationship(p, rows):
              f"{'more' if slope > 0 else 'less'} {_mid(second)} for {per}, and explains {r2:.0%} of the variation "
              f"(R² = {r2:.2f}).")
     if "road_delayed" in (first, second):
-        text += (" Bear in mind TfL's main-road rating changes rarely (it is often set by long-running roadworks), "
-                 "so short incidents barely move it: a weak link here doesn't mean incidents don't slow traffic.")
+        text += " Bear in mind TfL's main-road rating changes rarely (it is often set by long-running roadworks)"
+        text += (", so short incidents barely move it: a weak link here doesn't mean incidents don't slow traffic."
+                 if abs(r) < 0.3 else ".")
+    if MEASURES[first][0] != MEASURES[second][0] and abs(r) >= 0.3:
+        text += (" Both follow the daily rush hours, so part of this link may be the time of day rather than one "
+                 "driving the other: compare the two by hour to check.")
     if len(rows) < 100:
         text += f" With only {len(rows)} {unit_word(rows, first, second)} so far, treat this as provisional."
     chart = {"kind": "scatter", "title": f"{_name(second)} against {_mid(first)}", "x": "x", "y": "y",
