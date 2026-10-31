@@ -274,3 +274,17 @@ def test_map_plan_and_morans_i():
     points = [(51.50 + i * 0.001, -0.10, 0.9) for i in range(6)] + [(51.60 + i * 0.001, -0.20, 0.0) for i in range(6)]
     moran, p_value = analysis.morans_i(points, rounds=99)
     assert moran > 0.5 and p_value < 0.05
+
+
+def test_road_questions():
+    p = plan("Do more road incidents make London's main roads more delayed?")
+    assert p["measures"] == ["road_incidents", "road_delayed"]
+    assert "'London' AS entity" in build_sql(p)   # compared London-wide, hour by hour
+    assert plan("Compare main road delays by road")["dimension"] == "entity"
+
+    class Pairs(Sources):
+        def query(self, sql):
+            return [{"x": float(i % 4), "y": 0.3 + 0.01 * (i % 4)} for i in range(30)]
+    text = analysis.run(p, Pairs())["answer"]
+    assert "for each extra incident reported in the hour" in text
+    assert "TfL's main-road rating changes rarely" in text and "With only 30 hours" in text

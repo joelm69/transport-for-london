@@ -144,6 +144,11 @@ def _road_tips(sources):
         if serious:
             tips.append("**Serious incidents now:** " + "; ".join(
                 f"{d['sub_category'] or d['category']} at {d['location']}" for d in serious[:3]) + ".")
+    incidents = _best_worst("road_incidents", sources)   # the road history: incidents per hour
+    if incidents:
+        quiet, busy = incidents
+        tips.append(f"**Incidents are reported most around {busy['x']}** ({busy['y']:.1f} an hour on average) and "
+                    f"least around {quiet['x']} ({quiet['y']:.1f}): allow extra time if you drive then.")
     found = sources.recommendation("roads")
     if found:
         row = found[0]

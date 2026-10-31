@@ -157,7 +157,8 @@ ALL_ROUTES = (r"\b(all|every|each) (bus )?routes\b|\bnetwork[- ]wide\b|\bwhole (
 BUS = r"\bbus(es)?\b|\broutes?\b"
 TUBE = r"\b(tube|underground|trains?|metro)\b"
 RELATION = (r"\b(relat\w*|correlat\w*|link\w*|associat\w*|affect\w*|impact\w*|depend\w*|influenc\w*|"
-            r"vs\.?|versus|against|compare\w*|change\w*|vary|varies|pattern\w*|trend\w*|differ\w*)\b")
+            r"vs\.?|versus|against|compare\w*|change\w*|vary|varies|pattern\w*|trend\w*|differ\w*|"
+            r"makes?|lead(s)? to|result\w* in|drive\w*|go(es)? with|when there are more)\b")
 CHART_WORDS = (r"\b(chart|graph|plot|visuali[sz]\w*|draw|show me|analy[sz]\w*|prove|distribution|pie|donut|"
                r"doughnut|breakdown|split|heat ?maps?|box ?plots?|whiskers?|rolling|moving average|stacked|"
                r"cumulative|trend)\b")
@@ -266,7 +267,7 @@ def plan_without_kind(text):
     date = _has(r"\b(over time|trend\w*|daily|each day|per day|by date|day by day|last \d+ days|this month|"
                 r"(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*)\b", text)
     entity = _has(r"\b(by line|each line|per line|which lines?|by route|each route|per route|which routes?|"
-                  r"by station|which stations?)\b", text)
+                  r"by station|which stations?|by road|each road|per road|which (main )?roads?)\b", text)
     asks = _has(RELATION, text) or _has(CHART_WORDS, text)
 
     if "rail_disruption" in measures and _has(CAUSE, text) and (asks or _has(r"\b(main|most|top)\b", text)):
@@ -333,10 +334,13 @@ def build_sql(p):
 
 
 def _pair_sql(first, second):
+    network = "network" in (MEASURES[first][5], MEASURES[second][5])   # e.g. incidents for all London
     parts = []
     for i, name in enumerate((first, second)):
         table_key, where, expr, *_ = MEASURES[name]
         table, entity, weight = TABLES[table_key]
+        if network:
+            entity = "'London'"
         parts.append(f"""m{i} AS (
             SELECT {entity} AS entity, hour_start, {expr} AS v{i}, SUM({weight}) AS w{i}
             FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where} GROUP BY entity, hour_start)""")
@@ -662,6 +666,10 @@ def _by_hour_and_day_type(p, rows):
     return {"answer": text, "chart": chart}
 
 
+def unit_word(rows, first, second):
+    return "hours" if "network" in (MEASURES[first][5], MEASURES[second][5]) else f"{MEASURES[first][5]}-hours"
+
+
 def _relationship(p, rows):
     first, second = p["measures"]
     xs, ys = [r["x"] for r in rows], [r["y"] for r in rows]
@@ -669,18 +677,27 @@ def _relationship(p, rows):
     if r is None:
         return {"answer": "There isn't enough overlapping data to compare those two yet.", "chart": None}
     entity = MEASURES[first][5]
+    unit = "hours" if "network" in (entity, MEASURES[second][5]) else f"{entity}-hours"
     change = ("tends to rise" if r > 0 else "tends to fall") if abs(r) >= 0.1 else "shows no consistent change"
     text = (f"**There is {_strength(r)} relationship** (correlation r = {r:.2f}, over {len(rows):,} "
-            f"{entity}-hours): when {_mid(first)} is higher, {_mid(second)} {change}. "
+            f"{unit}): when {_mid(first)} is higher, {_mid(second)} {change}. "
             "r runs from −1 to 1, and 0 means no straight-line relationship. It shows the two move together, "
             "not that one causes the other.")
     slope, _, r2 = linear_fit(xs, ys)
     step = 0.01 if MEASURES[first][3] == "pct" else 1
-    unit = {"pct": "percentage point", "minutes": "minute", "seconds": "second", "hours": "hour"}.get(
-        MEASURES[first][3], "unit")
+    per = {"road_incidents": "each extra incident reported in the hour"}.get(first)
+    if per is None:
+        unit = {"pct": "percentage point", "minutes": "minute", "seconds": "second", "hours": "hour"}.get(
+            MEASURES[first][3], "unit")
+        per = f"each extra {unit} of {_mid(first)}"
     text += (f" A straight-line (least-squares) regression gives {_fmt(abs(slope * step), MEASURES[second][3])} "
-             f"{'more' if slope > 0 else 'less'} {_mid(second)} for each extra {unit} of {_mid(first)}, and "
-             f"explains {r2:.0%} of the variation (R² = {r2:.2f}).")
+             f"{'more' if slope > 0 else 'less'} {_mid(second)} for {per}, and explains {r2:.0%} of the variation "
+             f"(R² = {r2:.2f}).")
+    if "road_delayed" in (first, second):
+        text += (" Bear in mind TfL's main-road rating changes rarely (it is often set by long-running roadworks), "
+                 "so short incidents barely move it: a weak link here doesn't mean incidents don't slow traffic.")
+    if len(rows) < 100:
+        text += f" With only {len(rows)} {unit_word(rows, first, second)} so far, treat this as provisional."
     chart = {"kind": "scatter", "title": f"{_name(second)} against {_mid(first)}", "x": "x", "y": "y",
              "data": [{"x": x, "y": y} for x, y in zip(xs, ys)], "format": MEASURES[second][3],
              "x_format": MEASURES[first][3], "series": None, "horizontal": False,
