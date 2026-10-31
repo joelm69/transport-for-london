@@ -1,7 +1,7 @@
 -- Native tables for arrivals: parsed types, one row per Kafka message, partitioned by the date
 -- of the GCS batch (source_date) so each hourly load replaces only today's slice.
 -- Loaded by 04_serving_refresh.sql. Why not query the external tables directly: every query
--- would re-read and re-parse all the compressed JSON in GCS, and the cost would grow daily.
+-- would re-read and re-parse all the compressed JSON in GCS and the cost would grow daily.
 
 CREATE TABLE IF NOT EXISTS `transport-for-london-511318.tfl_transport_analytics.arrival_events` (
   source_date DATE,

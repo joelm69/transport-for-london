@@ -83,7 +83,7 @@ map of all disruptions weighted by severity. Called directly with the shared 150
 
 | Business question | Measure |
 |---|---|
-| Which main roads spend most time at Serious, and when? | Corridor minutes by status, per day and hour |
+| Which main roads spend most time at Serious and when? | Corridor minutes by status, per day and hour |
 | How long do incidents take to clear, by type? | First seen → CLEARED (censored while open) |
 | Do roadworks finish when planned? | Observed clear time − `endDateTime` |
 | Where do disruptions cluster? | Disruption-minutes by area and corridor |

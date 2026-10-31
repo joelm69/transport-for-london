@@ -112,7 +112,7 @@ moves AS (
 ),
 
 counted AS (
-  -- Kept only when physically possible: forward, and no faster than 25 km/h on average (the
+  -- Kept only when physically possible: forward and no faster than 25 km/h on average (the
   -- fastest London buses, the SL express routes, average about that). Anything else is a
   -- prediction artefact, typically a bus waiting at a terminus whose direction TfL flips before
   -- it leaves; it counts as 0, so the total is a lower bound. Also 0: the first poll, a gap over

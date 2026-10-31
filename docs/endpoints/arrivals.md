@@ -63,7 +63,7 @@ live tracking. Only about a third of them fall within 30 minutes.
    ~440 GB a year. Line status and stop disruptions store on change; nearly every arrival
    prediction changes every poll, so the stored form must be derived **events** (e.g. "train 234
    arrived at North Ealing at 07:23:05"), not snapshots.
-5. **Processing is too heavy for the e2-micro.** Parsing ~10,000 records every 30 s, and keeping
+5. **Processing is too heavy for the e2-micro.** Parsing ~10,000 records every 30 s and keeping
    each vehicle's recent predictions in memory, needs more than the 1 GB VM can spare beside the two
    collectors (~470 MB in use). This is the workload that justifies Kafka on a separate machine.
 
@@ -165,7 +165,7 @@ and events in order.
 | Detector state | grows with visits | bounded: visits within 30 min, removed when they close |
 | Kafka data | on disk | 2 h and 250 MB per partition, then deleted |
 
-On the VM each process also gets a systemd `MemoryMax`, and the out-of-memory score is set so the
+On the VM each process also gets a systemd `MemoryMax` and the out-of-memory score is set so the
 kernel stops Kafka before either collector.
 
 ### Delivery guarantee: at-least-once
@@ -279,7 +279,7 @@ skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
 
 | Question | Metric | Method |
 |---|---|---|
-| What is the typical wait at a station, and how variable is it? | Average passenger wait, headway distribution | Descriptive statistics by station, line, hour of day |
+| What is the typical wait at a station and how variable is it? | Average passenger wait, headway distribution | Descriptive statistics by station, line, hour of day |
 | Do trains arrive in clumps instead of evenly? | Bunching rate, regularity | By line and hour; compare peaks with off-peak |
 | How far off are TfL's countdown predictions, by line? | Prediction error by horizon | Bias and spread; does accuracy drop during disruptions (join line status)? |
 | Do disruptions show up in waits before the status changes? | Headways vs line status periods | Join on line and time |
@@ -298,9 +298,9 @@ No container was killed for memory; no restarts. Medians (p95, max) in MiB: Kafk
 real heap+native ~216, the rest is reclaimable file cache), producer 50 (54, 56), detector 27
 (28, 28), archiver 16 (25, 25). **All four together: median 313, p95 396, max 420 MiB** against
 ~477 MiB free on the VM. On the VM the archiver will be ~60 MB heavier (GCS library), so p95
-≈ 455 MiB: it fits, but only just, and the hourly BigQuery refresh will push into zram.
+≈ 455 MiB: it fits, but only just and the hourly BigQuery refresh will push into zram.
 Recommendation before deploying: remove exim4 (~21 MB), set systemd MemoryMax per process and
-OOM priority so Kafka goes before the collectors, and watch the first 24 hours.
+OOM priority so Kafka goes before the collectors and watch the first 24 hours.
 
 The 09:00 hourly publish worked: 4,719 arrivals, 989 drops, 545 coverage rows and 1,023
 prediction snapshots (6.8 MB) published, then offsets committed for both topics.

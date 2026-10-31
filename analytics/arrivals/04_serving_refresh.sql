@@ -4,7 +4,7 @@
 -- The first run on empty tables backfills from 2026-10-22 (when arrivals collection started).
 --
 -- Cost stays flat as history grows: the load reads only today's external partition (and
--- yesterday's just after midnight), and the metrics read only the window they recompute.
+-- yesterday's just after midnight) and the metrics read only the window they recompute.
 
 DECLARE first_day DATE DEFAULT DATE '2026-10-22';
 DECLARE load_from DATE DEFAULT DATE(TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 HOUR));

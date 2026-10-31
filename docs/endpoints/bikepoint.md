@@ -42,7 +42,7 @@ is a list of `additionalProperties` (`key`, `value` as text, `modified`).
 | **Docks out of use** (`NbDocks` − `NbBikes` − `NbEmptyDocks`) | **1,777 (8.5%), at 660 of 799 stations** |
 
 The feed never names the out-of-use docks. They are neither holding a bike nor free, which matches
-broken or reserved docks. This is derived, not reported by TfL, and is labelled that way everywhere.
+broken or reserved docks. This is derived, not reported by TfL and is labelled that way everywhere.
 
 ## 2. Grain and identity
 
@@ -114,6 +114,6 @@ use; a map of all stations coloured empty / full / OK. Called directly with the 
 | Business question | Method |
 |---|---|
 | Where and when can't people get or return a bike? | Minutes empty / full by station and hour |
-| Where should rebalancing vans go, and when? | Ranking of empty-in-the-morning and full-in-the-evening stations |
-| How many docks are out of use, and for how long? | Out-of-use docks over time |
+| Where should rebalancing vans go and when? | Ranking of empty-in-the-morning and full-in-the-evening stations |
+| How many docks are out of use and for how long? | Out-of-use docks over time |
 | Are e-bikes spread evenly? | E-bike share by area |

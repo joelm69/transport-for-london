@@ -113,7 +113,7 @@ CREATE OR REPLACE TABLE FUNCTION `transport-for-london-511318.tfl_transport_anal
 
 
 -- 4. Hourly metrics per line (all stops): observed time, arrivals, drops (near-term share, C4),
---    service gaps, and the passenger-weighted wait, regularity and bunching.
+--    service gaps and the passenger-weighted wait, regularity and bunching.
 
 CREATE OR REPLACE TABLE FUNCTION `transport-for-london-511318.tfl_transport_analytics.fn_arrival_line_hourly`(t0 TIMESTAMP, t1 TIMESTAMP) AS (
   WITH headways AS (

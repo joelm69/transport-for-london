@@ -179,7 +179,7 @@ important was lost.
 
 **MCP live tool:** `get_station_notices(station | mode | accessibility_only)`.
 
-### Cold path (daily, BigQuery → Sheet → Tableau, and MCP history tools)
+### Cold path (daily, BigQuery → Sheet → Tableau and MCP history tools)
 
 | Table | Grain | Key columns |
 |---|---|---|
@@ -199,7 +199,7 @@ important was lost.
 
 | Business question | Method |
 |---|---|
-| Which stations most often lack step-free access, and for how long? | Descriptive statistics, ranking |
+| Which stations most often lack step-free access and for how long? | Descriptive statistics, ranking |
 | How long do lift outages last? | Survival analysis (censored durations) |
 | Do planned works finish on time? | Overrun distribution, planned vs actual |
 | Which modes and lines have the most station closures? | Counts by mode; by line once stations are linked to lines |
