@@ -135,7 +135,8 @@ def test_persistence_and_horizon():
 def test_capabilities_lists_the_analyses():
     result = assistant.answer("What analyses can you do?", Data())
     assert "**Statistics:**" in result["answer"]
-    assert result["suggestions"][0] == analysis.STAT_SUGGESTIONS[0]
+    assert analysis.STAT_SUGGESTIONS[0] in result["suggestions"]
+    assert "**The recommendations' figures:**" in result["answer"]
 
 
 def test_analyses_it_cannot_do_get_suggestions_of_the_same_kind():

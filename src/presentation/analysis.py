@@ -833,8 +833,9 @@ NO_HISTORY = [   # (topic, question words, why)
      "this platform doesn't collect weather data"),
 ]
 TOPIC_SUGGESTIONS = {
-    "bikes": ["How many bikes are at Waterloo?", "Which bike stations fail riders most this week?"],
-    "roads": ["Which main roads are delayed?", "How long do road incidents take to clear this week?"],
+    "bikes": ["How many bikes are at Waterloo?", "Chart how often bike stations are empty or full",
+              "How many bike docks are out of use?"],
+    "roads": ["Which main roads are delayed?", "Chart how long road incidents take to clear", "Do roadworks overrun?"],
 }
 KIND_SUGGESTIONS = {
     "histogram": ["What is the distribution of Tube waiting times?", "What is the distribution of bus bunching?",

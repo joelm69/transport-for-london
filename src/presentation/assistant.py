@@ -31,7 +31,7 @@ Each may raise; the assistant then says that source couldn't be read.
 
 import re
 
-from . import advice, analysis
+from . import advice, analysis, figures
 
 EXAMPLES = [
     "Which Tube lines have problems right now?",
@@ -92,6 +92,10 @@ def capabilities():
         "- **Patterns and charts:** how a measure changes by hour, day of week, weekday or weekend, date, line "
         "or route (line or bar chart), how two measures relate (scatter plot with correlation), and the reasons "
         "for disruption (bars or a pie).\n"
+        "- **The recommendations' figures:** even-spacing against actual bus waits and the passenger-hours "
+        "lost, planned against unplanned rail disruption, train against infrastructure causes, bike stations "
+        "empty or full, docks out of use, road clearing times and roadworks overruns, charted with how each is "
+        "worked out.\n"
         "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
         "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
         "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
@@ -313,10 +317,16 @@ def answer_read(question, sources):
     result = {"source": None, "suggestions": [], "chart": None}
     try:
         if re.search(CAPABILITIES, question.lower()):
-            return {**result, "answer": capabilities(), "suggestions": analysis.STAT_SUGGESTIONS[:4]
-                    + analysis.SUGGESTIONS[:3]}
+            return {**result, "answer": capabilities(), "suggestions": figures.SUGGESTIONS[:2]
+                    + analysis.STAT_SUGGESTIONS[:3] + analysis.SUGGESTIONS[:2]}
         if advice.asks_for_advice(question):
             return {**result, **advice.advise(question, sources)}
+        figure = figures.choose(question)
+        if figure:
+            ran = figures.run(figure, sources)
+            charts = ran["charts"]
+            return {**result, "answer": ran["answer"], "charts": charts, "chart": charts[0] if charts else None,
+                    "source": "the business recommendation figures (BigQuery)"}
         declined = analysis.cannot_analyse(question)
         if declined:
             return {**result, **declined}
