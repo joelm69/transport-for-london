@@ -1097,6 +1097,8 @@ def _box(p, rows):
 def _rolling(p, rows):
     name = p["measures"][0]
     fmt = MEASURES[name][3]
+    keep, thin = reliable([{**r, "w": float(r["weight"])} for r in rows])   # overnight hours with few trains
+    rows = keep
     values = [float(r["value"]) for r in rows]
     window = 24
     data = []
@@ -1113,6 +1115,9 @@ def _rolling(p, rows):
             f"level: it ranged from {_fmt(min(smooth), fmt)} to {_fmt(max(smooth), fmt)} and stands at "
             f"**{_fmt(smooth[-1], fmt)}** for the latest 24 hours, against {_fmt(sum(smooth) / len(smooth), fmt)} "
             "on average.")
+    if thin:
+        text += (f" {len(thin)} hours with too little service to measure (mostly overnight) are left out, so the "
+                 "average follows the hours people travel.")
     chart = {"kind": "line", "title": f"{_name(name)}: each hour and 24-hour rolling average", "x": "x", "y": "y",
              "data": data, "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour (London time)",
              "y_title": _label(name), "temporal_labels": True}
