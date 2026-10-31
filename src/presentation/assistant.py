@@ -8,7 +8,10 @@ documentation search (the retrieval half of RAG). It is rule-based: it answers g
 when a question is outside this project, and returns clickable suggestions (`suggestions`) of
 questions it can answer.
 
-Asked how something changes or whether two things are related ("is there a relationship between
+Asked "what analyses can you do?", it lists them with clickable examples. Asked a statistical
+question (a distribution, a significance test, anomalies, persistence, early warning,
+concentration, countdown accuracy), it runs analysis.py's statistical analyses. Asked how
+something changes or whether two things are related ("is there a relationship between
 time of day and bus bunching?"), it runs analysis.py's engine on the history and returns the most
 suitable chart with the numbers behind the answer.
 
@@ -32,9 +35,10 @@ EXAMPLES = [
     "How many bikes are at Waterloo?",
     "Which main roads are delayed?",
     "Is there a relationship between time of day and bus bunching?",
-    "How does Tube waiting time change through the day?",
     "Is bunching related to waiting time on the Tube?",
+    "What analyses can you do?",
     "Is the Central line running?",
+    "How does Tube waiting time change through the day?",
     "Which lines were least reliable this week?",
     "Which bus routes bunch most?",
     "What does bunching mean?",
@@ -69,8 +73,29 @@ SUGGESTIONS = [
     "Which main roads are delayed?",
     "Is there a relationship between time of day and bus bunching?",
     "Is bunching related to waiting time on the Tube?",
-    "What does bunching mean?",
+    "What analyses can you do?",
 ]
+CAPABILITIES = (r"\b(what|which) (analys\w*|statistic\w*|charts?|kinds? of (analys\w*|charts?|questions?))\b|"
+                r"\bwhat can you (do|analy[sz]e|show|chart|answer)\b|\bcapabilit\w*|\bsuggest\w* (an )?analys\w*")
+
+
+def capabilities():
+    """What the assistant can answer, for "what analyses can you do?"."""
+    return (
+        "Here's what I can do with this platform's data:\n\n"
+        "- **Live now:** line status, bikes and free docks at any station, delayed main roads and incidents.\n"
+        "- **This week:** the rail, bus, bike and road findings behind the business recommendations.\n"
+        "- **Patterns and charts:** how a measure changes by hour, day of week, weekday or weekend, date, line "
+        "or route (line or bar chart), how two measures relate (scatter plot with correlation), and the reasons "
+        "for disruption (bars or a pie).\n"
+        "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
+        "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
+        "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
+        "- **Definitions:** what any figure means and how it's measured.\n\n"
+        "Measures: bus and Tube bunching, waiting time and gap regularity, dropped trains, rail disruption and "
+        "incidents, countdown accuracy and accessibility. Try one of these:")
+
+
 OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
              "and roads, and how this platform measures them. Try one of these:")
 
@@ -247,6 +272,13 @@ def answer(question, sources):
     labels = {"rail": "live TfL line status", "bikes": "live TfL BikePoint feed", "roads": "live TfL road feeds"}
     result = {"source": None, "suggestions": [], "chart": None}
     try:
+        if re.search(CAPABILITIES, question.lower()):
+            return {**result, "answer": capabilities(), "suggestions": analysis.STAT_SUGGESTIONS[:4]
+                    + analysis.SUGGESTIONS[:3]}
+        stat = analysis.stat_plan(question)
+        if stat:
+            ran = analysis.run_stat(stat, sources)
+            return {**result, **ran, "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days"}
         chosen = analysis.plan(question)
         if chosen:
             ran = analysis.run(chosen, sources)

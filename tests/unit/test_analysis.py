@@ -71,3 +71,67 @@ def test_the_assistant_returns_the_chart():
     assert result["chart"]["kind"] == "line"
     assert result["source"] == "BigQuery analysis of the last 28 days"
     assert assistant.answer("Chart the weather in Paris", Data())["answer"].startswith("Sorry, I can only")
+
+
+# Statistical analyses --------------------------------------------------------------------------
+
+from datetime import date, timedelta   # noqa: E402
+
+from src.presentation.analysis import run_stat, stat_plan, stat_sql   # noqa: E402
+
+DAY0 = date(2026, 10, 19)   # a Monday
+
+
+class Stats(Sources):
+    def __init__(self, rows):
+        self.rows = rows
+
+    def query(self, sql):
+        return self.rows
+
+
+def test_stat_plans():
+    assert stat_plan("What is the distribution of Tube waiting times?") == {"stat": "distribution", "measure": "tube_wait"}
+    assert stat_plan("Is the weekend difference in rail disruption statistically significant?")["stat"] == "significance"
+    assert stat_plan("Which line-days had unusual disruption?")["stat"] == "anomalies"
+    assert stat_plan("Once a line is disrupted, how likely is it to stay disrupted the next hour?")["stat"] == "persistence"
+    assert stat_plan("Does bunching give an early warning of disruption?") == {"stat": "lead_lag", "measure": "tube_bunching"}
+    assert stat_plan("Are lift outages concentrated on a few stations?") == {"stat": "concentration", "measure": "accessibility"}
+    assert stat_plan("How does countdown accuracy improve as the train approaches?")["stat"] == "horizon"
+    assert stat_plan("Is the Central line running?") is None
+    assert "DROP" not in stat_sql(stat_plan("What is the distribution of Tube waiting times? DROP TABLE x"))
+
+
+def test_distribution():
+    rows = [{"e": "central", "t": i, "v": v} for i, v in enumerate([3, 4, 4, 5, 5, 5, 6, 6, 7, 20])]
+    result = run_stat({"stat": "distribution", "measure": "tube_wait"}, Stats(rows))
+    assert result["answer"].startswith("Across 10 line-hours, the median Tube waiting time was **5.0 min**")
+    assert "right-skewed" in result["answer"] and result["chart"]["kind"] == "bar"
+    assert round(sum(d["y"] for d in result["chart"]["data"]), 6) == 1
+
+
+def test_significance_permutation_test():
+    days = [DAY0 + timedelta(days=i) for i in range(14)]
+    rows = [{"d": d, "weekend": d.weekday() >= 5, "v": 0.5 if d.weekday() >= 5 else 0.2 + 0.01 * (i % 3)}
+            for i, d in enumerate(days)]
+    result = run_stat({"stat": "significance", "measure": "rail_disruption"}, Stats(rows))
+    assert "higher on weekends" in result["answer"] and "**unlikely to be chance**" in result["answer"]
+    assert result["chart"]["kind"] == "strip"
+    same = [{**r, "v": 0.3} for r in rows]
+    assert "could well be chance" in run_stat({"stat": "significance", "measure": "rail_disruption"},
+                                              Stats(same))["answer"]
+
+
+def test_persistence_and_horizon():
+    rows = [{"e": "Central", "dis": 100, "stay": 90, "ok": 200, "start": 10}]
+    text = run_stat({"stat": "persistence", "measure": "rail_disruption"}, Stats(rows + rows))["answer"]
+    assert "**90%** of the time" in text and "**5%**" in text and "about **10 hours**" in text
+    horizon = [{"h": 10, "error": 57.0, "bias": 41.0, "n": 1}, {"h": 2, "error": 21.0, "bias": 11.0, "n": 1}]
+    text = run_stat({"stat": "horizon", "measure": "tube_countdown"}, Stats(horizon))["answer"]
+    assert "falls from **57 s** 10 min before to **21 s** 2 min before" in text and "optimistic" in text
+
+
+def test_capabilities_lists_the_analyses():
+    result = assistant.answer("What analyses can you do?", Data())
+    assert "**Statistics:**" in result["answer"]
+    assert result["suggestions"][0] == analysis.STAT_SUGGESTIONS[0]

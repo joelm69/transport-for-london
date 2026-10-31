@@ -465,3 +465,310 @@ def _relationship(p, rows):
              "x_format": MEASURES[first][3], "series": None, "horizontal": False,
              "x_title": _label(first), "y_title": _label(second)}
     return {"answer": text, "chart": chart}
+
+
+# Statistical analyses -------------------------------------------------------------------------
+# Beyond "how does X change with Y": distributions, a significance test, anomalies, persistence,
+# early warning (lead-lag), concentration and countdown decay. Each has fixed SQL and its own
+# statistics; a question chooses one by its wording, and may name the measure to analyse.
+
+STATS = {   # name: (question words, default measure, example question)
+    "distribution": (r"\b(distribution|histogram|spread|how (variable|spread)|skew\w*|percentiles?|typical range)\b",
+                     "tube_wait", "What is the distribution of Tube waiting times?"),
+    "significance": (r"\b(significan\w*|statistically|hypothesis|t-?test|by chance|difference real|real difference)\b",
+                     "rail_disruption", "Is the weekend difference in rail disruption statistically significant?"),
+    "anomalies": (r"\b(anomal\w*|unusual\w*|outliers?|abnormal|spikes?|stood out|stand out|exceptional)\b",
+                  "rail_disruption", "Which line-days had unusual disruption?"),
+    "persistence": (r"\b(persist\w*|once (a line is )?disrupted|next hour|stays? disrupted|how long .*last\w*|"
+                    r"recover\w*|run length)\b", "rail_disruption",
+                    "Once a line is disrupted, how likely is it to stay disrupted the next hour?"),
+    "lead_lag": (r"\b(early warning|warn\w*|before (tfl|a|the) (disruption|report)\w*|lead\w*|lags?|ahead of)\b",
+                 "tube_wait", "Do Tube waits rise before a disruption is reported?"),
+    "concentration": (r"\b(concentrat\w*|pareto|gini|inequal\w*|80/20|few (lines|stations))\b",
+                      "rail_disruption", "Is disruption concentrated on a few lines?"),
+    "horizon": (r"\b(horizon|as the trains? approach\w*|closer|minutes? (before|out)|improves?)\b",
+                "tube_countdown", "How does countdown accuracy improve as the train approaches?"),
+}
+STAT_SUGGESTIONS = [example for _, _, example in STATS.values()]
+DISRUPTED_HOUR = 0.5   # an hour counts as disrupted when at least half its service time was
+
+
+def stat_plan(question):
+    """{"stat": name, "measure": name} for a statistical question, else None."""
+    text = question.lower()
+    for name, (pattern, default, _) in STATS.items():
+        if name == "horizon" and not _has(r"\b(countdowns?|predict\w*|accura\w*)\b", text):
+            continue
+        if _has(pattern, text):
+            found = sorted((m.start(), subject) for subject, p in SUBJECTS for m in [re.search(p, text)] if m)
+            measure = _measure(found[0][1], text) if found else default
+            if name in ("persistence", "concentration") and measure not in ("rail_disruption", "accessibility"):
+                measure = default
+            if name == "lead_lag" and measure not in ("tube_wait", "tube_bunching", "tube_regularity"):
+                measure = default
+            if name == "horizon":
+                measure = "tube_countdown"
+            return {"stat": name, "measure": measure}
+    return None
+
+
+def _values_sql(measure, group):
+    """One value of a measure per group (entity-hour, day, or entity-day)."""
+    table_key, where, expr, *_ = MEASURES[measure]
+    table, entity, weight = TABLES[table_key]
+    cols = {"entity_hour": f"{entity} AS e, hour_start AS t",
+            "day": "DATE(hour_start, 'Europe/London') AS d, "
+                   "EXTRACT(DAYOFWEEK FROM DATE(hour_start, 'Europe/London')) IN (1, 7) AS weekend",
+            "entity_day": f"{entity} AS e, DATE(hour_start, 'Europe/London') AS d"}[group]
+    keys = {"entity_hour": "e, t", "day": "d, weekend", "entity_day": "e, d"}[group]
+    return f"""
+        SELECT {cols}, {expr} AS v FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
+        GROUP BY {keys} HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL ORDER BY {keys} LIMIT 6000"""
+
+
+def stat_sql(p):
+    name, measure = p["stat"], p["measure"]
+    if name == "distribution":
+        return _values_sql(measure, "entity_hour")
+    if name == "significance":
+        return _values_sql(measure, "day")
+    if name == "anomalies":
+        return _values_sql(measure, "entity_day")
+    if name == "persistence":
+        return f"""
+            WITH h AS (
+              SELECT line_name, hour_start, disrupted_share >= {DISRUPTED_HOUR} AS dis,
+                     LEAD(disrupted_share >= {DISRUPTED_HOUR}) OVER w AS nxt, LEAD(hour_start) OVER w AS next_hour
+              FROM `{DATASET}.line_disruption_hourly` WHERE {WINDOW} AND in_service_minutes >= 30
+              WINDOW w AS (PARTITION BY line_id ORDER BY hour_start))
+            SELECT line_name AS e, COUNTIF(dis) AS dis, COUNTIF(dis AND nxt) AS stay,
+                   COUNTIF(NOT dis) AS ok, COUNTIF(NOT dis AND nxt) AS start
+            FROM h WHERE next_hour = TIMESTAMP_ADD(hour_start, INTERVAL 1 HOUR)
+            GROUP BY e ORDER BY e"""
+    if name == "lead_lag":
+        _, where, expr, *_ = MEASURES[measure]
+        return f"""
+            WITH a AS (SELECT line_id, hour_start, {expr} AS v FROM `{DATASET}.arrival_line_hourly`
+                       WHERE {WINDOW} AND {where} GROUP BY line_id, hour_start),
+                 d AS (SELECT line_id, hour_start, disrupted_share AS s FROM `{DATASET}.line_disruption_hourly`
+                       WHERE {WINDOW} AND in_service_minutes > 0)
+            SELECT k, CORR(a.v, d.s) AS r, COUNT(*) AS n
+            FROM a, UNNEST(GENERATE_ARRAY(-3, 3)) AS k
+            JOIN d ON d.line_id = a.line_id AND d.hour_start = TIMESTAMP_ADD(a.hour_start, INTERVAL k HOUR)
+            GROUP BY k ORDER BY k"""
+    if name == "concentration":
+        table_key, where, *_ = MEASURES[measure]
+        table, entity, _ = TABLES[table_key]
+        hours = "SUM(accessibility_minutes) / 60" if measure == "accessibility" else "SUM(disrupted_minutes) / 60"
+        label = entity if measure == "accessibility" else "line_name"
+        return f"""
+            SELECT {label} AS e, {hours} AS v FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
+            GROUP BY e HAVING v > 0 ORDER BY v DESC"""
+    return f"""
+        SELECT horizon_minutes AS h, {_weighted('median_abs_error_seconds', 'predictions')} AS error,
+               {_weighted('mean_error_seconds', 'predictions')} AS bias, SUM(predictions) AS n
+        FROM `{DATASET}.arrival_accuracy_hourly` WHERE {WINDOW} AND mode = 'tube' AND predictions > 0
+        GROUP BY h ORDER BY h DESC"""
+
+
+def _quantile(sorted_values, q):
+    if not sorted_values:
+        return None
+    pos = (len(sorted_values) - 1) * q
+    lo, hi = math.floor(pos), math.ceil(pos)
+    return sorted_values[lo] + (sorted_values[hi] - sorted_values[lo]) * (pos - lo)
+
+
+def run_stat(p, sources):
+    rows = [dict(r) for r in sources.query(stat_sql(p))]
+    if len(rows) < 2:
+        return {"answer": "There isn't enough data for that analysis yet.", "chart": None}
+    return globals()[f"_stat_{p['stat']}"](p, rows)
+
+
+def _stat_distribution(p, rows):
+    measure = p["measure"]
+    fmt, entity = MEASURES[measure][3], MEASURES[measure][5]
+    values = sorted(float(r["v"]) for r in rows)
+    n, mean = len(values), sum(values) / len(values)
+    q1, median, q3, p90 = (_quantile(values, q) for q in (0.25, 0.5, 0.75, 0.9))
+    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / (n - 1)) if n > 1 else 0
+    skew = (sum((v - mean) ** 3 for v in values) / n) / sd ** 3 if sd else 0
+    top = _quantile(values, 0.99)
+    width = (top - values[0]) / 15 or 1
+    bins = [0] * 15
+    for v in values:
+        bins[min(int((v - values[0]) / width), 14)] += 1
+    data = [{"x": f"{_fmt(values[0] + i * width, fmt)}" + ("+" if i == 14 else ""), "y": count / n}
+            for i, count in enumerate(bins)]
+    shape = ("right-skewed: most hours are close to the median, with a long tail of much worse hours"
+             if skew > 0.5 else "left-skewed: a tail of unusually good hours" if skew < -0.5
+             else "roughly symmetric around the median")
+    text = (f"Across {n:,} {entity}-hours, the median {_mid(measure)} was **{_fmt(median, fmt)}**; half of the "
+            f"hours were between {_fmt(q1, fmt)} and {_fmt(q3, fmt)} (the interquartile range), and 1 hour in 10 "
+            f"was above {_fmt(p90, fmt)}. The distribution is {shape} (skewness {skew:.2f}).")
+    chart = {"kind": "bar", "title": f"Distribution of {_mid(measure)} per {entity}-hour", "x": "x", "y": "y",
+             "data": data, "format": "pct", "horizontal": False, "series": None,
+             "x_title": _label(measure), "y_title": f"Share of {entity}-hours"}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_significance(p, rows):
+    from itertools import combinations
+    from random import Random
+    measure = p["measure"]
+    fmt = MEASURES[measure][3]
+    weekend = [float(r["v"]) for r in rows if r["weekend"]]
+    weekday = [float(r["v"]) for r in rows if not r["weekend"]]
+    if len(weekend) < 2 or len(weekday) < 2:
+        return {"answer": "There aren't enough weekend and weekday days yet to test the difference; it needs at "
+                          "least two of each.", "chart": None}
+    mean_we, mean_wd = sum(weekend) / len(weekend), sum(weekday) / len(weekday)
+    observed = mean_we - mean_wd
+    values, k = weekend + weekday, len(weekend)
+    total = sum(values)
+    # Permutation test: how often does a random split of the same days differ as much?
+    if math.comb(len(values), k) <= 20000:
+        splits = (list(c) for c in combinations(range(len(values)), k))
+        count = math.comb(len(values), k)
+    else:
+        rng = Random(7)
+        splits = (rng.sample(range(len(values)), k) for _ in range(20000))
+        count = 20000
+    extreme = 0
+    for split in splits:
+        s = sum(values[i] for i in split)
+        if abs(s / k - (total - s) / (len(values) - k)) >= abs(observed) - 1e-12:
+            extreme += 1
+    p_value = extreme / count
+    verdict = ("**unlikely to be chance**" if p_value < 0.05 else
+               "**could well be chance**: more weeks of data are needed to be sure")
+    higher = "weekends" if observed > 0 else "weekdays"
+    text = (f"{_name(measure)} averaged {_fmt(mean_we, fmt)} on weekend days and {_fmt(mean_wd, fmt)} on weekdays: "
+            f"higher on {higher}. A permutation test (re-splitting the same {len(values)} days at random) gives "
+            f"p = {p_value:.3f}, so the difference is {verdict}. ({len(weekday)} weekdays and {len(weekend)} "
+            "weekend days so far.)")
+    if min(len(weekend), len(weekday)) < 4:
+        text += " With so few days in one group, treat this as provisional."
+    data = [{"x": "Weekend" if r["weekend"] else "Weekday", "y": float(r["v"]), "label": _day(r["d"])} for r in rows]
+    chart = {"kind": "strip", "title": f"{_name(measure)} per day: weekdays against weekends", "x": "x", "y": "y",
+             "data": data, "format": fmt, "horizontal": False, "series": None, "x_title": "",
+             "y_title": _label(measure)}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_anomalies(p, rows):
+    measure = p["measure"]
+    fmt, entity = MEASURES[measure][3], MEASURES[measure][5]
+    by = {}
+    for r in rows:
+        by.setdefault(r["e"], []).append(r)
+    found = []
+    for e, days in by.items():
+        if len(days) < 4:
+            continue
+        vals = [float(d["v"]) for d in days]
+        mean = sum(vals) / len(vals)
+        sd = math.sqrt(sum((v - mean) ** 2 for v in vals) / (len(vals) - 1))
+        if not sd:
+            continue
+        for d in days:
+            z = (float(d["v"]) - mean) / sd
+            found.append({"e": _entity_name(e, entity), "d": _day(d["d"]), "v": float(d["v"]), "mean": mean, "z": z})
+    unusual = sorted((f for f in found if abs(f["z"]) >= 2), key=lambda f: -abs(f["z"]))
+    if not unusual:
+        return {"answer": f"No {entity}-day stood out: none was more than 2 standard deviations from that "
+                          f"{entity}'s own usual {_mid(measure)}.", "chart": None}
+    top = unusual[0]
+    text = (f"**{len(unusual)} {entity}-day{'s' if len(unusual) != 1 else ''}** stood out (more than 2 standard "
+            f"deviations from that {entity}'s own usual level). The most unusual: **{top['e']} on {top['d']}**, "
+            f"unusually {'high' if top['z'] > 0 else 'low'} at {_fmt(top['v'], fmt)} against its usual "
+            f"{_fmt(top['mean'], fmt)} (z = {top['z']:.1f}). Each {entity} is compared with itself, so one that is "
+            f"always high isn't flagged just for that. Positive z is worse than usual for this measure.")
+    data = [{"x": f"{f['e']} · {f['d']}", "y": f["z"]} for f in unusual[:12]]
+    chart = {"kind": "bar", "title": "Most unusual days (z-score against the line's own normal)", "x": "x", "y": "y",
+             "data": data, "format": "ratio", "horizontal": True, "series": None, "x_title": "",
+             "y_title": "Standard deviations from normal (z)"}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_persistence(p, rows):
+    dis = sum(r["dis"] for r in rows)
+    stay = sum(r["stay"] for r in rows)
+    ok = sum(r["ok"] for r in rows)
+    start = sum(r["start"] for r in rows)
+    if not dis or not ok:
+        return {"answer": "There aren't enough disrupted hours yet to measure persistence.", "chart": None}
+    p_stay, p_start = stay / dis, start / ok
+    run = 1 / (1 - p_stay) if p_stay < 1 else float("inf")
+    text = (f"A disrupted hour (half or more of the service time disrupted) is followed by another disrupted hour "
+            f"**{p_stay:.0%}** of the time; an undisrupted hour turns into a disrupted one only **{p_start:.0%}** "
+            f"of the time. In a simple Markov model that means a disruption, once started, lasts about "
+            f"**{run:.0f} hours** on average, and is {p_stay / p_start:.0f} times as likely to continue as to "
+            "start. Planned closures count, which makes long runs more likely.")
+    data = sorted(({"x": r["e"], "y": r["stay"] / r["dis"]} for r in rows if r["dis"] >= 10),
+                  key=lambda d: -d["y"])
+    chart = {"kind": "bar", "title": "Chance a disrupted hour is followed by another, by line", "x": "x", "y": "y",
+             "data": data, "format": "pct", "horizontal": True, "series": None, "x_title": "",
+             "y_title": "Chance the next hour is disrupted too"}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_lead_lag(p, rows):
+    measure = p["measure"]
+    data = [{"x": "same hour" if int(r["k"]) == 0 else f"{int(r['k']):+d} h", "y": float(r["r"]), "k": int(r["k"])}
+            for r in rows if r["r"] is not None]
+    best = max(data, key=lambda d: d["y"])
+    same = next((d for d in data if d["k"] == 0), best)
+    lead = [d for d in data if d["k"] > 0]
+    warning = lead and max(d["y"] for d in lead) > same["y"] + 0.03
+    text = (f"Correlation between {_mid(measure)} and rail disruption, with {_mid(measure)} measured up to 3 hours "
+            f"before (+) or after (−) the disruption: strongest at **{best['x']}** (r = {best['y']:.2f}).")
+    text += (f" {_name(measure)} rises **before** disruption shows in TfL's status, so it could serve as an early "
+             "warning." if warning else
+             f" {_name(measure)} moves **with or after** the disruption, not before it: no early warning in the "
+             "data so far.")
+    chart = {"kind": "bar", "title": f"Correlation of {_mid(measure)} with disruption, by hours ahead",
+             "x": "x", "y": "y", "data": [{"x": d["x"], "y": d["y"]} for d in data], "format": "ratio",
+             "horizontal": False, "series": None,
+             "x_title": f"{_name(measure)} measured this many hours before (+) or after (−) the disruption",
+             "y_title": "Correlation (r)"}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_concentration(p, rows):
+    measure = p["measure"]
+    values = [float(r["v"]) for r in rows]
+    total, n = sum(values), len(values)
+    cumulative, running = [], 0
+    for r, v in zip(rows, values):
+        running += v
+        cumulative.append({"x": str(r["e"]), "y": running / total})
+    top = max(1, round(n * 0.2))
+    top_share = cumulative[top - 1]["y"]
+    ascending = sorted(values)
+    gini = (2 * sum((i + 1) * v for i, v in enumerate(ascending)) / (n * total) - (n + 1) / n) if total else 0
+    what = "stations" if measure == "accessibility" else "lines"
+    hours = "hours with a lift or step-free access notice" if measure == "accessibility" else "disrupted hours"
+    text = (f"The top {top} of {n} {what} (20%) account for **{top_share:.0%}** of all {hours}. The Gini "
+            f"coefficient is **{gini:.2f}** (0 = spread evenly, 1 = all on one {what[:-1]}): "
+            + ("strongly concentrated." if gini >= 0.5 else "moderately concentrated." if gini >= 0.3
+               else "fairly evenly spread."))
+    chart = {"kind": "line", "title": f"Cumulative share of {hours} (Pareto curve)", "x": "x", "y": "y",
+             "data": cumulative[:40], "format": "pct", "horizontal": False, "series": None,
+             "x_title": f"{what.title()}, most affected first", "y_title": f"Cumulative share of {hours}"}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_horizon(p, rows):
+    data = [{"x": f"{int(r['h'])} min before", "y": float(r["error"]), "bias": float(r["bias"])} for r in rows]
+    far, near = data[0], data[-1]
+    late = near["bias"] > 0
+    text = (f"TfL's Tube countdown gets steadily more accurate as the train approaches: the typical error falls "
+            f"from **{far['y']:.0f} s** {far['x']} to **{near['y']:.0f} s** {near['x']}. On average trains arrive "
+            f"{abs(near['bias']):.0f} s {'later' if late else 'earlier'} than shown {near['x']} "
+            f"({abs(far['bias']):.0f} s {far['x']}), so the countdown is {'optimistic' if late else 'cautious'}.")
+    chart = {"kind": "line", "title": "Typical Tube countdown error by time before arrival", "x": "x", "y": "y",
+             "data": [{"x": d["x"], "y": d["y"]} for d in data], "format": "seconds", "horizontal": False,
+             "series": None, "x_title": "When the countdown was shown", "y_title": "Typical error (seconds)"}
+    return {"answer": text, "chart": chart}
