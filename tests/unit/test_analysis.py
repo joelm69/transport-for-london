@@ -163,3 +163,50 @@ def test_misspellings_are_read_and_said():
     assert assistant.read_misspellings("Is the Central line running?") == ("Is the Central line running?", [])
     result = assistant.answer("histgram of bus bunchng", Data())
     assert result["answer"].startswith("_Reading “histgram” as “histogram”, “bunchng” as “bunching”._")
+
+
+# More charts, trends, regression, the catalogue -------------------------------------------------
+
+from src.presentation import catalogue   # noqa: E402
+from src.presentation.analysis import linear_fit, permutation_p   # noqa: E402
+
+
+def test_chart_kinds_shape_the_plan():
+    assert plan("Heatmap of bus bunching by hour and day of week") == {
+        "measures": ["bus_bunching"], "dimension": "hour", "series": "weekday", "kind": "heatmap"}
+    assert plan("Bus bunching by hour and day of week")["series"] == "weekday"
+    assert plan("Box plot of Tube waiting time by line")["kind"] == "box"
+    assert plan("Box plot of Tube waiting time")["dimension"] == "entity"
+    assert plan("Control chart of rail disruption")["dimension"] == "date"
+    assert plan("Rolling average of Tube bunching")["dimension"] == "time"
+    assert plan("Is rail disruption getting worse over time?")["trend"] is True
+    assert "LIMIT 400" in build_sql(plan("Heatmap of bus bunching by hour and day of week"))   # 168 cells fit
+
+
+def test_trend_statistics():
+    slope, intercept, r2 = linear_fit([0, 1, 2, 3], [1, 3, 5, 7])
+    assert (round(slope, 6), round(intercept, 6), round(r2, 6)) == (2, 1, 1)
+    assert permutation_p(list(range(10)), [v * 2 for v in range(10)]) < 0.01
+    assert permutation_p(list(range(8)), [1, 3, 2, 3, 1, 2, 3, 1]) > 0.2
+
+
+class Boxes(Sources):
+    def query(self, sql):
+        return [{"g": line, "s": line, "v": v} for line, values in
+                (("central", [3, 4, 5, 6, 7, 30]), ("victoria", [1, 1.5, 2, 2.5, 3, 3.5])) for v in values]
+
+
+def test_box_plot():
+    result = analysis.run(plan("Box plot of Tube waiting time by line"), Boxes())
+    assert result["chart"]["kind"] == "box"
+    first = result["chart"]["data"][0]
+    assert first["x"] == "Central" and first["median"] == 5.5 and first["outliers"] == 1
+    assert "The highest median is **Central**" in result["answer"]
+
+
+def test_catalogue_and_features():
+    assert catalogue.asks_about_data("What data do you collect?")
+    assert catalogue.asks_about_data("How often is BikePoint collected?")
+    assert not catalogue.asks_about_data("How often are bike stations empty?")
+    assert catalogue.describe("How often is BikePoint collected?").startswith("- **Santander Cycles docking stations**")
+    assert "Needs new data or development" in assistant.answer("Suggest new features", Data())["answer"]

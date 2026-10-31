@@ -90,6 +90,12 @@ CAUSE_SQL = f"""
     FROM `{DATASET}.line_disruption_hourly` WHERE {WINDOW} AND disrupted_minutes > 0
     GROUP BY d0 ORDER BY value DESC"""
 
+# Disrupted hours by line and reason, for a stacked bar chart.
+CAUSE_BY_LINE_SQL = f"""
+    SELECT line_name AS x, IFNULL(main_cause, 'Not stated') AS series, SUM(disrupted_minutes) / 60 AS y
+    FROM `{DATASET}.line_disruption_hourly` WHERE {WINDOW} AND disrupted_minutes > 0
+    GROUP BY x, series ORDER BY x"""
+
 DIMENSIONS = {   # SQL value, SQL sort key, label
     "hour": (f"EXTRACT(HOUR FROM {LONDON})", f"EXTRACT(HOUR FROM {LONDON})", "Hour of day (London time)"),
     "weekday": (f"FORMAT_DATETIME('%a', {LONDON})", f"MOD(EXTRACT(DAYOFWEEK FROM {LONDON}) + 5, 7)", "Day of week"),
@@ -115,10 +121,16 @@ TUBE = r"\b(tube|underground|trains?|metro)\b"
 RELATION = (r"\b(relat\w*|correlat\w*|link\w*|associat\w*|affect\w*|impact\w*|depend\w*|influenc\w*|"
             r"vs\.?|versus|against|compare\w*|change\w*|vary|varies|pattern\w*|trend\w*|differ\w*)\b")
 CHART_WORDS = (r"\b(chart|graph|plot|visuali[sz]\w*|draw|show me|analy[sz]\w*|prove|distribution|pie|donut|"
-               r"doughnut|breakdown|split)\b")
-KINDS = [("pie", r"\b(pie|donut|doughnut)\b"), ("scatter", r"\bscatter\w*"), ("line", r"\bline (chart|graph)\b"),
+               r"doughnut|breakdown|split|heat ?maps?|box ?plots?|whiskers?|rolling|moving average|stacked|"
+               r"cumulative|trend)\b")
+KINDS = [("heatmap", r"\bheat ?maps?\b"), ("box", r"\bbox(es)?[- ]?(plots?|and whiskers?)\b|\bwhiskers?\b"),
+         ("control", r"\b(control charts?|process control)\b"), ("rolling", r"\b(rolling|moving)[- ]averages?\b|\bsmooth\w*"),
+         ("area", r"\barea (charts?|graphs?)\b|\bcumulative\b"), ("stacked", r"\bstacked\b"),
+         ("pie", r"\b(pie|donut|doughnut)\b"), ("scatter", r"\bscatter\w*"), ("line", r"\bline (chart|graph)\b"),
          ("bar", r"\b(bar|column) (chart|graph)s?\b|\bbars\b")]
 CAUSE = r"\b(reasons?|causes?|caused|why|because)\b"
+TREND_WORDS = (r"\b(trend\w*|(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*|"
+               r"over time)\b")
 
 SUGGESTIONS = [
     "Is there a relationship between time of day and bus bunching?",
@@ -158,6 +170,18 @@ def plan(question):
     found = plan_without_kind(text)
     if found is None and kind and _has(CAUSE, text) and _has(r"\b(lines?|tube|rail|trains?)\b", text):
         found = {"measures": ["rail_disruption"], "dimension": "cause", "series": None}
+    if found and found["dimension"] == "date" and _has(TREND_WORDS, text):
+        found["trend"] = True
+    if found and len(found["measures"]) == 1 and found["dimension"] != "cause":
+        if kind in ("control", "area"):
+            found.update(dimension="date", series=None)
+        elif kind == "rolling":
+            found.update(dimension="time", series=None)
+        elif kind == "heatmap":
+            found.update(dimension="hour", series="weekday")
+        elif kind == "box" and (found["dimension"] in (None, "date") or (
+                found["dimension"] == "hour" and not _has(r"\b(hours?|hourly|time of (the )?day)\b", text))):
+            found.update(dimension="entity", series=None)   # by line or route unless the hour is asked for
     return {**found, "kind": kind} if found else None
 
 
@@ -176,7 +200,8 @@ def plan_without_kind(text):
     day_type = _has(r"\bweekends?\b", text)
     weekday = _has(r"\b(day of (the )?week|which day|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
                    text)
-    date = _has(r"\b(over time|trend|daily|each day|per day|by date|day by day|last \d+ days|this month)\b", text)
+    date = _has(r"\b(over time|trend\w*|daily|each day|per day|by date|day by day|last \d+ days|this month|"
+                r"(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*)\b", text)
     entity = _has(r"\b(by line|each line|per line|which lines?|by route|each route|per route|which routes?|"
                   r"by station|which stations?)\b", text)
     asks = _has(RELATION, text) or _has(CHART_WORDS, text)
@@ -186,6 +211,8 @@ def plan_without_kind(text):
     if len(measures) >= 2 and asks:
         return {"measures": measures[:2], "dimension": None, "series": None}
     measure = measures[0]
+    if hour and weekday and not day_type:
+        return {"measures": [measure], "dimension": "hour", "series": "weekday"}
     if hour:
         return {"measures": [measure], "dimension": "hour", "series": "day_type" if day_type else None}
     if day_type:
@@ -204,11 +231,24 @@ def plan_without_kind(text):
 def build_sql(p):
     """SQL for a plan, from the catalogue only."""
     if p["dimension"] == "cause":
-        return CAUSE_SQL
+        return CAUSE_BY_LINE_SQL if p.get("kind") == "stacked" else CAUSE_SQL
     if len(p["measures"]) == 2:
         return _pair_sql(*p["measures"])
     table_key, where, expr, *_ = MEASURES[p["measures"][0]]
     table, entity, weight = TABLES[table_key]
+    if p["dimension"] == "time":   # one value per clock hour, for rolling averages
+        return f"""
+        SELECT hour_start AS d0, {expr} AS value, SUM({weight}) AS weight
+        FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
+        GROUP BY d0 HAVING SUM({weight}) > 0 ORDER BY d0"""
+    if p.get("kind") == "box":    # one value per entity-hour, grouped for the box plot
+        dim = p["dimension"]
+        group, sort = (entity, entity) if dim == "entity" else DIMENSIONS[dim][:2]
+        return f"""
+        SELECT {group} AS g, MIN({sort}) AS s, {expr} AS v
+        FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
+        GROUP BY g, {entity}, hour_start HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL
+        ORDER BY s LIMIT 8000"""
     dims = [p["dimension"]] + ([p["series"]] if p["series"] else [])
     selects, groups, orders = [], [], []
     for i, dim in enumerate(dims):
@@ -219,11 +259,13 @@ def build_sql(p):
     order = "value DESC" if p["dimension"] == "entity" else ", ".join(orders)
     days = (f"(SELECT COUNT(DISTINCT DATE(hour_start, 'Europe/London')) FROM `{DATASET}.{table}` "
             f"WHERE {WINDOW} AND {where})")
+    latest = f"(SELECT MAX(hour_start) FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where})"
     return f"""
-        SELECT {', '.join(selects)}, {expr} AS value, SUM({weight}) AS weight, ANY_VALUE({days}) AS days
+        SELECT {', '.join(selects)}, {expr} AS value, SUM({weight}) AS weight, ANY_VALUE({days}) AS days,
+               ANY_VALUE({latest}) AS last_hour
         FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
         GROUP BY {', '.join(groups)} HAVING SUM({weight}) > 0
-        ORDER BY {order} LIMIT 60"""
+        ORDER BY {order} LIMIT 400"""   # room for every hour × day of week cell (168)
 
 
 def _pair_sql(first, second):
@@ -311,25 +353,72 @@ def _strength(r):
 def run(p, sources):
     """{"answer": markdown, "chart": description or None} for a plan."""
     rows = [dict(r) for r in sources.query(build_sql(p))]
-    rows = [r for r in rows if r.get("value", r.get("y")) is not None]
+    rows = [r for r in rows if r.get("value", r.get("y", r.get("v"))) is not None]
     if len(rows) < 2:
         return {"answer": "There isn't enough data for that analysis yet.", "chart": None}
+    kind = p.get("kind")
     if len(p["measures"]) == 2:
         result = _relationship(p, rows)
     elif p["dimension"] == "cause":
-        result = _by_cause(p, rows)
+        result = _stacked_causes(p, rows) if kind == "stacked" else _by_cause(p, rows)
+    elif kind == "box":
+        result = _box(p, rows)
+    elif p["dimension"] == "time":
+        result = _rolling(p, rows)
+    elif p["series"] == "weekday":
+        result = _heatmap(p, rows)
     elif p["series"]:
         result = _by_hour_and_day_type(p, rows)
+    elif kind == "control":
+        result = _control(p, rows)
     else:
         result = _by_dimension(p, rows)
-    return _apply_kind(p.get("kind"), result, p)
+    result = _apply_kind(kind, result, p)
+    latest = next((r["last_hour"] for r in rows if r.get("last_hour")), None)
+    if latest is not None and result.get("chart"):
+        result["answer"] += f"\n\n_Latest data used: {_when_hour(latest)}._"
+    return result
+
+
+def _when_hour(value):
+    """A timestamp as London time: 'Sat 31 Oct, 21:00'."""
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+    t = value if isinstance(value, datetime) else datetime.fromisoformat(str(value).replace(" UTC", "+00:00"))
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=timezone.utc)
+    t = t.astimezone(ZoneInfo("Europe/London"))
+    return f"{t:%a} {t.day} {t:%b}, {t:%H:%M} London time"
+
+
+def follow_ups(p):
+    """Questions that take the same measure further, offered after an answer."""
+    if not p or len(p["measures"]) != 1 or p["dimension"] == "cause":
+        first = ("Show a pie chart of the reasons for rail disruption" if p and p.get("kind") == "stacked"
+                 else "Show a stacked bar chart of disruption causes by line")
+        return [first, "Is rail disruption getting worse over time?", "Which line-days had unusual disruption?"]
+    name = _mid(p["measures"][0])
+    entity = MEASURES[p["measures"][0]][5]
+    options = [f"Heatmap of {name} by hour and day of week", f"Box plot of {name} by {entity}",
+               f"Is {name} getting worse over time?", f"Control chart of {name}",
+               f"Rolling average of {name}"]
+    done = {"hour": 0 if p["series"] == "weekday" else None, "entity": 1 if p.get("kind") == "box" else None,
+            "date": 2 if p.get("kind") != "control" else 3, "time": 4}.get(p["dimension"])
+    return [q for i, q in enumerate(options) if i != done][:3]
 
 
 def _apply_kind(kind, result, p):
     """Use the chart type the visitor asked for when it suits the data; otherwise keep the best
     one and say why."""
     chart = result["chart"]
-    if not kind or not chart or kind == chart["kind"]:
+    if not kind or not chart or kind == chart["kind"] or kind in ("box", "rolling", "control", "heatmap", "stacked"):
+        if kind in ("box", "rolling", "control", "heatmap", "stacked") and chart and kind not in (
+                chart["kind"], "rolling") and not (kind == "rolling" and chart["kind"] == "line"):
+            result["answer"] += (f"\n\n_A {kind} chart doesn't suit this question, so here is a {chart['kind']} "
+                                 "chart._")
+        return result
+    if kind == "area" and chart["kind"] == "line" and not chart.get("series"):
+        chart["kind"] = "area"
         return result
     note = None
     if kind == "pie":
@@ -460,12 +549,27 @@ def _by_dimension(p, rows):
         names = ", ".join(d["x"] for d in thin)
         why = ("" if dim != "hour" else " (fewer buses run overnight)" if name.startswith("bus")
                else " (only the Night Tube runs overnight)" if name.startswith("tube") else " (overnight)")
+        them = "them" if len(thin) > 1 else "it"
         text += (f" {names} {'have' if len(thin) > 1 else 'has'} too little data to compare{why}, so the chart "
-                 "shows them but the comparison leaves them out.")
+                 f"shows {them} but the comparison leaves {them} out.")
+    fitted = None
+    if dim == "date" and len(data) >= 3:
+        trend_text, fitted = trend(data, fmt, _mid(name))
+        if p.get("trend"):   # the question asks about a trend: answer that first
+            slope = fitted[-1] - fitted[0]
+            significant = "unlikely to be chance" in trend_text
+            lead = ("**No clear trend yet.**" if not significant else
+                    f"**Yes: {_mid(name)} is getting {'worse' if slope > 0 else 'better'}.**")
+            body = text.split("** ", 1)[-1]
+            text = (lead + trend_text.replace(": no clear trend yet", "") + " Day to day: "
+                    + body[0].lower() + body[1:])
+        else:
+            text += trend_text
     text += f"\n\n_Based on {int(rows[0]['days'])} days of data; times are London time._"
     x_title = entity.title() if dim == "entity" else DIMENSIONS[dim][2]
     chart = {"kind": "line" if dim in ("hour", "date") else "bar", "title": f"{_name(name)} by {x_title.lower()}",
-             "x": "x", "y": "y", "data": [{"x": d["x"], "y": d["y"]} for d in data], "format": fmt,
+             "x": "x", "y": "y", "data": [{"x": d["x"], "y": d["y"], **({"fit": fitted[i]} if fitted else {})}
+                                          for i, d in enumerate(data)], "format": fmt,
              "horizontal": dim == "entity", "x_title": x_title, "y_title": label, "series": None}
     return {"answer": text, "chart": chart}
 
@@ -501,6 +605,13 @@ def _relationship(p, rows):
             f"{entity}-hours): when {_mid(first)} is higher, {_mid(second)} {change}. "
             "r runs from −1 to 1, and 0 means no straight-line relationship. It shows the two move together, "
             "not that one causes the other.")
+    slope, _, r2 = linear_fit(xs, ys)
+    step = 0.01 if MEASURES[first][3] == "pct" else 1
+    unit = {"pct": "percentage point", "minutes": "minute", "seconds": "second", "hours": "hour"}.get(
+        MEASURES[first][3], "unit")
+    text += (f" A straight-line (least-squares) regression gives {_fmt(abs(slope * step), MEASURES[second][3])} "
+             f"{'more' if slope > 0 else 'less'} {_mid(second)} for each extra {unit} of {_mid(first)}, and "
+             f"explains {r2:.0%} of the variation (R² = {r2:.2f}).")
     chart = {"kind": "scatter", "title": f"{_name(second)} against {_mid(first)}", "x": "x", "y": "y",
              "data": [{"x": x, "y": y} for x, y in zip(xs, ys)], "format": MEASURES[second][3],
              "x_format": MEASURES[first][3], "series": None, "horizontal": False,
@@ -682,12 +793,21 @@ def _stat_significance(p, rows):
         if abs(s / k - (total - s) / (len(values) - k)) >= abs(observed) - 1e-12:
             extreme += 1
     p_value = extreme / count
+    boot, rng_ci = [], Random(3)
+    for _ in range(4000):
+        we = [rng_ci.choice(weekend) for _ in weekend]
+        wd = [rng_ci.choice(weekday) for _ in weekday]
+        boot.append(sum(we) / len(we) - sum(wd) / len(wd))
+    boot.sort()
+    ci = (boot[int(0.025 * len(boot))], boot[int(0.975 * len(boot)) - 1])
     verdict = ("**unlikely to be chance**" if p_value < 0.05 else
                "**could well be chance**: more weeks of data are needed to be sure")
     higher = "weekends" if observed > 0 else "weekdays"
     text = (f"{_name(measure)} averaged {_fmt(mean_we, fmt)} on weekend days and {_fmt(mean_wd, fmt)} on weekdays: "
             f"higher on {higher}. A permutation test (re-splitting the same {len(values)} days at random) gives "
-            f"p = {p_value:.3f}, so the difference is {verdict}. ({len(weekday)} weekdays and {len(weekend)} "
+            f"p = {p_value:.3f}, so the difference is {verdict}. A bootstrap 95% confidence interval for the "
+            f"difference (weekend minus weekday) runs from {_fmt(ci[0], fmt)} to {_fmt(ci[1], fmt)}"
+            f"{'; it includes zero' if ci[0] <= 0 <= ci[1] else ''}. ({len(weekday)} weekdays and {len(weekend)} "
             "weekend days so far.)")
     if min(len(weekend), len(weekday)) < 4:
         text += " With so few days in one group, treat this as provisional."
@@ -883,3 +1003,189 @@ def cannot_analyse(question):
                           "accessibility. Which one? Try one of these:",
                 "suggestions": KIND_SUGGESTIONS.get(kind, STAT_SUGGESTIONS[:4] + SUGGESTIONS[:2])}
     return None
+
+
+# More charts and statistics ---------------------------------------------------------------------
+
+def linear_fit(xs, ys):
+    """(slope, intercept, r²) of a least-squares straight line."""
+    n = len(xs)
+    mx, my = sum(xs) / n, sum(ys) / n
+    sxx = sum((x - mx) ** 2 for x in xs)
+    if not sxx:
+        return 0.0, my, 0.0
+    slope = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
+    r = pearson(xs, ys)
+    return slope, my - slope * mx, (r or 0) ** 2
+
+
+def permutation_p(xs, ys, rounds=4000):
+    """Two-sided p-value for a straight-line trend: how often shuffled data fits as steep a slope."""
+    from random import Random
+    observed = abs(linear_fit(xs, ys)[0])
+    rng, values, extreme = Random(11), list(ys), 0
+    for _ in range(rounds):
+        rng.shuffle(values)
+        if abs(linear_fit(xs, values)[0]) >= observed - 1e-12:
+            extreme += 1
+    return extreme / rounds
+
+
+def trend(points, fmt, name):
+    """(text, fitted values) for a measure's daily values: the slope per day, how much of the
+    day-to-day change it explains, and whether it could be chance."""
+    xs, ys = list(range(len(points))), [d["y"] for d in points]
+    slope, intercept, r2 = linear_fit(xs, ys)
+    p = permutation_p(xs, ys)
+    per_day = _fmt(abs(slope), fmt).replace("%", " points") if fmt == "pct" else _fmt(abs(slope), fmt)
+    direction = "rising" if slope > 0 else "falling"
+    if len(points) < 7:
+        verdict = "too few days to call it a trend yet"
+    elif p < 0.05:
+        verdict = f"unlikely to be chance (p = {p:.3f}): a real {direction} trend so far"
+    else:
+        verdict = f"could be chance (p = {p:.2f}): no clear trend yet"
+    text = (f" A straight-line trend through the days is {direction} by {per_day} a day "
+            f"(R² = {r2:.2f}, so it explains {r2:.0%} of the day-to-day change); {verdict}.")
+    worse = slope > 0   # every measure here is better when lower
+    text += f" For {name} that would mean getting {'worse' if worse else 'better'}." if p < 0.05 and len(points) >= 7 else ""
+    return text, [intercept + slope * x for x in xs]
+
+
+def _box(p, rows):
+    name, dim = p["measures"][0], p["dimension"]
+    fmt, entity = MEASURES[name][3], MEASURES[name][5]
+    groups, order = {}, []
+    for r in rows:
+        key = r["g"]
+        if key not in groups:
+            groups[key], _ = [], order.append(key)
+        groups[key].append(float(r["v"]))
+    data = []
+    for key in order:
+        values = sorted(groups[key])
+        if len(values) < 5:
+            continue
+        q1, median, q3 = (_quantile(values, q) for q in (0.25, 0.5, 0.75))
+        iqr = q3 - q1
+        lo = min(v for v in values if v >= q1 - 1.5 * iqr)
+        hi = max(v for v in values if v <= q3 + 1.5 * iqr)
+        outliers = sum(v < lo or v > hi for v in values)
+        label = (_entity_name(key, entity) if dim == "entity" else f"{int(key):02d}:00" if dim == "hour" else str(key))
+        data.append({"x": label, "q1": q1, "median": median, "q3": q3, "lo": lo, "hi": hi, "n": len(values),
+                     "outliers": outliers})
+    if len(data) < 2:
+        return {"answer": "There isn't enough data for a box plot yet.", "chart": None}
+    if dim == "entity":
+        data.sort(key=lambda d: -d["median"])
+    widest = max(data, key=lambda d: d["q3"] - d["q1"])
+    top, low = max(data, key=lambda d: d["median"]), min(data, key=lambda d: d["median"])
+    unit = f"{entity}-hour"
+    text = (f"Each box shows the middle half of {_mid(name)} across {unit}s: the line in the box is the median, "
+            f"the whiskers reach the furthest values within 1.5 times the box's height, and dots beyond them are "
+            f"outliers. The highest median is **{top['x']}** ({_fmt(top['median'], fmt)}), the lowest "
+            f"**{low['x']}** ({_fmt(low['median'], fmt)}). **{widest['x']}** varies most: half its {unit}s fall "
+            f"between {_fmt(widest['q1'], fmt)} and {_fmt(widest['q3'], fmt)}, so it is the least predictable. "
+            f"{sum(d['outliers'] for d in data)} of {sum(d['n'] for d in data):,} {unit}s are outliers.")
+    x_title = entity.title() if dim == "entity" else DIMENSIONS[dim][2]
+    chart = {"kind": "box", "title": f"{_name(name)} by {x_title.lower()} (box plot)", "x": "x", "y": "median",
+             "data": data, "format": fmt, "horizontal": dim == "entity", "series": None, "x_title": x_title,
+             "y_title": _label(name)}
+    return {"answer": text, "chart": chart}
+
+
+def _rolling(p, rows):
+    name = p["measures"][0]
+    fmt = MEASURES[name][3]
+    values = [float(r["value"]) for r in rows]
+    window = 24
+    data = []
+    for i, r in enumerate(rows):
+        recent = values[max(0, i - window + 1): i + 1]
+        stamp = _when_hour(r["d0"]).replace(" London time", "")
+        data.append({"x": stamp, "y": values[i], "series": "Each hour"})
+        if len(recent) == window:
+            data.append({"x": stamp, "y": sum(recent) / window, "series": "24-hour rolling average"})
+    smooth = [d["y"] for d in data if d["series"] != "Each hour"]
+    if len(smooth) < 2:
+        return {"answer": "There isn't enough data for a 24-hour rolling average yet.", "chart": None}
+    text = (f"The 24-hour rolling average smooths out the daily cycle of {_mid(name)} to show the underlying "
+            f"level: it ranged from {_fmt(min(smooth), fmt)} to {_fmt(max(smooth), fmt)} and stands at "
+            f"**{_fmt(smooth[-1], fmt)}** for the latest 24 hours, against {_fmt(sum(smooth) / len(smooth), fmt)} "
+            "on average.")
+    chart = {"kind": "line", "title": f"{_name(name)}: each hour and 24-hour rolling average", "x": "x", "y": "y",
+             "data": data, "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour (London time)",
+             "y_title": _label(name), "temporal_labels": True}
+    return {"answer": text, "chart": chart}
+
+
+def _heatmap(p, rows):
+    name = p["measures"][0]
+    fmt = MEASURES[name][3]
+    cells = [{"x": f"{int(r['d0']):02d}:00", "y": r["d1"], "value": float(r["value"]), "w": float(r["weight"])}
+             for r in rows]
+    keep, thin = reliable([{**c, "y_": c["y"], "y": c["value"]} for c in cells])
+    keep = [{**c, "y": c["y_"]} for c in keep]
+    high = max(keep, key=lambda c: c["value"])
+    low = min(keep, key=lambda c: c["value"])
+    text = (f"The darkest cells are the worst times for {_mid(name)}: highest on **{WEEKDAYS.get(high['y'])}s at "
+            f"{high['x']}** ({_fmt(high['value'], fmt)}), lowest on {WEEKDAYS.get(low['y'])}s at {low['x']} "
+            f"({_fmt(low['value'], fmt)}).")
+    if thin:
+        text += f" {len(thin)} cells have too little data to compare and are left out of that comparison."
+    text += f"\n\n_Based on {int(rows[0]['days'])} days of data, so each weekday appears only once or twice so far._"
+    chart = {"kind": "heatmap", "title": f"{_name(name)} by hour and day of week", "x": "x", "y": "y",
+             "data": [{"x": c["x"], "y": c["y"], "value": c["value"]} for c in cells], "format": fmt,
+             "series": None, "horizontal": False, "x_title": "Hour of day (London time)", "y_title": "Day of week",
+             "y_order": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+    return {"answer": text, "chart": chart}
+
+
+def _control(p, rows):
+    name = p["measures"][0]
+    fmt = MEASURES[name][3]
+    data = [{"x": _day(r["d0"]), "y": float(r["value"])} for r in rows]
+    values = [d["y"] for d in data]
+    mean = sum(values) / len(values)
+    sd = math.sqrt(sum((v - mean) ** 2 for v in values) / (len(values) - 1)) if len(values) > 1 else 0
+    upper, lower = mean + 3 * sd, max(mean - 3 * sd, 0)
+    outside = [d for d in data if d["y"] > upper or d["y"] < lower]
+    text = (f"A control chart shows whether day-to-day changes in {_mid(name)} are normal variation or a signal. "
+            f"The centre line is the average ({_fmt(mean, fmt)}); the control limits are three standard deviations "
+            f"either side ({_fmt(lower, fmt)} to {_fmt(upper, fmt)}). ")
+    text += (f"**{len(outside)} day{'s' if len(outside) != 1 else ''}** fell outside the limits ("
+             + ", ".join(f"{d['x']}: {_fmt(d['y'], fmt)}" for d in outside) + "): worth investigating."
+             if outside else "**Every day is within the limits**, so the changes are ordinary variation, not a "
+                             "signal that something changed.")
+    text += f" With only {len(values)} days the limits are wide; they tighten as data builds."
+    chart = {"kind": "control", "title": f"{_name(name)}: control chart by day", "x": "x", "y": "y", "data": data,
+             "format": fmt, "series": None, "horizontal": False, "x_title": "Day", "y_title": _label(name),
+             "centre": mean, "upper": upper, "lower": lower}
+    return {"answer": text, "chart": chart}
+
+
+def _stacked_causes(p, rows):
+    totals, causes = {}, {}
+    for r in rows:
+        totals[r["x"]] = totals.get(r["x"], 0) + float(r["y"])
+        causes[r["series"]] = causes.get(r["series"], 0) + float(r["y"])
+    top_causes = [c for c, _ in sorted(causes.items(), key=lambda kv: -kv[1])[:6]]
+    lines = [l for l, _ in sorted(totals.items(), key=lambda kv: -kv[1])[:12]]
+    data = {}
+    for r in rows:
+        if r["x"] not in lines:
+            continue
+        cause = r["series"] if r["series"] in top_causes else "Other"
+        data[(r["x"], cause)] = data.get((r["x"], cause), 0) + float(r["y"])
+    worst = lines[0]
+    worst_cause = max(((c, v) for (l, c), v in data.items() if l == worst), key=lambda kv: kv[1])
+    total = sum(totals.values())
+    text = (f"**{worst}** had the most disrupted line-hours ({totals[worst]:,.0f}), mostly "
+            f"{worst_cause[0].lower()}. Across all lines, the biggest reasons were "
+            + ", ".join(f"{c.lower()} ({causes[c] / total:.0%})" for c in top_causes[:3])
+            + ". Each bar is a line; its segments add up to that line's disrupted hours.")
+    chart = {"kind": "stacked", "title": "Disrupted line-hours by line and reason", "x": "x", "y": "y",
+             "data": [{"x": l, "series": c, "y": v} for (l, c), v in data.items()], "format": "hours",
+             "series": "series", "horizontal": True, "x_title": "Line", "y_title": "Disrupted line-hours",
+             "x_order": lines}
+    return {"answer": text, "chart": chart}

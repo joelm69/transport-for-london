@@ -31,7 +31,7 @@ Each may raise; the assistant then says that source couldn't be read.
 
 import re
 
-from . import advice, analysis, figures
+from . import advice, analysis, catalogue, figures
 
 EXAMPLES = [
     "Which Tube lines have problems right now?",
@@ -96,6 +96,11 @@ def capabilities():
         "lost, planned against unplanned rail disruption, train against infrastructure causes, bike stations "
         "empty or full, docks out of use, road clearing times and roadworks overruns, charted with how each is "
         "worked out.\n"
+        "- **More charts:** heatmaps (hour × day of week), box plots, control charts, rolling averages, area "
+        "and stacked bar charts; trends over time with a fitted slope and significance, and regression on "
+        "scatter plots.\n"
+        "- **The project itself:** what data it collects, how often and since when, and suggestions for new "
+        "features.\n"
         "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
         "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
         "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
@@ -319,6 +324,13 @@ def answer_read(question, sources):
         if re.search(CAPABILITIES, question.lower()):
             return {**result, "answer": capabilities(), "suggestions": figures.SUGGESTIONS[:2]
                     + analysis.STAT_SUGGESTIONS[:3] + analysis.SUGGESTIONS[:2]}
+        if catalogue.asks_about_features(question):
+            return {**result, "answer": "New analyses and features, by what they need:\n\n" + catalogue.features(),
+                    "source": "the project catalogue", "suggestions": ["What data do you collect?",
+                                                                      "What analyses can you do?"]}
+        if catalogue.asks_about_data(question):
+            return {**result, "answer": catalogue.describe(question), "source": "the project catalogue",
+                    "suggestions": ["What analyses can you do?", "Suggest new features"]}
         if advice.asks_for_advice(question):
             return {**result, **advice.advise(question, sources)}
         figure = figures.choose(question)
@@ -333,14 +345,14 @@ def answer_read(question, sources):
         stat = analysis.stat_plan(question)
         if stat:
             ran = analysis.run_stat(stat, sources)
+            others = [q for name, (_, _, q) in analysis.STATS.items() if name != stat["stat"]]
             return {**result, **ran, "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days",
-                    "suggestions": [] if ran["chart"] else analysis.STAT_SUGGESTIONS[:4]}
+                    "suggestions": others[:3]}
         chosen = analysis.plan(question)
         if chosen:
             ran = analysis.run(chosen, sources)
             source = f"BigQuery analysis of the last {analysis.DAYS} days"
-            if not ran["chart"]:
-                result["suggestions"] = analysis.SUGGESTIONS[:4]
+            result["suggestions"] = analysis.follow_ups(chosen) if ran["chart"] else analysis.SUGGESTIONS[:4]
             return {**result, **ran, "source": source}
         if topic is None:
             return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}
