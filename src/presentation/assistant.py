@@ -8,8 +8,9 @@ documentation search (the retrieval half of RAG). It is rule-based: it answers g
 when a question is outside this project, and returns clickable suggestions (`suggestions`) of
 questions it can answer.
 
-Asked for a chart or an analysis ("chart disruption by hour"), it runs one of the fixed analyses
-in analysis.py on the history and returns the chart with the finding.
+Asked how something changes or whether two things are related ("is there a relationship between
+time of day and bus bunching?"), it runs analysis.py's engine on the history and returns the most
+suitable chart with the numbers behind the answer.
 
 Pure functions, shared by the portfolio and the TfL repository: the caller passes `sources`, an
 object that fetches the data (so the portfolio reuses its cached live feeds):
@@ -18,7 +19,7 @@ object that fetches the data (so the portfolio reuses its cached live feeds):
     sources.roads()               -> (disruptions, corridors) (src/presentation/road_live)
     sources.recommendation(area)  -> (figures row, text module) or None; area: rail, bus, bikes, roads
     sources.docs(query)           -> documentation chunks, best first
-    sources.query(sql)            -> rows of one of analysis.py's fixed queries
+    sources.query(sql)            -> rows of a query analysis.py builds from its catalogue
 Each may raise; the assistant then says that source couldn't be read.
 """
 
@@ -30,9 +31,9 @@ EXAMPLES = [
     "Which Tube lines have problems right now?",
     "How many bikes are at Waterloo?",
     "Which main roads are delayed?",
-    "Chart disruption by line this week",
-    "Graph disruption by hour of day",
-    "Plot Tube bunching by line",
+    "Is there a relationship between time of day and bus bunching?",
+    "How does Tube waiting time change through the day?",
+    "Is bunching related to waiting time on the Tube?",
     "Is the Central line running?",
     "Which lines were least reliable this week?",
     "Which bus routes bunch most?",
@@ -66,8 +67,8 @@ SUGGESTIONS = [
     "Which Tube lines have problems right now?",
     "How many bikes are at Waterloo?",
     "Which main roads are delayed?",
-    "Chart disruption by line this week",
-    "Graph disruption by hour of day",
+    "Is there a relationship between time of day and bus bunching?",
+    "Is bunching related to waiting time on the Tube?",
     "What does bunching mean?",
 ]
 OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
@@ -246,11 +247,10 @@ def answer(question, sources):
     labels = {"rail": "live TfL line status", "bikes": "live TfL BikePoint feed", "roads": "live TfL road feeds"}
     result = {"source": None, "suggestions": [], "chart": None}
     try:
-        chosen = analysis.choose(question)
+        chosen = analysis.plan(question)
         if chosen:
             ran = analysis.run(chosen, sources)
-            source = ("BigQuery analysis of the last 7 complete days" if chosen in analysis.SQL
-                      else "business recommendation figures (last 7 complete days)")
+            source = f"BigQuery analysis of the last {analysis.DAYS} days"
             return {**result, **ran, "source": source}
         if topic is None:
             return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}

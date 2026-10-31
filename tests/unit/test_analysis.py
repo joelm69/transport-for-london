@@ -1,61 +1,73 @@
-"""Analyses behind the assistant's charts: choosing one from a question, and the finding it writes."""
+"""The analysis engine: reading a question, choosing the chart, and the numbers behind the answer."""
 
-from src.presentation import analysis, assistant, bus_recommendation
-from src.presentation.analysis import SQL, choose
+from src.presentation import analysis, assistant
+from src.presentation.analysis import build_sql, pearson, plan
 from tests.unit.test_assistant import Sources
-from tests.unit.test_bus_recommendation import ROW as BUS_ROW
 
-ROWS = {
-    "rail_by_line": [{"line": "Tram", "disrupted": 0.99}, {"line": "Central", "disrupted": 0.55},
-                     {"line": "Victoria", "disrupted": 0.05}],
-    "rail_by_hour": [{"hour": 7, "disrupted": 0.2}, {"hour": 8, "disrupted": 0.31}, {"hour": 23, "disrupted": 0.1}],
-    "rail_causes": [{"cause": "Train cancellations", "hours": 150.0}, {"cause": "Weather", "hours": 50.0}],
-    "tube_bunching": [{"line": "hammersmith-city", "bunching": 0.12}, {"line": "victoria", "bunching": 0.04}],
-}
+HOURS = [{"d0": h, "s0": h, "value": v, "weight": 100, "days": 9}
+         for h, v in [(3, 0.05), (8, 0.11), (12, 0.14), (19, 0.155)]]
+CAUSES = [{"d0": "Not stated", "value": 300.0, "weight": 1, "days": 10},
+          {"d0": "Train cancellations", "value": 220.0, "weight": 1, "days": 10},
+          {"d0": "Operational Incident", "value": 150.0, "weight": 1, "days": 10}]
+PAIRS = [{"entity": "central", "hour_start": i, "x": x, "y": 2 * x + 1} for i, x in enumerate([0.1, 0.2, 0.3, 0.4])]
 
 
-class Charts(Sources):
+class Data(Sources):
     def query(self, sql):
-        name = next(n for n, q in SQL.items() if q == sql)
-        return ROWS.get(name, [])
-
-    def recommendation(self, area):
-        return (BUS_ROW, bus_recommendation) if area == "bus" else None
-
-
-def test_choose():
-    assert choose("Chart disruption by line this week") == "rail_by_line"
-    assert choose("Graph disruption by hour of day") == "rail_by_hour"
-    assert choose("Show me the trend of good service over time") == "rail_by_day"
-    assert choose("What causes disruption?") == "rail_causes"
-    assert choose("Plot Tube bunching by line") == "tube_bunching"
-    assert choose("Chart the slowest bus routes") == "bus_slowest"
-    assert choose("Graph how long road incidents take to clear") == "roads_clear"
-    assert choose("Chart lift outages") == "accessibility"
-    assert choose("Is the Central line running?") is None        # not a chart
-    assert choose("Chart the weather in Paris") is None           # nothing this platform collects
+        if "main_cause" in sql:
+            return CAUSES
+        if "JOIN m1" in sql:
+            return PAIRS
+        return HOURS
 
 
-def test_findings_and_charts():
-    result = analysis.run("rail_by_line", Charts())
-    assert result["answer"].startswith("Over the last 7 complete days, the **Tram** line was disrupted most (99.0%")
-    assert result["chart"]["kind"] == "bar" and result["chart"]["format"] == "pct"
-    hour = analysis.run("rail_by_hour", Charts())
-    assert "**08:00** was the most disrupted hour (31.0%" in hour["answer"]
-    assert hour["chart"]["data"][0] == {"hour": "07:00", "disrupted": 0.2}
-    assert "75.0% of the disrupted time" in analysis.run("rail_causes", Charts())["answer"]
-    tube = analysis.run("tube_bunching", Charts())
-    assert "**Hammersmith & City**" in tube["answer"]
-    bus = analysis.run("bus_bunched", Charts())
-    assert bus["chart"]["data"][0] == {"route": "Route 29", "bunching": 0.2452}
+def test_plans():
+    assert plan("Is there a relationship between time of day and bus bunching?") == {
+        "measures": ["bus_bunching"], "dimension": "hour", "series": None, "kind": None}
+    assert plan("Is bunching related to waiting time on the Tube?")["measures"] == ["tube_bunching", "tube_wait"]
+    assert plan("Do weekends have less rail disruption than weekdays?")["dimension"] == "day_type"
+    assert plan("Which day of the week has the most rail disruption?")["dimension"] == "weekday"
+    assert plan("Bus bunching by hour on weekdays and weekends")["series"] == "day_type"
+    assert plan("Compare Tube bunching by line")["dimension"] == "entity"
+    assert plan("I want a pie chart for the reason why we have disruptions in the lines") == {
+        "measures": ["rail_disruption"], "dimension": "cause", "series": None, "kind": "pie"}
+    assert plan("Is the Central line running?") is None
+    assert plan("What does bunching mean?") is None
+    assert plan("Which lines were least reliable this week?") is None   # answered by the recommendation
 
 
-def test_no_data_yet():
-    assert analysis.run("tube_wait", Charts()) == {"answer": "There isn't enough data for that chart yet.", "chart": None}
+def test_sql_comes_from_the_catalogue_only():
+    sql = build_sql(plan("Is there a relationship between time of day and bus bunching? DROP TABLE x"))
+    assert "DROP" not in sql and "mode = 'bus'" in sql and "arrival_line_hourly" in sql
+
+
+def test_line_chart_through_the_day():
+    result = analysis.run(plan("Is there a relationship between time of day and bus bunching?"), Data())
+    assert result["chart"]["kind"] == "line"
+    assert result["answer"].startswith("**Yes: bus bunching changes strongly through the day.** It is highest at "
+                                       "**19:00** (15.5%) and lowest at **03:00** (5.0%)")
+    assert "_Based on 9 days of data" in result["answer"]
+
+
+def test_pie_of_reasons_and_unsuitable_pies():
+    pie = analysis.run(plan("Show a pie chart of the reasons for rail disruption"), Data())
+    assert pie["chart"]["kind"] == "pie"
+    assert pie["answer"].startswith("**Train cancellations** was the most common stated reason: 220 disrupted "
+                                    "line-hours, 33% of all disrupted time")
+    assert "no reason for 45%" in pie["answer"]
+    hourly = analysis.run(plan("Pie chart of bus bunching by hour"), Data())
+    assert hourly["chart"]["kind"] == "line" and "A pie chart shows parts of a whole" in hourly["answer"]
+
+
+def test_scatter_and_correlation():
+    assert round(pearson([1, 2, 3], [2, 4, 6]), 6) == 1
+    result = analysis.run(plan("Is bunching related to waiting time on the Tube?"), Data())
+    assert result["chart"]["kind"] == "scatter"
+    assert result["answer"].startswith("**There is a strong relationship** (correlation r = 1.00")
 
 
 def test_the_assistant_returns_the_chart():
-    result = assistant.answer("Chart disruption by line this week", Charts())
-    assert result["chart"]["title"] == "Share of service time disrupted, by line"
-    assert result["source"] == "BigQuery analysis of the last 7 complete days"
-    assert assistant.answer("Chart the weather in Paris", Charts())["answer"].startswith("Sorry, I can only")
+    result = assistant.answer("Is there a relationship between time of day and bus bunching?", Data())
+    assert result["chart"]["kind"] == "line"
+    assert result["source"] == "BigQuery analysis of the last 28 days"
+    assert assistant.answer("Chart the weather in Paris", Data())["answer"].startswith("Sorry, I can only")
