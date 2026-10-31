@@ -31,7 +31,7 @@ Each may raise; the assistant then says that source couldn't be read.
 
 import re
 
-from . import analysis
+from . import advice, analysis
 
 EXAMPLES = [
     "Which Tube lines have problems right now?",
@@ -77,6 +77,7 @@ SUGGESTIONS = [
     "Is there a relationship between time of day and bus bunching?",
     "Is bunching related to waiting time on the Tube?",
     "What analyses can you do?",
+    "Any travel tips for the Tube?",
 ]
 CAPABILITIES = (r"\b(what|which) (analys\w*|statistic\w*|charts?|kinds? of (analys\w*|charts?|questions?))\b|"
                 r"\bwhat can you (do|analy[sz]e|show|chart|answer)\b|\bcapabilit\w*|\bsuggest\w* (an )?analys\w*")
@@ -94,6 +95,8 @@ def capabilities():
         "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
         "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
         "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
+        "- **Travel advice:** the best times to travel by Tube and bus, lines and routes to allow extra time on, "
+        "roads to plan around, and what's wrong right now, worked out from the data.\n"
         "- **Definitions:** what any figure means and how it's measured.\n\n"
         "Measures: bus and Tube bunching, waiting time and gap regularity, dropped trains, rail disruption and "
         "incidents, countdown accuracy and accessibility. Try one of these:")
@@ -312,6 +315,8 @@ def answer_read(question, sources):
         if re.search(CAPABILITIES, question.lower()):
             return {**result, "answer": capabilities(), "suggestions": analysis.STAT_SUGGESTIONS[:4]
                     + analysis.SUGGESTIONS[:3]}
+        if advice.asks_for_advice(question):
+            return {**result, **advice.advise(question, sources)}
         declined = analysis.cannot_analyse(question)
         if declined:
             return {**result, **declined}

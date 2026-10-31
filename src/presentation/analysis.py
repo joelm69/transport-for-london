@@ -338,8 +338,13 @@ def _apply_kind(kind, result, p):
         else:
             note = (f"A pie chart shows parts of a whole, and {_mid(p['measures'][0])} is a rate, not a total "
                     f"that adds up, so here is a {chart['kind']} chart instead.")
+    elif kind == "scatter" and p["dimension"] == "hour":
+        chart.update(kind="scatter", x_format="hour", x_title="Hour of day (London time)",
+                     data=[{"x": int(d["x"][:2]), "y": d["y"]} for d in chart["data"]])
+        note = "Each dot is one hour of the day; the line shows the overall trend."
     elif kind == "scatter":
-        note = "A scatter plot compares two measures; ask how one relates to another, e.g. bunching and waiting time."
+        note = ("A scatter plot needs two numbers per point, such as hour and bunching, or bunching and waiting "
+                "time; these groups suit a bar chart better.")
     elif kind in ("bar", "line") and chart["kind"] in ("bar", "line"):
         if kind == "line" and p["dimension"] in ("entity", "cause", "day_type"):
             note = "A line chart suggests an order or a trend, which these groups don't have, so here is a bar chart."
@@ -388,6 +393,35 @@ def _mean(points):
     return sum(d["y"] * d["w"] for d in points) / total if total else 0
 
 
+THIN = 0.25   # a group with less than a quarter of the median group's data is too thin to compare
+
+
+def reliable(data):
+    """(groups with enough data, thin groups): thin ones are left out of the verdict, the peak
+    and the trough, so a few Night Tube trains at 04:00 can't decide "through the day"."""
+    weights = sorted(d["w"] for d in data)
+    median = weights[len(weights) // 2] if weights else 0
+    keep = [d for d in data if d["w"] >= THIN * median]
+    return keep, [d for d in data if d["w"] < THIN * median]
+
+
+def _variation(points):
+    """Weighted coefficient of variation: how much a measure moves, relative to its average."""
+    mean = _mean(points)
+    total = sum(d["w"] for d in points)
+    if not mean or not total:
+        return 0
+    return math.sqrt(sum(d["w"] * (d["y"] - mean) ** 2 for d in points) / total) / mean
+
+
+def hour_profile(measure, sources):
+    """The measure by hour of day (all hours, and the reliable ones), for the travel advice."""
+    rows = [dict(r) for r in sources.query(build_sql({"measures": [measure], "dimension": "hour", "series": None}))]
+    data = [{"x": f"{int(r['d0']):02d}:00", "h": int(r["d0"]), "y": float(r["value"]), "w": float(r["weight"])}
+            for r in rows if r.get("value") is not None]
+    return data, reliable(data)[0]
+
+
 def _by_dimension(p, rows):
     name, dim = p["measures"][0], p["dimension"]
     fmt, label, entity = MEASURES[name][3], _label(name), MEASURES[name][5]
@@ -400,27 +434,34 @@ def _by_dimension(p, rows):
     else:
         data = [{"x": str(r["d0"]), "y": r["value"], "w": r["weight"]} for r in rows]
 
-    high, low = max(data, key=lambda d: d["y"]), min(data, key=lambda d: d["y"])
-    mean = _mean(data)
-    spread = (high["y"] - low["y"]) / mean if mean else 0
+    keep, thin = reliable(data)
+    high, low = max(keep, key=lambda d: d["y"]), min(keep, key=lambda d: d["y"])
+    mean = _mean(keep)
+    variation = _variation(keep)
     what = {"hour": "through the day", "weekday": "across the week", "day_type": "between weekdays and weekends",
             "date": "from day to day", "entity": f"between {entity}s"}[dim]
-    if spread >= 0.5:
+    if variation >= 0.25:
         text = f"**Yes: {_mid(name)} changes strongly {what}.** "
-    elif spread >= 0.2:
-        text = f"**Yes: {_mid(name)} changes clearly {what}.** "
+    elif variation >= 0.10:
+        text = f"**Yes: {_mid(name)} changes {what}, moderately.** "
     else:
-        text = f"**Not much: {_mid(name)} varies little {what}.** "
+        text = f"**Not much: {_mid(name)} stays fairly steady {what}.** "
     text += (f"It is highest {_when(high['x'], dim)} ({_fmt(high['y'], fmt)}) and lowest {_when(low['x'], dim)} "
-             f"({_fmt(low['y'], fmt)}), against an average of {_fmt(mean, fmt)}")
-    text += f": the highest is {high['y'] / low['y']:.1f} times the lowest." if low["y"] > 0 else "."
+             f"({_fmt(low['y'], fmt)}), against an average of {_fmt(mean, fmt)}; it typically moves "
+             f"{variation:.0%} either side of that average (coefficient of variation).")
     if dim == "hour":
         rush = (7, 8, 9, 16, 17, 18)
-        peak = [d for d in data if int(d["x"][:2]) in rush]
-        other = [d for d in data if int(d["x"][:2]) not in rush]
+        peak = [d for d in keep if int(d["x"][:2]) in rush]
+        other = [d for d in keep if int(d["x"][:2]) not in rush]
         if peak and other:
             text += (f" In the rush hours (07–10 and 16–19) it averages {_fmt(_mean(peak), fmt)}, against "
                      f"{_fmt(_mean(other), fmt)} at other times.")
+    if thin:
+        names = ", ".join(d["x"] for d in thin)
+        why = ("" if dim != "hour" else " (fewer buses run overnight)" if name.startswith("bus")
+               else " (only the Night Tube runs overnight)" if name.startswith("tube") else " (overnight)")
+        text += (f" {names} {'have' if len(thin) > 1 else 'has'} too little data to compare{why}, so the chart "
+                 "shows them but the comparison leaves them out.")
     text += f"\n\n_Based on {int(rows[0]['days'])} days of data; times are London time._"
     x_title = entity.title() if dim == "entity" else DIMENSIONS[dim][2]
     chart = {"kind": "line" if dim in ("hour", "date") else "bar", "title": f"{_name(name)} by {x_title.lower()}",
