@@ -86,7 +86,7 @@ def board_rows(data, now, severity_classes, modes=None):
 
 def line_cards(rows):
     """One card per line from board_rows(): the worst status as the headline, the line's other
-    statuses listed, and each distinct reason once.
+    statuses listed and each distinct reason once.
 
     TfL can describe one incident with several statuses: on 2026-10-22 the Elizabeth line had
     Severe Delays (Abbey Wood - Reading/Heathrow) and Minor Delays (Whitechapel - Shenfield)

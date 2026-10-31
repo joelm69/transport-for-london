@@ -1,5 +1,5 @@
 """Turn live TfL road responses into rows for a live roads panel: every current road disruption
-(works and live incidents) with its location, and the status of the main road corridors.
+(works and live incidents) with its location and the status of the main road corridors.
 
 Pure functions (no Streamlit, no network), shared by the portfolio and future MCP tools.
 """

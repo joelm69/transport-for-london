@@ -100,7 +100,7 @@ def recommendations(row):
         bullets.append(("Pilot headway control", f"on routes {_routes(row['most_bunched'])} (low cost)."))
     if row.get("slowest"):
         bullets.append(("Review bus priority", f"on routes {_routes(row['slowest'])} (analysis only)."))
-    bullets.append(("Don't add buses yet:", "long waits are mostly by design, and slow routes need road space."))
+    bullets.append(("Don't add buses yet:", "long waits are mostly by design and slow routes need road space."))
     return bullets
 
 

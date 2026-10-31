@@ -1,4 +1,4 @@
-"""The analysis engine: reading a question, choosing the chart, and the numbers behind the answer."""
+"""The analysis engine: reading a question, choosing the chart and the numbers behind the answer."""
 
 from src.presentation import analysis, assistant
 from src.presentation.analysis import build_sql, pearson, plan

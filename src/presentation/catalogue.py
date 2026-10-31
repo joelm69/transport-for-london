@@ -1,4 +1,4 @@
-"""What this platform collects, where it goes, and what could be built next: the assistant's
+"""What this platform collects, where it goes and what could be built next: the assistant's
 project awareness. Only endpoints implemented in this repository are listed (config/*.json,
 src/collectors, scripts/bus_network_snapshot.py), with how often each is read and since when.
 

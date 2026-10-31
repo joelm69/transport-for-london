@@ -33,7 +33,7 @@ ROW = {
 def test_summary():
     assert summary(ROW) == (
         "In the weekday peaks about 6% of stations were empty and 3% full. 100 stations were empty or "
-        "full at least half the time, and about 1 in 11 docks (9%) couldn't be used.")
+        "full at least half the time and about 1 in 11 docks (9%) couldn't be used.")
 
 
 def test_findings_as_on_the_page():
@@ -74,7 +74,7 @@ def test_recommendations_name_this_weeks_stations():
          "Waterloo Station 1 (Waterloo)."),
         ("Prioritise repairs at the 36 stations with a quarter or more docks out of use,",
          "starting with Pindar Street (Liverpool Street), Crosswall (Tower) and Portman Square (Marylebone)."),
-        ("Don't add bikes or stations network-wide yet:", "the peaks are mostly covered, and the problems are local."),
+        ("Don't add bikes or stations network-wide yet:", "the peaks are mostly covered and the problems are local."),
     ]
     row = copy.deepcopy(ROW)
     row["most_empty"], row["most_full"], row["most_out_of_use"] = [], [], []

@@ -186,7 +186,7 @@ def _line_of(text):
 
 
 def station_cards(items):
-    """Display cards from notice_items() output: one card per station listing its messages,
+    """Display cards from notice_items() output: one card per station listing its messages
     and one card for several stations when they carry exactly the same messages (a section
     closure announced at both ends, a coach notice at several stations). A card for more than
     MAX_TITLE_STATIONS stations gets a short title (the line named in the message and the

@@ -9,7 +9,7 @@ section is one searchable chunk: keep sections short and self-contained.
 The platform polls the TfL Unified API from a VM and Cloud Run jobs and keeps only what changed
 (change-only storage). Rail line status is collected every 30 seconds since 21 October 2026,
 station notices every minute, buses (all routes) every 30 minutes since 26 October 2026, bike
-docking stations every 2 minutes since 29 October 2026 17:10, and road disruptions and main-road
+docking stations every 2 minutes since 29 October 2026 17:10 and road disruptions and main-road
 status every 5 minutes since 29 October 2026 18:38 (UTC). History is in BigQuery; the Tableau
 dashboards read a Google Sheet exported nightly at 02:00 London time. Business recommendations
 use the last 7 complete London days.

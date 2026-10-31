@@ -1,4 +1,4 @@
-"""Bus recommendation: text from the figures, and the export views kept in step with the exports."""
+"""Bus recommendation: text from the figures and the export views kept in step with the exports."""
 
 import copy
 import importlib.util
@@ -76,7 +76,7 @@ def test_recommendations_name_this_weeks_routes():
     assert recommendations(ROW) == [
         ("Pilot headway control", "on routes 29, 141, 18, 38 and 55 (low cost)."),
         ("Review bus priority", "on routes 189, 19, 98, W7 and 390 (analysis only)."),
-        ("Don't add buses yet:", "long waits are mostly by design, and slow routes need road space."),
+        ("Don't add buses yet:", "long waits are mostly by design and slow routes need road space."),
     ]
     row = copy.deepcopy(ROW)
     row["most_bunched"], row["slowest"] = [], []

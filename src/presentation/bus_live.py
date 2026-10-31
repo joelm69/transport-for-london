@@ -1,5 +1,5 @@
 """Turn live TfL bus responses into rows for a live bus panel: route status, every bus on a
-route with the time gap to the bus ahead (bunching now), and a stop countdown.
+route with the time gap to the bus ahead (bunching now) and a stop countdown.
 
 Pure functions (no Streamlit, no network), shared by the portfolio and future MCP tools.
 Live only: nothing here is stored. Bus history is analysed daily from the VM's arrival events.
@@ -65,7 +65,7 @@ def buses_on_route(arrivals, stops_by_direction, now):
              for direction, stops in stops_by_direction.items()}
     names = {direction: dict(stops) for direction, stops in stops_by_direction.items()}
 
-    # Every prediction per (direction, vehicle), and each vehicle's next stop.
+    # Every prediction per (direction, vehicle) and each vehicle's next stop.
     predictions, routes = {}, {}
     for item in arrivals:
         vehicle, direction = item.get("vehicleId"), item.get("direction")
@@ -117,7 +117,7 @@ def buses_on_route(arrivals, stops_by_direction, now):
 
 def stop_countdown(arrivals, now, limit=12):
     """Next buses at a stop (/StopPoint/{id}/Arrivals), soonest first: route, destination,
-    minutes, and the bus's registration (vehicleId)."""
+    minutes and the bus's registration (vehicleId)."""
     rows = []
     for item in arrivals:
         seconds = (_utc(item["expectedArrival"]) - now).total_seconds()

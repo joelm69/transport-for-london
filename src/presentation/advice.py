@@ -1,6 +1,6 @@
 """Travel advice and traffic tips worked out from the platform's data: the best and worst hours
 to travel by Tube and bus (the hourly history), the lines and routes to allow extra time on, the
-roads TfL keeps rating as seriously delayed, how long incidents take to clear, and what is wrong
+roads TfL keeps rating as seriously delayed, how long incidents take to clear and what is wrong
 right now (the live feeds). Every tip quotes the figure behind it.
 
 Pure functions, shared like the assistant: `sources` provides query(sql) (the analysis engine's

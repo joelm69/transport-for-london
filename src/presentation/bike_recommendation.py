@@ -44,7 +44,7 @@ def summary(row):
         peaks = (f"In the weekday peaks about {_pct(row['peak_empty_share'])} of stations were empty and "
                  f"{_pct(row['peak_full_share'])} full. ")
     return (
-        f"{peaks}{row['repeat_stations']} stations were empty or full at least half the time, and "
+        f"{peaks}{row['repeat_stations']} stations were empty or full at least half the time and "
         f"about {_one_in(row['out_of_use_share'])} docks ({_pct(row['out_of_use_share'])}) couldn't be used."
     )
 
@@ -99,7 +99,7 @@ def recommendations(row):
         bullets.append((f"Prioritise repairs at the {row['quarter_out_stations']} stations with a quarter or more "
                         "docks out of use,", f"starting with {names}."))
     bullets.append(("Don't add bikes or stations network-wide yet:",
-                    "the peaks are mostly covered, and the problems are local."))
+                    "the peaks are mostly covered and the problems are local."))
     return bullets
 
 

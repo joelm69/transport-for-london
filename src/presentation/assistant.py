@@ -5,13 +5,13 @@ It reads the question for what it is about (rail, buses, bikes, roads, or what a
 and whether it asks about now or about the past week, then answers from the matching source:
 the live TfL feeds, the business recommendation figures (last 7 complete London days) or the
 documentation search (the retrieval half of RAG). It is rule-based: it answers greetings, says
-when a question is outside this project, and returns clickable suggestions (`suggestions`) of
+when a question is outside this project and returns clickable suggestions (`suggestions`) of
 questions it can answer.
 
 Asked "what analyses can you do?", it lists them with clickable examples. Asked for a chart or a
 statistic it can't produce (bike or road history, weather, or no measure named), it says why and
 suggests the same kind of analysis it can do. Misspelt words are read as the closest known word
-("histgram" as "histogram"), and the answer says so. Asked a statistical
+("histgram" as "histogram") and the answer says so. Asked a statistical
 question (a distribution, a significance test, anomalies, persistence, early warning,
 concentration, countdown accuracy), it runs analysis.py's statistical analyses. Asked how
 something changes or whether two things are related ("is there a relationship between
@@ -140,24 +140,24 @@ def capabilities():
         "- **Live now:** line status, bikes and free docks at any station, delayed main roads and incidents.\n"
         "- **This week:** the rail, bus, bike and road findings behind the business recommendations.\n"
         "- **Patterns and charts:** how a measure changes by hour, day of week, weekday or weekend, date, line "
-        "or route (line or bar chart), how two measures relate (scatter plot with correlation), and the reasons "
+        "or route (line or bar chart), how two measures relate (scatter plot with correlation) and the reasons "
         "for disruption (bars or a pie).\n"
         "- **The recommendations' figures:** even-spacing against actual bus waits and the passenger-hours "
         "lost, planned against unplanned rail disruption, train against infrastructure causes, bike stations "
         "empty or full, docks out of use, road clearing times and roadworks overruns, charted with how each is "
         "worked out.\n"
         "- **More charts:** heatmaps (hour × day of week), box plots, control charts, rolling averages, area "
-        "and stacked bar charts; trends over time with a fitted slope and significance, and regression on "
+        "and stacked bar charts; trends over time with a fitted slope and significance and regression on "
         "scatter plots.\n"
-        "- **The project itself:** what data it collects, how often and since when, and suggestions for new "
+        "- **The project itself:** what data it collects, how often and since when and suggestions for new "
         "features.\n"
         "- **Forecasting and patterns:** a 24-hour forecast with a 95% range, decomposition into trend and "
-        "daily cycle, and clustering lines, routes or stations by their daily pattern.\n"
+        "daily cycle and clustering lines, routes or stations by their daily pattern.\n"
         "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
         "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
         "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
         "- **Travel advice:** the best times to travel by Tube and bus, lines and routes to allow extra time on, "
-        "roads to plan around, and what's wrong right now, worked out from the data.\n"
+        "roads to plan around and what's wrong right now, worked out from the data.\n"
         "- **Definitions:** what any figure means and how it's measured.\n\n"
         "Measures: bus and Tube bunching, waiting time and gap regularity, dropped trains, rail disruption and "
         "incidents, countdown accuracy and accessibility. Try one of these:")
@@ -175,7 +175,7 @@ bakerloo district circle waterloo hammersmith analyses analysis waiting delayed 
 
 def read_misspellings(question):
     """(question with likely misspellings corrected, [(typed, read as)]): only words of five or
-    more letters that aren't already known, and only close matches."""
+    more letters that aren't already known and only close matches."""
     import difflib
     fixed, changes = [], []
     for word in question.split():
@@ -190,7 +190,7 @@ def read_misspellings(question):
 
 
 OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
-             "and roads, and how this platform measures them. Try one of these:")
+             "and roads and how this platform measures them. Try one of these:")
 
 LINE_NAMES = ["bakerloo", "central", "circle", "district", "hammersmith", "jubilee", "metropolitan",
               "northern", "piccadilly", "victoria", "waterloo & city", "elizabeth", "dlr", "tram",

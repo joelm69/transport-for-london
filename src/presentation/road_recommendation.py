@@ -46,7 +46,7 @@ def summary(row):
     text = (f"TfL rated {row['roads_mostly_delayed']} of its {row['roads']} main roads as seriously delayed "
             "at least half the time")
     if row["roads_mostly_delayed"] and row["mostly_delayed_with_works"] == row["roads_mostly_delayed"]:
-        text += ", and every one of them had roadworks on it"
+        text += " and every one of them had roadworks on it"
     text += "."
     if row["median_clear_minutes"] is not None:
         text += f" A typical incident was cleared in {_duration(row['median_clear_minutes'])}"
@@ -66,7 +66,7 @@ def findings(row):
         text += (f" All {mostly} had roadworks on them" if with_works == mostly
                  else f" {with_works} of them had roadworks on them")
         if row["mostly_delayed_works_only"]:
-            text += f", and {row['mostly_delayed_works_only']} had no incidents at all"
+            text += f" and {row['mostly_delayed_works_only']} had no incidents at all"
         text += "."
     busiest = (row.get("most_works") or [None])[0]
     if busiest and busiest["delayed_share"] == 0:

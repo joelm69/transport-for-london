@@ -1,4 +1,4 @@
-"""Charts of the recommendation figures: choosing one from a question, and its numbers."""
+"""Charts of the recommendation figures: choosing one from a question and its numbers."""
 
 from src.presentation import (assistant, bike_recommendation, bus_recommendation, figures, rail_recommendation,
                               road_recommendation)

@@ -95,7 +95,7 @@ def summary(row):
         f"Rail lines ran a good service {_pct(row['good_service'], 1)} of the time in the 7 days to "
         f"{_day(row['last_day'])}. Planned works caused {_pct(row['planned_share'])} of the disruption. "
         f"The unplanned {_pct(row['unplanned_share'])} cost {_pct(row['unplanned_service_share'], 1)} of "
-        f"service time, and {_pct(lead_share)} of it came from {lead_words}."
+        f"service time and {_pct(lead_share)} of it came from {lead_words}."
     )
 
 

@@ -16,7 +16,7 @@ A chart type the visitor asks for (pie, bar, line, scatter) is used when it suit
 otherwise the answer says why another chart was drawn.
 
 The SQL is assembled only from the catalogue below (tables, measures, dimensions), never from the
-visitor's words, and reads the serving dataset (tfl_portfolio) over the last 28 complete days.
+visitor's words and reads the serving dataset (tfl_portfolio) over the last 28 complete days.
 Pure functions: the caller passes `sources` with `query(sql) -> rows`.
 
 Chart description: {"kind": "bar" | "line" | "scatter" | "pie", "title", "x", "y", "data", "format",
@@ -32,7 +32,7 @@ LONDON = "DATETIME(hour_start, 'Europe/London')"
 WINDOW = (f"DATE(hour_start, 'Europe/London') BETWEEN DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL {DAYS} DAY) "
           "AND DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 1 DAY)")
 
-# Tables: name, the column naming a line / route / station, and the weight behind each average.
+# Tables: name, the column naming a line / route / station and the weight behind each average.
 TABLES = {
     "arrivals": ("arrival_line_hourly", "line_id", "headways"),
     "disruption": ("line_disruption_hourly", "line_id", "in_service_minutes"),
@@ -523,7 +523,7 @@ def _apply_kind(kind, result, p):
         if p["dimension"] == "cause":
             chart["kind"] = "pie"
         else:
-            note = (f"A pie chart shows parts of a whole, and {_mid(p['measures'][0])} is a rate, not a total "
+            note = (f"A pie chart shows parts of a whole and {_mid(p['measures'][0])} is a rate, not a total "
                     f"that adds up, so here is a {chart['kind']} chart instead.")
     elif kind == "scatter" and p["dimension"] == "hour":
         chart.update(kind="scatter", x_format="hour", x_title="Hour of day (London time)",
@@ -602,7 +602,7 @@ def _variation(points):
 
 
 def hour_profile(measure, sources):
-    """The measure by hour of day (all hours, and the reliable ones), for the travel advice."""
+    """The measure by hour of day (all hours and the reliable ones), for the travel advice."""
     rows = [dict(r) for r in sources.query(build_sql({"measures": [measure], "dimension": "hour", "series": None}))]
     data = [{"x": f"{int(r['d0']):02d}:00", "h": int(r["d0"]), "y": float(r["value"]), "w": float(r["weight"])}
             for r in rows if r.get("value") is not None]
@@ -711,7 +711,7 @@ def _relationship(p, rows):
     change = ("tends to rise" if r > 0 else "tends to fall") if abs(r) >= 0.1 else "shows no consistent change"
     text = (f"**There is {_strength(r)} relationship** (correlation r = {r:.2f}, over {len(rows):,} "
             f"{unit}): when {_mid(first)} is higher, {_mid(second)} {change}. "
-            "r runs from −1 to 1, and 0 means no straight-line relationship. It shows the two move together, "
+            "r runs from −1 to 1 and 0 means no straight-line relationship. It shows the two move together, "
             "not that one causes the other.")
     slope, _, r2 = linear_fit(xs, ys)
     step = 0.01 if MEASURES[first][3] == "pct" else 1
@@ -721,7 +721,7 @@ def _relationship(p, rows):
             MEASURES[first][3], "unit")
         per = f"each extra {unit} of {_mid(first)}"
     text += (f" A straight-line (least-squares) regression gives {_fmt(abs(slope * step), MEASURES[second][3])} "
-             f"{'more' if slope > 0 else 'less'} {_mid(second)} for {per}, and explains {r2:.0%} of the variation "
+             f"{'more' if slope > 0 else 'less'} {_mid(second)} for {per} and explains {r2:.0%} of the variation "
              f"(R² = {r2:.2f}).")
     if "road_delayed" in (first, second):
         text += " Bear in mind TfL's main-road rating changes rarely (it is often set by long-running roadworks)"
@@ -742,7 +742,7 @@ def _relationship(p, rows):
 # Statistical analyses -------------------------------------------------------------------------
 # Beyond "how does X change with Y": distributions, a significance test, anomalies, persistence,
 # early warning (lead-lag), concentration and countdown decay. Each has fixed SQL and its own
-# statistics; a question chooses one by its wording, and may name the measure to analyse.
+# statistics; a question chooses one by its wording and may name the measure to analyse.
 
 STATS = {   # name: (question words, default measure, example question)
     "forecast": (r"\b(forecast\w*|next 24 hours|tomorrow|what will .{0,40} be|expect\w* (tomorrow|next|later)|"
@@ -924,7 +924,7 @@ def _stat_distribution(p, rows):
              if skew > 0.5 else "left-skewed: a tail of unusually good hours" if skew < -0.5
              else "roughly symmetric around the median")
     text = (f"Across {n:,} {entity}-hours, the median {_mid(measure)} was **{_fmt(median, fmt)}**; half of the "
-            f"hours were between {_fmt(q1, fmt)} and {_fmt(q3, fmt)} (the interquartile range), and 1 hour in 10 "
+            f"hours were between {_fmt(q1, fmt)} and {_fmt(q3, fmt)} (the interquartile range) and 1 hour in 10 "
             f"was above {_fmt(p90, fmt)}. The distribution is {shape} (skewness {skew:.2f}).")
     chart = {"kind": "bar", "title": f"Distribution of {_mid(measure)} per {entity}-hour", "x": "x", "y": "y",
              "data": data, "format": "pct", "horizontal": False, "series": None,
@@ -1032,7 +1032,7 @@ def _stat_persistence(p, rows):
     text = (f"A disrupted hour (half or more of the service time disrupted) is followed by another disrupted hour "
             f"**{p_stay:.0%}** of the time; an undisrupted hour turns into a disrupted one only **{p_start:.0%}** "
             f"of the time. In a simple Markov model that means a disruption, once started, lasts about "
-            f"**{run:.0f} hours** on average, and is {p_stay / p_start:.0f} times as likely to continue as to "
+            f"**{run:.0f} hours** on average and is {p_stay / p_start:.0f} times as likely to continue as to "
             "start. Planned closures count, which makes long runs more likely.")
     data = sorted(({"x": r["e"], "y": r["stay"] / r["dis"]} for r in rows if r["dis"] >= 10),
                   key=lambda d: -d["y"])
@@ -1199,7 +1199,7 @@ def permutation_p(xs, ys, rounds=4000):
 
 def trend(points, fmt, name):
     """(text, fitted values) for a measure's daily values: the slope per day, how much of the
-    day-to-day change it explains, and whether it could be chance."""
+    day-to-day change it explains and whether it could be chance."""
     xs, ys = list(range(len(points))), [d["y"] for d in points]
     slope, intercept, r2 = linear_fit(xs, ys)
     p = permutation_p(xs, ys)
@@ -1249,7 +1249,7 @@ def _box(p, rows):
     top, low = max(data, key=lambda d: d["median"]), min(data, key=lambda d: d["median"])
     unit = f"{entity}-hour"
     text = (f"Each box shows the middle half of {_mid(name)} across {unit}s: the line in the box is the median, "
-            f"the whiskers reach the furthest values within 1.5 times the box's height, and dots beyond them are "
+            f"the whiskers reach the furthest values within 1.5 times the box's height and dots beyond them are "
             f"outliers. The highest median is **{top['x']}** ({_fmt(top['median'], fmt)}), the lowest "
             f"**{low['x']}** ({_fmt(low['median'], fmt)}). **{widest['x']}** varies most: half its {unit}s fall "
             f"between {_fmt(widest['q1'], fmt)} and {_fmt(widest['q3'], fmt)}, so it is the least predictable. "

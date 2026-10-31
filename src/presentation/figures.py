@@ -229,7 +229,7 @@ def _road_overrun(row):
     ended, overran = row["works_ended"], row["works_overran"]
     text = (f"{overran} of the {ended} roadworks that ended (**{_pct(row['works_overrun_share'])}**) were still "
             f"listed after their planned end, but by a median of only **{row['median_overrun_minutes']:.0f} "
-            f"minutes**, and {row['works_overran_day']} overran by more than a day. Most \"overruns\" are TfL taking "
+            f"minutes** and {row['works_overran_day']} overran by more than a day. Most \"overruns\" are TfL taking "
             "the listing down a little late.")
     data = [{"x": "Finished on time", "y": ended - overran}, {"x": "Overran", "y": overran}]
     return {"answer": text, "charts": [

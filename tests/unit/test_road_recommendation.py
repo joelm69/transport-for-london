@@ -33,7 +33,7 @@ ROW = {
 
 def test_summary():
     assert summary(ROW) == (
-        "TfL rated 8 of its 24 main roads as seriously delayed at least half the time, and every one of "
+        "TfL rated 8 of its 24 main roads as seriously delayed at least half the time and every one of "
         "them had roadworks on it. A typical incident was cleared in 2h 51m, but traffic signal faults "
         "took 27h 20m.")
 
@@ -42,7 +42,7 @@ def test_findings_as_on_the_page():
     (h1, t1), (h2, t2), (h3, t3) = findings(ROW)
     assert h1 == "Delayed main roads all had roadworks"
     assert t1 == ("8 of 24 main roads were rated Serious or worse at least half the time (35% of all main-road "
-                  "time). All 8 had roadworks on them, and 3 had no incidents at all. Roadworks alone don't "
+                  "time). All 8 had roadworks on them and 3 had no incidents at all. Roadworks alone don't "
                   "explain it: Inner Ring had the most works (15) and was never delayed.")
     assert h2 == "Traffic signal faults take longest to clear"
     assert t2 == ("A typical incident was cleared in 2h 51m. Vehicle breakdowns took 40m, vehicle collisions "

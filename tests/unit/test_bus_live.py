@@ -44,7 +44,7 @@ def test_positions_gaps_and_bunching():
         pred("2", "C", "01:00"), pred("2", "D", "02:00"), pred("2", "E", "05:00"),
         # Bus 3 far behind: next stop A in 1 min, C in 10 min -> 9 min behind bus 2 at C.
         pred("3", "A", "01:00"), pred("3", "B", "05:00"), pred("3", "C", "10:00"),
-        # A bus going the other way, and a prediction for a stop off the route, are ignored.
+        # A bus going the other way and a prediction for a stop off the route, are ignored.
         pred("9", "B", "01:00", direction="inbound"), pred("4", "Z", "01:00"),
     ]
     rows = buses_on_route(arrivals, {"outbound": STOPS}, NOW)
