@@ -17,7 +17,7 @@ ADVICE = (r"\b(advi[cs]\w*|tips?|best time|worst time|when (should|to|is it best
           r"drive|cycle|go)|quietest|least busy|travel smarter)\b")
 TOPICS = [
     ("roads", r"\b(roads?|traffic|driv\w*|cars?|motorists?|congestion|roadworks?)\b"),
-    ("bikes", r"\b(bikes?|cycl\w*|santander|docks?)\b"),
+    ("bikes", r"\b(bikes?|cycling|cyclists?|cycle hire|santander|docks?)\b"),
     ("bus", r"\b(bus(es)?|routes?)\b"),
     ("rail", r"\b(tube|underground|trains?|rail|lines?|overground|dlr|elizabeth|tram)\b"),
 ]

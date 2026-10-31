@@ -140,11 +140,9 @@ def test_capabilities_lists_the_analyses():
 
 
 def test_analyses_it_cannot_do_get_suggestions_of_the_same_kind():
-    bikes = assistant.answer("Draw histogram of the bikes", Data())
-    assert bikes["answer"].startswith("I can't draw a histogram of bikes yet: the bike history")
-    assert bikes["suggestions"][0] == "How many bikes are at Waterloo?"
-    assert "What is the distribution of bus bunching?" in bikes["suggestions"]
-    assert bikes["chart"] is None
+    # Bike and road history is in the chat's dataset, so these are analysed
+    assert stat_plan("Draw histogram of the bikes") == {"stat": "distribution", "measure": "bike_empty"}
+    assert analysis.cannot_analyse("Pie chart of road traffic") is None
     weather = assistant.answer("Plot the weather against disruption", Data())
     assert weather["answer"].startswith("I can't analyse weather: this platform doesn't collect weather data")
     which = assistant.answer("draw a histogram", Data())
@@ -210,3 +208,59 @@ def test_catalogue_and_features():
     assert not catalogue.asks_about_data("How often are bike stations empty?")
     assert catalogue.describe("How often is BikePoint collected?").startswith("- **Santander Cycles docking stations**")
     assert "Needs new data or development" in assistant.answer("Suggest new features", Data())["answer"]
+
+
+def test_bike_road_and_all_route_measures():
+    assert plan("Heatmap of empty bike stations by hour and day of week")["measures"] == ["bike_empty"]
+    assert plan("How do full bike stations change through the day?")["measures"] == ["bike_full"]
+    assert plan("Are main roads more delayed at weekends?")["measures"] == ["road_delayed"]
+    assert plan("Plot road incidents by hour")["measures"] == ["road_incidents"]
+    assert plan("Compare bus bunching by route")["measures"] == ["bus_network_bunching"]
+    assert plan("How does bus bunching change through the day?")["measures"] == ["bus_bunching"]   # 12 routes, hourly
+    assert plan("Is the Central line running?") is None
+    sql = analysis.stat_sql(stat_plan("Draw histogram of the bikes"))
+    assert "bike_station_hourly" in sql and "FARM_FINGERPRINT" in sql   # an even sample, not alphabetical
+
+
+# Forecasting, decomposition, clustering ---------------------------------------------------------
+
+from datetime import datetime, timedelta as _td, timezone   # noqa: E402
+
+from src.presentation.analysis import kmeans   # noqa: E402
+
+
+def _hours(days, base=0.10, cycle=0.05):
+    """Hourly rows with a clear daily cycle (peak at 18:00)."""
+    from zoneinfo import ZoneInfo
+    start = datetime(2026, 11, 2, 0, tzinfo=timezone.utc)   # after the clocks changed: London = UTC
+    rows = []
+    for i in range(days * 24):
+        t = start + _td(hours=i)
+        peak = t.astimezone(ZoneInfo("Europe/London")).hour == 18
+        rows.append({"d0": t, "value": base + (cycle if peak else 0) + 0.001 * (i % 5), "weight": 100.0})
+    return rows
+
+
+def test_new_stat_plans():
+    assert stat_plan("Forecast Tube waiting time for the next 24 hours") == {"stat": "forecast", "measure": "tube_wait"}
+    assert stat_plan("Decompose bus bunching into trend and daily cycle") == {
+        "stat": "decomposition", "measure": "bus_bunching"}   # "daily cycle" is not cycling
+    assert stat_plan("Cluster bike stations by when they run empty") == {"stat": "clusters", "measure": "bike_empty"}
+    assert stat_plan("Cluster bus routes by bunching") == {"stat": "clusters", "measure": "bus_network_bunching"}
+    assert stat_plan("Forecast all-routes bus bunching")["measure"] == "bus_bunching"   # needs an hourly series
+
+
+def test_forecast_and_decomposition():
+    forecast = run_stat({"stat": "forecast", "measure": "tube_wait", "measures": ["tube_wait"]}, Stats(_hours(8)))
+    assert "should peak around **18:00**" in forecast["answer"] and forecast["chart"]["kind"] == "line"
+    assert {d["series"] for d in forecast["chart"]["data"]} >= {"Forecast", "95% range (high)", "Recent hours"}
+    assert "needs at least three days" in run_stat({"stat": "forecast", "measure": "tube_wait"}, Stats(_hours(2)))["answer"]
+    parts = run_stat({"stat": "decomposition", "measure": "bus_bunching"}, Stats(_hours(6)))
+    assert "The cycle is highest around 18:00" in parts["answer"] and len(parts["charts"]) == 2
+
+
+def test_kmeans_groups_alike_profiles():
+    vectors = [[1, 1], [1.1, 0.9], [5, 5], [5.2, 4.8], [9, 9], [9.1, 8.9]]
+    labels, _ = kmeans(vectors, 3)
+    assert labels[0] == labels[1] and labels[2] == labels[3] and labels[4] == labels[5]
+    assert len(set(labels)) == 3

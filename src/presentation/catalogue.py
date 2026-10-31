@@ -35,17 +35,18 @@ DATASETS = [
 ]
 NOT_COLLECTED = ("air quality (TfL's feed is only a daily London-wide forecast), weather, passenger numbers, "
                  "timetables (so no Excess Wait Time), car parks and taxi data")
-CHAT_TABLES = ("This chat queries the serving dataset tfl_portfolio: line_disruption_hourly, "
-               "station_accessibility_hourly, arrival_line_hourly, arrival_stop_hourly, arrival_accuracy_hourly and "
-               "the four recommendation tables. The bike, road and all-routes bus history is in BigQuery but not "
-               "yet in that dataset.")
+CHAT_TABLES = ("This chat queries the serving dataset tfl_portfolio (the last 28 complete days): "
+               "line_disruption_hourly, station_accessibility_hourly, arrival_line_hourly, arrival_accuracy_hourly, "
+               "bike_station_hourly, road_corridor_hourly, road_incident_hourly, bus_route_bands (all routes by "
+               "time band) and the four recommendation tables, refreshed by the hourly scheduled query.")
 
 FEATURES = {
     "Already built": [
         "Live rail, station, bus, bike and road boards on this page",
         "Tableau dashboards for rail reliability, buses, bikes and roads",
         "Data-driven business recommendations for rail, buses, bikes and roads",
-        "This chat: patterns, relationships, statistics, recommendation figures and travel advice",
+        "This chat: patterns, relationships, statistics, forecasts, clustering, recommendation figures and travel "
+        "advice, across rail, buses, bikes and roads",
         "An MCP server giving AI models the same tools",
     ],
     "Possible with the data already collected": [
@@ -56,14 +57,13 @@ FEATURES = {
         "Bike station rebalancing priority list: empty or full in the peaks, by area",
         "Road corridor reliability: share of time Serious, with the roadworks on each",
         "Cross-modal comparison: does a rail disruption push up bus bunching nearby?",
-        "Forecasting next week's disruption by line once there are several weeks of history",
+        "Weekday-aware forecasts and weekly seasonality once there are several weeks of history",
     ],
     "Needs new data or development": [
         "Excess Wait Time (TfL's official measure): needs bus timetables",
         "Passenger impact in journeys: needs passenger counts (TfL's NUMBAT or Oyster data)",
         "Weather effects on delays: needs a weather feed",
         "Air quality along routes: needs measured air quality (e.g. the London Air Quality Network)",
-        "Bike and road analysis in this chat: needs their hourly history added to the chat's dataset",
     ],
 }
 

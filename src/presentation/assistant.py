@@ -51,7 +51,7 @@ EXAMPLES = [
 WORDS = {
     "definition": r"\b(mean|means|meaning|define|definition|defined|measured|calculated|counted|explain)\b|"
                   r"\bwhy\b.*\b(use|used|median|average)\b",
-    "bikes": r"\b(bikes?|cycles?|cycling|docks?|docking|santander|e-?bikes?)\b",
+    "bikes": r"\b(bikes?|bicycles?|cycling|cyclists?|cycle hire|docks?|docking|santander|e-?bikes?)\b",
     "roads": r"\b(roads?|traffic|incidents?|roadworks?|works|collisions?|crash(es)?|breakdowns?|signal faults?|"
              r"a\d{1,3}|north circular|south circular|tunnel|corridors?|congestion)\b",
     "bus": r"\b(bus|buses|bunch\w*|routes?)\b",
@@ -101,6 +101,8 @@ def capabilities():
         "scatter plots.\n"
         "- **The project itself:** what data it collects, how often and since when, and suggestions for new "
         "features.\n"
+        "- **Forecasting and patterns:** a 24-hour forecast with a 95% range, decomposition into trend and "
+        "daily cycle, and clustering lines, routes or stations by their daily pattern.\n"
         "- **Statistics:** distributions (median, spread, skew), a significance test for weekday against weekend, "
         "anomaly detection (z-scores), persistence (how long disruptions last), early warning (lead–lag "
         "correlation), concentration (Pareto curve and Gini) and how countdown accuracy improves near arrival.\n"
@@ -346,7 +348,8 @@ def answer_read(question, sources):
         if stat:
             ran = analysis.run_stat(stat, sources)
             others = [q for name, (_, _, q) in analysis.STATS.items() if name != stat["stat"]]
-            return {**result, **ran, "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days",
+            return {**result, **ran, "charts": ran.get("charts"),
+                    "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days",
                     "suggestions": others[:3]}
         chosen = analysis.plan(question)
         if chosen:

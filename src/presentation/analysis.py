@@ -38,7 +38,14 @@ TABLES = {
     "disruption": ("line_disruption_hourly", "line_id", "in_service_minutes"),
     "accuracy": ("arrival_accuracy_hourly", "line_id", "predictions"),
     "access": ("station_accessibility_hourly", "station", "1"),
+    "bikes": ("bike_station_hourly", "station_name", "observed_minutes"),
+    "corridors": ("road_corridor_hourly", "corridor_name", "observed_minutes"),
+    "road_incidents": ("road_incident_hourly", "'London'", "1"),
+    "routes": ("bus_route_bands", "route", "polls"),
 }
+# The all-routes bus table has time bands, not hours: hour_start is the band's start.
+BANDS = {0: "Night 00–05", 5: "Early 05–07", 7: "Morning peak 07–10", 10: "Midday 10–16", 16: "Evening peak 16–19",
+         19: "Evening 19–24"}
 
 
 def _weighted(column, weight):
@@ -78,6 +85,27 @@ MEASURES = {
                       "Bus countdown error 5 minutes out (seconds)", "route"),
     "accessibility": ("access", "accessibility_minutes > 0", "SUM(accessibility_minutes) / 60", "hours",
                       "Station hours with a lift or step-free access notice", "station"),
+    "bike_empty": ("bikes", "observed_minutes > 0", "SAFE_DIVIDE(SUM(empty_minutes), SUM(observed_minutes))", "pct",
+                   "Bike stations empty (share of station time)", "station"),
+    "bike_full": ("bikes", "observed_minutes > 0", "SAFE_DIVIDE(SUM(full_minutes), SUM(observed_minutes))", "pct",
+                  "Bike stations full (share of station time)", "station"),
+    "bike_out_of_use": ("bikes", "observed_minutes > 0 AND docks > 0",
+                        "SAFE_DIVIDE(SUM(avg_out_of_use_docks * observed_minutes), SUM(docks * observed_minutes))",
+                        "pct", "Bike docks out of use (share of docks)", "station"),
+    "bike_available": ("bikes", "observed_minutes > 0", _weighted("avg_bikes", "observed_minutes"), "number",
+                       "Bikes available per station", "station"),
+    "road_delayed": ("corridors", "observed_minutes > 0", "SAFE_DIVIDE(SUM(delayed_minutes), SUM(observed_minutes))",
+                     "pct", "Main roads at Serious or worse (share of time)", "road"),
+    "road_incidents": ("road_incidents", "TRUE", "AVG(incidents)", "number", "Road incidents reported per hour",
+                       "network"),
+    "bus_network_bunching": ("routes", "polls > 0 AND bunching_rate IS NOT NULL", _weighted("bunching_rate", "polls"),
+                             "pct", "Bus bunching, all routes (share of gaps bunched)", "route"),
+    "bus_network_wait": ("routes", "polls > 0 AND average_wait_minutes IS NOT NULL",
+                         _weighted("average_wait_minutes", "polls"), "minutes", "Bus waiting time, all routes (minutes)",
+                         "route"),
+    "bus_network_gap": ("routes", "polls > 0 AND typical_gap_minutes IS NOT NULL",
+                        _weighted("typical_gap_minutes", "polls"), "minutes",
+                        "Gap between buses, all routes (minutes)", "route"),
 }
 
 # Disruption by cause: hours add up to the whole, so they can be shown as a pie. The cause is read
@@ -115,7 +143,17 @@ SUBJECTS = [
     ("incidents", r"\bincidents?\b"),
     ("disruption", r"\b(disrupt\w*|delays?|reliab\w*|good service)\b"),
     ("accessibility", r"\b(lifts?|step[- ]free|accessib\w*)\b"),
+    ("empty", r"\bempty\b|\bno bikes?\b"),
+    ("full", r"\bfull\b|\bnowhere to return\b"),
+    ("out_of_use", r"\bout of use\b|\bbroken docks?\b"),
+    ("availability", r"\b(bikes? available|availability|how many bikes)\b"),
+    ("congestion", r"\b(congest\w*|serious(ly)? delayed|main roads?|corridors?)\b"),
+    ("gap", r"\b(gaps? between|frequency|frequent)\b"),
 ]
+BIKE = r"\b(bikes?|bicycles?|cycling|cyclists?|cycle hire|docks?|docking|santander)\b"   # not "daily cycle"
+ROAD = r"\b(roads?|traffic|roadworks?|corridors?|congestion|a\d{1,3})\b"
+ALL_ROUTES = (r"\b(all|every|each) (bus )?routes\b|\bnetwork[- ]wide\b|\bwhole (bus )?network\b|\b675\b|"
+              r"\bby routes?\b|\bwhich routes?\b|\bper route\b|\btime bands?\b")
 BUS = r"\bbus(es)?\b|\broutes?\b"
 TUBE = r"\b(tube|underground|trains?|metro)\b"
 RELATION = (r"\b(relat\w*|correlat\w*|link\w*|associat\w*|affect\w*|impact\w*|depend\w*|influenc\w*|"
@@ -147,9 +185,31 @@ def _has(pattern, text):
     return re.search(pattern, text) is not None
 
 
+def _mode(text):
+    if _has(BIKE, text):
+        return "bike"
+    if _has(ROAD, text):
+        return "road"
+    return "bus" if _has(BUS, text) and not _has(TUBE, text) else "tube"
+
+
 def _measure(subject, text):
-    """The catalogue measure for a subject, using the question's mode (bus or Tube)."""
-    bus = _has(BUS, text) and not _has(TUBE, text)
+    """The catalogue measure for a subject, using the question's mode (bus, Tube, bike or road), or
+    None when that mode has no such measure."""
+    mode = _mode(text)
+    if mode == "bike":
+        return {"empty": "bike_empty", "full": "bike_full", "out_of_use": "bike_out_of_use",
+                "availability": "bike_available", "disruption": "bike_empty"}.get(subject)
+    if mode == "road":
+        return {"congestion": "road_delayed", "disruption": "road_delayed", "incidents": "road_incidents",
+                "wait": "road_delayed"}.get(subject)
+    if mode == "bus" and _has(ALL_ROUTES, text) and subject in ("bunching", "wait", "gap"):
+        return {"bunching": "bus_network_bunching", "wait": "bus_network_wait", "gap": "bus_network_gap"}[subject]
+    if subject in ("empty", "full", "out_of_use", "availability", "congestion"):
+        return None
+    if subject == "gap":
+        return "bus_network_gap" if mode == "bus" else "tube_wait"
+    bus = mode == "bus"
     return {
         "bunching": "bus_bunching" if bus else "tube_bunching",
         "wait": "bus_wait" if bus else "tube_wait",
@@ -191,12 +251,15 @@ def plan_without_kind(text):
     measures = []
     for _, subject in found:
         name = _measure(subject, text)
-        if name not in measures:
+        if name and name not in measures:
             measures.append(name)
+    if not measures and _mode(text) in ("bike", "road") and (_has(CHART_WORDS, text) or _has(RELATION, text)):
+        measures = ["bike_empty" if _mode(text) == "bike" else "road_delayed"]
     if not measures:
         return None
 
-    hour = _has(r"\b(time of (the )?day|hours?|hourly|rush hours?|peak|morning|evening|night|through the day)\b", text)
+    hour = _has(r"\b(time of (the )?day|hours?|hourly|rush hours?|peak|morning|evening|night|through the day|"
+                r"time bands?)\b", text)
     day_type = _has(r"\bweekends?\b", text)
     weekday = _has(r"\b(day of (the )?week|which day|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
                    text)
@@ -248,7 +311,7 @@ def build_sql(p):
         SELECT {group} AS g, MIN({sort}) AS s, {expr} AS v
         FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
         GROUP BY g, {entity}, hour_start HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL
-        ORDER BY s LIMIT 8000"""
+        ORDER BY FARM_FINGERPRINT(CONCAT(CAST(g AS STRING), CAST(hour_start AS STRING))) LIMIT 12000"""
     dims = [p["dimension"]] + ([p["series"]] if p["series"] else [])
     selects, groups, orders = [], [], []
     for i, dim in enumerate(dims):
@@ -257,6 +320,7 @@ def build_sql(p):
         groups.append(f"d{i}")
         orders.append(f"s{i}")
     order = "value DESC" if p["dimension"] == "entity" else ", ".join(orders)
+    limit = 1500 if p["dimension"] == "entity" else 400   # every bus route (675) or bike station (800)
     days = (f"(SELECT COUNT(DISTINCT DATE(hour_start, 'Europe/London')) FROM `{DATASET}.{table}` "
             f"WHERE {WINDOW} AND {where})")
     latest = f"(SELECT MAX(hour_start) FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where})"
@@ -265,7 +329,7 @@ def build_sql(p):
                ANY_VALUE({latest}) AS last_hour
         FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
         GROUP BY {', '.join(groups)} HAVING SUM({weight}) > 0
-        ORDER BY {order} LIMIT 400"""   # room for every hour × day of week cell (168)
+        ORDER BY {order} LIMIT {limit}"""   # room for every hour × day of week cell (168)
 
 
 def _pair_sql(first, second):
@@ -289,7 +353,7 @@ def _pair_sql(first, second):
 def _fmt(value, kind):
     return {
         "pct": f"{value * 100:.1f}%", "minutes": f"{value:.1f} min", "seconds": f"{value:.0f} s",
-        "hours": f"{value:,.0f} h", "ratio": f"{value:.2f}", "rate": f"{value:.2f}",
+        "hours": f"{value:,.0f} h", "ratio": f"{value:.2f}", "rate": f"{value:.2f}", "number": f"{value:,.1f}",
     }.get(kind, f"{value:.2f}")
 
 
@@ -314,7 +378,7 @@ WEEKDAYS = {"Mon": "Monday", "Tue": "Tuesday", "Wed": "Wednesday", "Thu": "Thurs
 
 
 def _entity_name(value, entity):
-    if entity == "station":
+    if entity in ("station", "road", "network"):
         return value
     if entity == "route":
         return f"Route {str(value).upper()}"
@@ -515,9 +579,11 @@ def _by_dimension(p, rows):
     name, dim = p["measures"][0], p["dimension"]
     fmt, label, entity = MEASURES[name][3], _label(name), MEASURES[name][5]
     if dim == "hour":
-        data = [{"x": f"{int(r['d0']):02d}:00", "y": r["value"], "w": r["weight"]} for r in rows]
+        bands = MEASURES[name][0] == "routes"
+        data = [{"x": f"{int(r['d0']):02d}:00" + (f" {BANDS[int(r['d0'])]}" if bands else ""), "y": r["value"],
+                 "w": r["weight"]} for r in rows]
     elif dim == "entity":
-        data = [{"x": _entity_name(r["d0"], entity), "y": r["value"], "w": r["weight"]} for r in rows[:15]]
+        data = [{"x": _entity_name(r["d0"], entity), "y": r["value"], "w": r["weight"]} for r in rows]
     elif dim == "date":
         data = [{"x": _day(r["d0"]), "y": r["value"], "w": r["weight"]} for r in rows]
     else:
@@ -546,7 +612,7 @@ def _by_dimension(p, rows):
             text += (f" In the rush hours (07–10 and 16–19) it averages {_fmt(_mean(peak), fmt)}, against "
                      f"{_fmt(_mean(other), fmt)} at other times.")
     if thin:
-        names = ", ".join(d["x"] for d in thin)
+        names = ", ".join(d["x"] for d in thin) if len(thin) <= 5 else f"{len(thin)} of them"
         why = ("" if dim != "hour" else " (fewer buses run overnight)" if name.startswith("bus")
                else " (only the Night Tube runs overnight)" if name.startswith("tube") else " (overnight)")
         them = "them" if len(thin) > 1 else "it"
@@ -567,6 +633,9 @@ def _by_dimension(p, rows):
             text += trend_text
     text += f"\n\n_Based on {int(rows[0]['days'])} days of data; times are London time._"
     x_title = entity.title() if dim == "entity" else DIMENSIONS[dim][2]
+    if dim == "entity" and len(data) > 15:   # the statistics cover every one; the chart, the 15 highest
+        text = text.replace("\n\n_Based on", f" The chart shows the 15 highest of {len(data)} {entity}s.\n\n_Based on", 1)
+        data = sorted(data, key=lambda d: -d["y"])[:15]
     chart = {"kind": "line" if dim in ("hour", "date") else "bar", "title": f"{_name(name)} by {x_title.lower()}",
              "x": "x", "y": "y", "data": [{"x": d["x"], "y": d["y"], **({"fit": fitted[i]} if fitted else {})}
                                           for i, d in enumerate(data)], "format": fmt,
@@ -625,6 +694,13 @@ def _relationship(p, rows):
 # statistics; a question chooses one by its wording, and may name the measure to analyse.
 
 STATS = {   # name: (question words, default measure, example question)
+    "forecast": (r"\b(forecast\w*|next 24 hours|tomorrow|what will .{0,40} be|expect\w* (tomorrow|next|later)|"
+                 r"predict\w* (for |of )?(tomorrow|the next|next))\b", "tube_wait",
+                 "Forecast Tube waiting time for the next 24 hours"),
+    "decomposition": (r"\b(decompos\w*|seasonal\w*|daily cycle|underlying trend|trend and (daily )?(pattern|season\w*))\b",
+                      "bus_bunching", "Decompose bus bunching into trend and daily cycle"),
+    "clusters": (r"\b(cluster\w*|segment\w*|similar|alike|group(s|ing)? (of )?(lines|routes|stations|roads)|"
+                 r"kinds? of (stations|routes|lines))\b", "bike_empty", "Cluster bike stations by when they run empty"),
     "distribution": (r"\b(distribution|histogram|spread|how (variable|spread)|skew\w*|percentiles?|typical range)\b",
                      "tube_wait", "What is the distribution of Tube waiting times?"),
     "significance": (r"\b(significan\w*|statistically|hypothesis|t-?test|by chance|difference real|real difference)\b",
@@ -642,6 +718,13 @@ STATS = {   # name: (question words, default measure, example question)
                 "tube_countdown", "How does countdown accuracy improve as the train approaches?"),
 }
 STAT_SUGGESTIONS = [example for _, _, example in STATS.values()]
+HOURLY_EQUIVALENT = {"bus_network_bunching": "bus_bunching", "bus_network_wait": "bus_wait",
+                     "bus_network_gap": "bus_wait"}
+CONCENTRATION = {   # hours that add up, for the Pareto curve
+    "rail_disruption": "SUM(disrupted_minutes) / 60", "accessibility": "SUM(accessibility_minutes) / 60",
+    "bike_empty": "SUM(empty_minutes) / 60", "bike_full": "SUM(full_minutes) / 60",
+    "road_delayed": "SUM(delayed_minutes) / 60",
+}
 DISRUPTED_HOUR = 0.5   # an hour counts as disrupted when at least half its service time was
 
 
@@ -653,13 +736,22 @@ def stat_plan(question):
             continue
         if _has(pattern, text):
             found = sorted((m.start(), subject) for subject, p in SUBJECTS for m in [re.search(p, text)] if m)
-            measure = _measure(found[0][1], text) if found else default
-            if name in ("persistence", "concentration") and measure not in ("rail_disruption", "accessibility"):
+            measures = [m for m in (_measure(subject, text) for _, subject in found) if m]
+            mode_default = {"bike": "bike_empty", "road": "road_delayed"}.get(_mode(text), default)
+            measure = measures[0] if measures else mode_default
+            if name == "persistence" and measure != "rail_disruption":
+                measure = default
+            if name == "concentration" and measure not in CONCENTRATION:
                 measure = default
             if name == "lead_lag" and measure not in ("tube_wait", "tube_bunching", "tube_regularity"):
                 measure = default
             if name == "horizon":
                 measure = "tube_countdown"
+            if name in ("forecast", "decomposition") and MEASURES[measure][0] in ("routes", "access"):
+                measure = HOURLY_EQUIVALENT.get(measure, default)   # these need an hourly series
+            if name == "clusters" and _mode(text) == "bus":   # group every route, not the 12 tracked hourly
+                measure = {"bus_bunching": "bus_network_bunching", "bus_wait": "bus_network_wait"}.get(
+                    measure, "bus_network_bunching" if not measures else measure)
             return {"stat": name, "measure": measure}
     return None
 
@@ -673,13 +765,26 @@ def _values_sql(measure, group):
                    "EXTRACT(DAYOFWEEK FROM DATE(hour_start, 'Europe/London')) IN (1, 7) AS weekend",
             "entity_day": f"{entity} AS e, DATE(hour_start, 'Europe/London') AS d"}[group]
     keys = {"entity_hour": "e, t", "day": "d, weekend", "entity_day": "e, d"}[group]
+    # A big table (800 bike stations) is sampled evenly, not cut off alphabetically.
+    order = "FARM_FINGERPRINT(CONCAT(CAST(e AS STRING), CAST(t AS STRING)))" if group == "entity_hour" else keys
+    limit = 6000 if group == "entity_hour" else 20000
     return f"""
         SELECT {cols}, {expr} AS v FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
-        GROUP BY {keys} HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL ORDER BY {keys} LIMIT 6000"""
+        GROUP BY {keys} HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL
+        ORDER BY {order} LIMIT {limit}"""
 
 
 def stat_sql(p):
     name, measure = p["stat"], p["measure"]
+    if name in ("forecast", "decomposition"):
+        return build_sql({"measures": [measure], "dimension": "time", "series": None})
+    if name == "clusters":
+        table_key, where, expr, *_ = MEASURES[measure]
+        table, entity, weight = TABLES[table_key]
+        return f"""
+            SELECT {entity} AS e, EXTRACT(HOUR FROM {LONDON}) AS h, {expr} AS v, SUM({weight}) AS w
+            FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
+            GROUP BY e, h HAVING SUM({weight}) > 0 AND {expr} IS NOT NULL ORDER BY e, h LIMIT 40000"""
     if name == "distribution":
         return _values_sql(measure, "entity_hour")
     if name == "significance":
@@ -711,8 +816,8 @@ def stat_sql(p):
     if name == "concentration":
         table_key, where, *_ = MEASURES[measure]
         table, entity, _ = TABLES[table_key]
-        hours = "SUM(accessibility_minutes) / 60" if measure == "accessibility" else "SUM(disrupted_minutes) / 60"
-        label = entity if measure == "accessibility" else "line_name"
+        hours = CONCENTRATION[measure]
+        label = "line_name" if measure == "rail_disruption" else entity
         return f"""
             SELECT {label} AS e, {hours} AS v FROM `{DATASET}.{table}` WHERE {WINDOW} AND {where}
             GROUP BY e HAVING v > 0 ORDER BY v DESC"""
@@ -753,6 +858,17 @@ def _stat_distribution(p, rows):
         bins[min(int((v - values[0]) / width), 14)] += 1
     data = [{"x": f"{_fmt(values[0] + i * width, fmt)}" + ("+" if i == 14 else ""), "y": count / n}
             for i, count in enumerate(bins)]
+    zero_share = sum(v == 0 for v in values) / n
+    if zero_share >= 0.5:
+        rest = [v for v in values if v > 0]
+        mid = _quantile(rest, 0.5) if rest else 0
+        text = (f"Across {n:,} {entity}-hours, **{zero_share:.0%} had none at all** ({_mid(measure)} was zero). In the "
+                f"{len(rest):,} hours where it happened, the median was **{_fmt(mid, fmt)}** and 1 hour in 10 "
+                f"overall was above {_fmt(p90, fmt)}: the problem is concentrated in a minority of hours.")
+        chart = {"kind": "bar", "title": f"Distribution of {_mid(measure)} per {entity}-hour", "x": "x", "y": "y",
+                 "data": data, "format": "pct", "horizontal": False, "series": None,
+                 "x_title": _label(measure), "y_title": f"Share of {entity}-hours"}
+        return {"answer": text, "chart": chart}
     shape = ("right-skewed: most hours are close to the median, with a long tail of much worse hours"
              if skew > 0.5 else "left-skewed: a tail of unusually good hours" if skew < -0.5
              else "roughly symmetric around the median")
@@ -909,8 +1025,11 @@ def _stat_concentration(p, rows):
     top_share = cumulative[top - 1]["y"]
     ascending = sorted(values)
     gini = (2 * sum((i + 1) * v for i, v in enumerate(ascending)) / (n * total) - (n + 1) / n) if total else 0
-    what = "stations" if measure == "accessibility" else "lines"
-    hours = "hours with a lift or step-free access notice" if measure == "accessibility" else "disrupted hours"
+    what = {"accessibility": "stations", "bike_empty": "stations", "bike_full": "stations",
+            "road_delayed": "roads"}.get(measure, "lines")
+    hours = {"accessibility": "hours with a lift or step-free access notice", "bike_empty": "hours stations sat empty",
+             "bike_full": "hours stations sat full", "road_delayed": "hours main roads were seriously delayed"
+             }.get(measure, "disrupted hours")
     text = (f"The top {top} of {n} {what} (20%) account for **{top_share:.0%}** of all {hours}. The Gini "
             f"coefficient is **{gini:.2f}** (0 = spread evenly, 1 = all on one {what[:-1]}): "
             + ("strongly concentrated." if gini >= 0.5 else "moderately concentrated." if gini >= 0.3
@@ -941,12 +1060,6 @@ def _stat_horizon(p, rows):
 # chart of something else.
 
 NO_HISTORY = [   # (topic, question words, why)
-    ("bikes", r"\b(bikes?|bicycles?|cycles?|cycling|docks?|docking|santander)\b",
-     "the bike history (every docking station, every 2 minutes) isn't in the tables I can query; it feeds "
-     "the Bikes dashboard and this week's bike findings instead"),
-    ("roads", r"\b(roads?|traffic|roadworks?|congestion|corridors?|road incidents?)\b",
-     "the road history isn't in the tables I can query; it feeds the Roads dashboard and this week's road "
-     "findings instead"),
     ("air quality", r"\b(air quality|pollution|no2|pm2\.?5|pm10|ozone)\b",
      "this platform doesn't collect air quality"),
     ("weather", r"\b(weather|rain\w*|temperature|snow\w*|wind)\b",
@@ -996,6 +1109,8 @@ def cannot_analyse(question):
             opening = (f"I can't draw {KIND_NAMES[kind]} of {topic} yet" if topic in TOPIC_SUGGESTIONS
                        else f"I can't analyse {topic}")
             return {"answer": f"{opening}: {why}. Here's what I can do instead:", "suggestions": suggestions[:5]}
+    if _mode(text) in ("bike", "road"):
+        return None   # bike and road history is in the chat's dataset; their defaults apply
     if not measures and not _has(r"\b(lifts?|step[- ]free|accessib\w*|countdowns?|disrupt\w*)\b", text):
         what = KIND_NAMES[kind].replace("that analysis", "an analysis")
         return {"answer": f"I can draw {what} of several measures: bunching, waiting time and gap regularity for "
@@ -1078,6 +1193,7 @@ def _box(p, rows):
         return {"answer": "There isn't enough data for a box plot yet.", "chart": None}
     if dim == "entity":
         data.sort(key=lambda d: -d["median"])
+        data = data[:15]
     widest = max(data, key=lambda d: d["q3"] - d["q1"])
     top, low = max(data, key=lambda d: d["median"]), min(data, key=lambda d: d["median"])
     unit = f"{entity}-hour"
@@ -1193,4 +1309,199 @@ def _stacked_causes(p, rows):
              "data": [{"x": l, "series": c, "y": v} for (l, c), v in data.items()], "format": "hours",
              "series": "series", "horizontal": True, "x_title": "Line", "y_title": "Disrupted line-hours",
              "x_order": lines}
+    return {"answer": text, "chart": chart}
+
+
+# Forecasting, decomposition, clustering ---------------------------------------------------------
+# Simple, explainable methods that grow with the history: with a week or two of data they show the
+# daily cycle; weekly patterns and a reliable trend need several weeks.
+
+def _london(value):
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+    t = value if isinstance(value, datetime) else datetime.fromisoformat(str(value).replace(" UTC", "+00:00"))
+    return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)).astimezone(ZoneInfo("Europe/London"))
+
+
+def _hourly(rows):
+    """[(London time, value)] for the hours with enough data (thin overnight hours left out)."""
+    keep, _ = reliable([{**r, "w": float(r["weight"]), "y": float(r["value"])} for r in rows])
+    return [(_london(r["d0"]), r["y"]) for r in keep]
+
+
+def _stat_forecast(p, rows):
+    from datetime import timedelta
+    name = p["measures"][0] if "measures" in p else p["measure"]
+    fmt = MEASURES[name][3]
+    series = _hourly(rows)
+    days = sorted({t.date() for t, _ in series})
+    if len(days) < 3:
+        return {"answer": "A forecast needs at least three days of history; there isn't enough yet.", "chart": None}
+
+    def profile(points):
+        by = {}
+        for t, v in points:
+            by.setdefault(t.hour, []).append(v)
+        return {h: sum(v) / len(v) for h, v in by.items()}
+
+    # Backtest: forecast the last complete day from the days before it, against "same as the day before".
+    last, before = days[-1], days[-2]
+    past = [(t, v) for t, v in series if t.date() < last and t.date() >= last - timedelta(days=7)]
+    seasonal = profile(past)
+    actual = {t.hour: v for t, v in series if t.date() == last}
+    yesterday = {t.hour: v for t, v in series if t.date() == before}
+    hours = [h for h in actual if h in seasonal and h in yesterday]
+    mae = sum(abs(actual[h] - seasonal[h]) for h in hours) / len(hours) if hours else None
+    naive = sum(abs(actual[h] - yesterday[h]) for h in hours) / len(hours) if hours else None
+
+    recent = [(t, v) for t, v in series if t.date() > last - timedelta(days=7)]
+    forecast = profile(recent)
+    residuals = [v - forecast[t.hour] for t, v in recent if t.hour in forecast]
+    sd = math.sqrt(sum(e * e for e in residuals) / max(len(residuals) - 1, 1))
+    start = max(t for t, _ in series) + timedelta(hours=1)
+    data = []
+    for t, v in [x for x in series if x[0] >= start - timedelta(hours=48)]:
+        data.append({"x": f"{t:%a} {t.day} {t:%b}, {t:%H}:00", "y": v, "series": "Recent hours"})
+    future = []
+    for i in range(24):
+        t = start + timedelta(hours=i)
+        if t.hour in forecast:
+            label = f"{t:%a} {t.day} {t:%b}, {t:%H}:00"
+            future.append((t, forecast[t.hour]))
+            data.append({"x": label, "y": forecast[t.hour], "series": "Forecast"})
+            data.append({"x": label, "y": forecast[t.hour] + 1.96 * sd, "series": "95% range (high)"})
+            data.append({"x": label, "y": max(forecast[t.hour] - 1.96 * sd, 0), "series": "95% range (low)"})
+    peak = max(future, key=lambda f: f[1])
+    low = min(future, key=lambda f: f[1])
+    text = (f"Forecast for the 24 hours after the latest complete day ({start:%a %d %b}): {_mid(name)} should peak "
+            f"around **{peak[0]:%H}:00** (about {_fmt(peak[1], fmt)}) and be lowest around {low[0]:%H}:00 (about "
+            f"{_fmt(low[1], fmt)}), give or take {_fmt(1.96 * sd, fmt)} (95% range). Method: a seasonal average, "
+            f"each hour forecast from the same hour on the last {min(len(days), 7)} days.")
+    if mae is not None:
+        better = mae < naive
+        text += (f" Tested on {last:%a %d %b}, it was off by {_fmt(mae, fmt)} on average, against {_fmt(naive, fmt)} "
+                 f"for simply repeating the day before: {'better' if better else 'not yet better'} than that "
+                 "baseline.")
+    text += (f" Built on {len(days)} days; it will learn weekday-weekend differences once there are a few weeks "
+             "of history.")
+    chart = {"kind": "line", "title": f"{_name(name)}: recent hours and 24-hour forecast", "x": "x", "y": "y",
+             "data": data, "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour (London time)",
+             "y_title": _label(name), "temporal_labels": True}
+    return {"answer": text, "chart": chart}
+
+
+def _stat_decomposition(p, rows):
+    name = p["measure"]
+    fmt = MEASURES[name][3]
+    series = _hourly(rows)
+    if len(series) < 72:
+        return {"answer": "Decomposition needs at least three days of hourly data; there isn't enough yet.",
+                "chart": None}
+    values = [v for _, v in series]
+    trend = [sum(values[i - 12:i + 12]) / 24 if 12 <= i < len(values) - 12 else None for i in range(len(values))]
+    detrended = {}
+    for (t, v), tr in zip(series, trend):
+        if tr is not None:
+            detrended.setdefault(t.hour, []).append(v - tr)
+    cycle = {h: sum(d) / len(d) for h, d in detrended.items()}
+    centre = sum(cycle.values()) / len(cycle)
+    cycle = {h: c - centre for h, c in cycle.items()}
+    points = [(t, v, tr, cycle.get(t.hour, 0)) for (t, v), tr in zip(series, trend) if tr is not None]
+    mean = sum(v for _, v, _, _ in points) / len(points)
+
+    def var(xs):
+        m = sum(xs) / len(xs)
+        return sum((x - m) ** 2 for x in xs) / len(xs)
+
+    total = var([v for _, v, _, _ in points]) or 1
+    shares = {"daily cycle": var([c for *_, c in points]) / total, "slow trend": var([tr for _, _, tr, _ in points]) / total,
+              "irregular": var([v - tr - c for _, v, tr, c in points]) / total}
+    peak = max(cycle, key=cycle.get)
+    trough = min(cycle, key=cycle.get)
+    days = len({t.date() for t, _ in series})
+    text = (f"{_name(name)} splits into three parts: a **slow trend** (the 24-hour moving average), a **daily "
+            f"cycle** (the typical hour-of-day pattern) and what's left (**irregular** variation). The daily cycle "
+            f"accounts for about **{shares['daily cycle']:.0%}** of the hour-to-hour variation, the slow trend "
+            f"{shares['slow trend']:.0%} and irregular movements {shares['irregular']:.0%}. The cycle is highest "
+            f"around {peak:02d}:00 ({_fmt(cycle[peak], fmt).replace('-', '−')} against the trend) and lowest around "
+            f"{trough:02d}:00. The trend ran from {_fmt(min(tr for _, _, tr, _ in points), fmt)} to "
+            f"{_fmt(max(tr for _, _, tr, _ in points), fmt)}. With {days} days, a weekly cycle can't be separated yet; "
+            "it needs at least two weeks.")
+    line = [{"x": f"{t:%a} {t.day} {t:%b}, {t:%H}:00", "y": v, "series": "Each hour"} for t, v, _, _ in points]
+    line += [{"x": f"{t:%a} {t.day} {t:%b}, {t:%H}:00", "y": tr, "series": "Slow trend (24-hour average)"}
+             for t, _, tr, _ in points]
+    bars = [{"x": f"{h:02d}:00", "y": cycle[h]} for h in sorted(cycle)]
+    charts = [
+        {"kind": "line", "title": f"{_name(name)}: each hour and the slow trend", "x": "x", "y": "y", "data": line,
+         "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour (London time)",
+         "y_title": _label(name), "temporal_labels": True},
+        {"kind": "bar", "title": "The daily cycle: above (+) or below (−) the trend, by hour", "x": "x", "y": "y",
+         "data": bars, "format": fmt, "series": None, "horizontal": False, "x_title": "Hour of day (London time)",
+         "y_title": "Difference from the trend"},
+    ]
+    return {"answer": text, "chart": charts[0], "charts": charts}
+
+
+def kmeans(vectors, k, rounds=60):
+    """Plain k-means with a fixed start (the vectors at the low, middle and high end of the average
+    level), so the same data always gives the same groups."""
+    order = sorted(range(len(vectors)), key=lambda i: sum(vectors[i]))
+    centres = [list(vectors[order[int(j * (len(order) - 1) / max(k - 1, 1))]]) for j in range(k)]
+    labels = [0] * len(vectors)
+    for _ in range(rounds):
+        labels = [min(range(k), key=lambda c: sum((a - b) ** 2 for a, b in zip(v, centres[c]))) for v in vectors]
+        for c in range(k):
+            members = [vectors[i] for i in range(len(vectors)) if labels[i] == c]
+            if members:
+                centres[c] = [sum(col) / len(members) for col in zip(*members)]
+    return labels, centres
+
+
+def _stat_clusters(p, rows):
+    name = p["measure"]
+    fmt, entity = MEASURES[name][3], MEASURES[name][5]
+    hours = sorted({int(r["h"]) for r in rows})
+    by = {}
+    for r in rows:
+        by.setdefault(r["e"], {})[int(r["h"])] = float(r["v"])
+    complete = {e: prof for e, prof in by.items() if len(prof) >= 0.7 * len(hours)}
+    if len(complete) < 6:
+        return {"answer": f"Grouping needs at least six {entity}s with data through the day; there aren't enough yet.",
+                "chart": None}
+    names = sorted(complete)
+    vectors = []
+    for e in names:
+        prof = complete[e]
+        fill = sum(prof.values()) / len(prof)
+        vectors.append([prof.get(h, fill) for h in hours])
+    k = 3 if len(names) >= 9 else 2
+    labels, centres = kmeans(vectors, k)
+    groups = []
+    for c in range(k):
+        members = [names[i] for i in range(len(names)) if labels[i] == c]
+        if not members:
+            continue
+        level = sum(centres[c]) / len(centres[c])
+        peak = hours[max(range(len(hours)), key=lambda i: centres[c][i])]
+        groups.append({"c": c, "members": members, "level": level, "peak": peak})
+    groups.sort(key=lambda g: -g["level"])
+    words = ["Highest", "Middle", "Lowest"] if len(groups) == 3 else ["Higher", "Lower"]
+    lines, data = [], []
+    for word, g in zip(words, groups):
+        label = f"{word}: {len(g['members'])} {entity}s"
+        # The most typical members: closest to the group's average day
+        typical = sorted(g["members"], key=lambda m: sum(
+            (a - b) ** 2 for a, b in zip(vectors[names.index(m)], centres[g["c"]])))
+        examples = ", ".join(_entity_name(m, entity) for m in typical[:4])
+        lines.append(f"- **{label}**, averaging {_fmt(g['level'], fmt)} and peaking around {g['peak']:02d}:00 "
+                     f"(e.g. {examples})")
+        for i, h in enumerate(hours):
+            band = f" {BANDS[h]}" if MEASURES[name][0] == "routes" and h in BANDS else ""
+            data.append({"x": f"{h:02d}:00{band}", "y": centres[g["c"]][i], "series": label})
+    text = (f"Grouping {len(names)} {entity}s by their hour-by-hour pattern of {_mid(name)} (k-means, {len(groups)} "
+            "groups) gives:\n\n" + "\n".join(lines)
+            + f"\n\nEach line in the chart is a group's average day. Groups will settle as more days are collected.")
+    chart = {"kind": "line", "title": f"{_name(name)}: average day of each group", "x": "x", "y": "y", "data": data,
+             "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour of day (London time)",
+             "y_title": _label(name)}
     return {"answer": text, "chart": chart}

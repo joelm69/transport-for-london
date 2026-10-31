@@ -36,7 +36,7 @@ FIGURES = {
 AREA_WORDS = {
     "bus": r"\b(bus(es)?|routes?)\b",
     "rail": r"\b(tube|underground|trains?|rail|lines?|overground|dlr|elizabeth)\b",
-    "bikes": r"\b(bikes?|cycl\w*|docks?|docking|stations?|santander)\b",
+    "bikes": r"\b(bikes?|bicycles?|cycling|cyclists?|cycle hire|docks?|docking|stations?|santander)\b",
     "roads": r"\b(roads?|traffic|incidents?|roadworks?|works|corridors?)\b",
 }
 SUGGESTIONS = [
