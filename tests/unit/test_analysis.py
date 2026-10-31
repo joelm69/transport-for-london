@@ -70,7 +70,8 @@ def test_the_assistant_returns_the_chart():
     result = assistant.answer("Is there a relationship between time of day and bus bunching?", Data())
     assert result["chart"]["kind"] == "line"
     assert result["source"] == "BigQuery analysis of the last 28 days"
-    assert assistant.answer("Chart the weather in Paris", Data())["answer"].startswith("Sorry, I can only")
+    assert assistant.answer("Chart the weather in Paris", Data())["answer"].startswith("I can't analyse weather")
+    assert assistant.answer("Who won the football?", Data())["answer"].startswith("Sorry, I can only")
 
 
 # Statistical analyses --------------------------------------------------------------------------
@@ -135,3 +136,29 @@ def test_capabilities_lists_the_analyses():
     result = assistant.answer("What analyses can you do?", Data())
     assert "**Statistics:**" in result["answer"]
     assert result["suggestions"][0] == analysis.STAT_SUGGESTIONS[0]
+
+
+def test_analyses_it_cannot_do_get_suggestions_of_the_same_kind():
+    bikes = assistant.answer("Draw histogram of the bikes", Data())
+    assert bikes["answer"].startswith("I can't draw a histogram of bikes yet: the bike history")
+    assert bikes["suggestions"][0] == "How many bikes are at Waterloo?"
+    assert "What is the distribution of bus bunching?" in bikes["suggestions"]
+    assert bikes["chart"] is None
+    weather = assistant.answer("Plot the weather against disruption", Data())
+    assert weather["answer"].startswith("I can't analyse weather: this platform doesn't collect weather data")
+    which = assistant.answer("draw a histogram", Data())
+    assert "Which one?" in which["answer"] and which["suggestions"] == analysis.KIND_SUGGESTIONS["histogram"]
+    scatter = assistant.answer("Scatter plot please", Data())
+    assert scatter["suggestions"] == analysis.KIND_SUGGESTIONS["scatter"]
+    # Questions it can answer are not caught
+    assert analysis.cannot_analyse("Is there a relationship between time of day and bus bunching?") is None
+    assert analysis.cannot_analyse("How many bikes are at Waterloo?") is None
+    assert analysis.cannot_analyse("Show a pie chart of the reasons for rail disruption") is None
+
+
+def test_misspellings_are_read_and_said():
+    fixed, changes = assistant.read_misspellings("histgram of bus bunchng")
+    assert fixed == "histogram of bus bunching" and changes == [("histgram", "histogram"), ("bunchng", "bunching")]
+    assert assistant.read_misspellings("Is the Central line running?") == ("Is the Central line running?", [])
+    result = assistant.answer("histgram of bus bunchng", Data())
+    assert result["answer"].startswith("_Reading “histgram” as “histogram”, “bunchng” as “bunching”._")

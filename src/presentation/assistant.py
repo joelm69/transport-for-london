@@ -8,7 +8,10 @@ documentation search (the retrieval half of RAG). It is rule-based: it answers g
 when a question is outside this project, and returns clickable suggestions (`suggestions`) of
 questions it can answer.
 
-Asked "what analyses can you do?", it lists them with clickable examples. Asked a statistical
+Asked "what analyses can you do?", it lists them with clickable examples. Asked for a chart or a
+statistic it can't produce (bike or road history, weather, or no measure named), it says why and
+suggests the same kind of analysis it can do. Misspelt words are read as the closest known word
+("histgram" as "histogram"), and the answer says so. Asked a statistical
 question (a distribution, a significance test, anomalies, persistence, early warning,
 concentration, countdown accuracy), it runs analysis.py's statistical analyses. Asked how
 something changes or whether two things are related ("is there a relationship between
@@ -94,6 +97,32 @@ def capabilities():
         "- **Definitions:** what any figure means and how it's measured.\n\n"
         "Measures: bus and Tube bunching, waiting time and gap regularity, dropped trains, rail disruption and "
         "incidents, countdown accuracy and accessibility. Try one of these:")
+
+
+# Words the assistant knows, for reading misspellings ("histgram" -> "histogram").
+VOCABULARY = sorted(set("""
+histogram distribution bunching bunched disruption disruptions disrupted waiting relationship related
+correlation concentrated significant statistically anomalies unusual persistence countdown countdowns
+accuracy accurate accessibility weekend weekends weekday weekdays morning evening regularity incidents
+compare chart graph scatter doughnut reliable reliability stations station bicycles bikes traffic
+roadworks underground overground elizabeth piccadilly metropolitan northern central victoria jubilee
+bakerloo district circle waterloo hammersmith analyses analysis waiting delayed delays""".split()))
+
+
+def read_misspellings(question):
+    """(question with likely misspellings corrected, [(typed, read as)]): only words of five or
+    more letters that aren't already known, and only close matches."""
+    import difflib
+    fixed, changes = [], []
+    for word in question.split():
+        core = word.strip(".,?!;:()\"'").lower()
+        if len(core) >= 5 and core.isalpha() and core not in VOCABULARY:
+            match = difflib.get_close_matches(core, VOCABULARY, n=1, cutoff=0.84)
+            if match:
+                changes.append((core, match[0]))
+                word = word.lower().replace(core, match[0])
+        fixed.append(word)
+    return " ".join(fixed), changes
 
 
 OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
@@ -268,6 +297,14 @@ def answer(question, sources):
     if reply:
         return {"answer": reply, "source": None, "chart": None,
                 "suggestions": [] if "Goodbye" in reply else SUGGESTIONS}
+    question, changes = read_misspellings(question)
+    note = ("_Reading " + ", ".join(f"“{a}” as “{b}”" for a, b in changes) + "._\n\n") if changes else ""
+    result = answer_read(question, sources)
+    return {**result, "answer": note + result["answer"]} if note else result
+
+
+def answer_read(question, sources):
+    """answer() for a question with misspellings already corrected."""
     topic, when = route(question)
     labels = {"rail": "live TfL line status", "bikes": "live TfL BikePoint feed", "roads": "live TfL road feeds"}
     result = {"source": None, "suggestions": [], "chart": None}
@@ -275,14 +312,20 @@ def answer(question, sources):
         if re.search(CAPABILITIES, question.lower()):
             return {**result, "answer": capabilities(), "suggestions": analysis.STAT_SUGGESTIONS[:4]
                     + analysis.SUGGESTIONS[:3]}
+        declined = analysis.cannot_analyse(question)
+        if declined:
+            return {**result, **declined}
         stat = analysis.stat_plan(question)
         if stat:
             ran = analysis.run_stat(stat, sources)
-            return {**result, **ran, "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days"}
+            return {**result, **ran, "source": f"BigQuery statistical analysis of the last {analysis.DAYS} days",
+                    "suggestions": [] if ran["chart"] else analysis.STAT_SUGGESTIONS[:4]}
         chosen = analysis.plan(question)
         if chosen:
             ran = analysis.run(chosen, sources)
             source = f"BigQuery analysis of the last {analysis.DAYS} days"
+            if not ran["chart"]:
+                result["suggestions"] = analysis.SUGGESTIONS[:4]
             return {**result, **ran, "source": source}
         if topic is None:
             return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}

@@ -772,3 +772,72 @@ def _stat_horizon(p, rows):
              "data": [{"x": d["x"], "y": d["y"]} for d in data], "format": "seconds", "horizontal": False,
              "series": None, "x_title": "When the countdown was shown", "y_title": "Typical error (seconds)"}
     return {"answer": text, "chart": chart}
+
+
+# When an analysis can't be done ---------------------------------------------------------------
+# A chart or statistic asked for something this engine has no history for (or for no measure at
+# all) gets an explanation and suggestions of the same kind of analysis it can do, instead of a
+# chart of something else.
+
+NO_HISTORY = [   # (topic, question words, why)
+    ("bikes", r"\b(bikes?|bicycles?|cycles?|cycling|docks?|docking|santander)\b",
+     "the bike history (every docking station, every 2 minutes) isn't in the tables I can query; it feeds "
+     "the Bikes dashboard and this week's bike findings instead"),
+    ("roads", r"\b(roads?|traffic|roadworks?|congestion|corridors?|road incidents?)\b",
+     "the road history isn't in the tables I can query; it feeds the Roads dashboard and this week's road "
+     "findings instead"),
+    ("air quality", r"\b(air quality|pollution|no2|pm2\.?5|pm10|ozone)\b",
+     "this platform doesn't collect air quality"),
+    ("weather", r"\b(weather|rain\w*|temperature|snow\w*|wind)\b",
+     "this platform doesn't collect weather data"),
+]
+TOPIC_SUGGESTIONS = {
+    "bikes": ["How many bikes are at Waterloo?", "Which bike stations fail riders most this week?"],
+    "roads": ["Which main roads are delayed?", "How long do road incidents take to clear this week?"],
+}
+KIND_SUGGESTIONS = {
+    "histogram": ["What is the distribution of Tube waiting times?", "What is the distribution of bus bunching?",
+                  "What is the distribution of bus waiting times?"],
+    "pie": ["Show a pie chart of the reasons for rail disruption"],
+    "scatter": ["Is bunching related to waiting time on the Tube?", "Is bus bunching related to bus waiting time?",
+                "Is rail disruption related to countdown accuracy?"],
+    "line": ["How does Tube waiting time change through the day?", "Plot rail disruption over time",
+             "Bus bunching by hour on weekdays and weekends"],
+    "bar": ["Compare Tube bunching by line", "Which day of the week has the most rail disruption?",
+            "Compare bus waiting time by route"],
+}
+KIND_NAMES = {"histogram": "a histogram", "pie": "a pie chart", "scatter": "a scatter plot", "line": "a line chart",
+              "bar": "a bar chart", None: "that analysis"}
+ASKS_ANALYSIS = (CHART_WORDS + r"|\b(histogram|frequency|significan\w*|anomal\w*|unusual|outliers?|persist\w*|"
+                 r"correlat\w*|relationship|concentrat\w*|gini|pareto|early warning|lead.?lag)\b")
+
+
+def _requested_kind(text):
+    if _has(r"\b(histogram|distribution|frequency|spread)\b", text):
+        return "histogram"
+    return next((name for name, pattern in KINDS if _has(pattern, text)), None)
+
+
+def cannot_analyse(question):
+    """{"answer", "suggestions"} when a chart or statistic is asked for something this engine
+    can't analyse, or for no measure at all; None when the question isn't asking for one or can
+    be answered."""
+    text = question.lower()
+    if not _has(ASKS_ANALYSIS, text):
+        return None
+    kind = _requested_kind(text)
+    rail_or_bus = _has(r"\b(tube|underground|trains?|rail|lines?|bus(es)?|routes?|dlr|overground|elizabeth)\b", text)
+    measures = [subject for subject, pattern in SUBJECTS if _has(pattern, text)]
+    for topic, pattern, why in NO_HISTORY:
+        if _has(pattern, text) and not (rail_or_bus and measures):
+            suggestions = TOPIC_SUGGESTIONS.get(topic, []) + KIND_SUGGESTIONS.get(kind, STAT_SUGGESTIONS[:3])
+            opening = (f"I can't draw {KIND_NAMES[kind]} of {topic} yet" if topic in TOPIC_SUGGESTIONS
+                       else f"I can't analyse {topic}")
+            return {"answer": f"{opening}: {why}. Here's what I can do instead:", "suggestions": suggestions[:5]}
+    if not measures and not _has(r"\b(lifts?|step[- ]free|accessib\w*|countdowns?|disrupt\w*)\b", text):
+        what = KIND_NAMES[kind].replace("that analysis", "an analysis")
+        return {"answer": f"I can draw {what} of several measures: bunching, waiting time and gap regularity for "
+                          "buses and the Tube, rail disruption and incidents, countdown accuracy and station "
+                          "accessibility. Which one? Try one of these:",
+                "suggestions": KIND_SUGGESTIONS.get(kind, STAT_SUGGESTIONS[:4] + SUGGESTIONS[:2])}
+    return None
