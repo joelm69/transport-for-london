@@ -29,24 +29,83 @@ object that fetches the data (so the portfolio reuses its cached live feeds):
 Each may raise; the assistant then says that source couldn't be read.
 """
 
+import random
 import re
 
 from . import advice, analysis, catalogue, figures
 
-EXAMPLES = [
-    "Which Tube lines have problems right now?",
-    "How many bikes are at Waterloo?",
-    "Which main roads are delayed?",
-    "Is there a relationship between time of day and bus bunching?",
-    "Is bunching related to waiting time on the Tube?",
-    "What analyses can you do?",
-    "Is the Central line running?",
-    "How does Tube waiting time change through the day?",
-    "Which lines were least reliable this week?",
-    "Which bus routes bunch most?",
-    "What does bunching mean?",
-    "Why use the median time to clear?",
-]
+# Questions offered as buttons, by topic. starters() picks a random mix from these for each
+# visit, so returning visitors see different questions; every one is answered by the routes below.
+QUESTION_POOL = {
+    "live": [
+        "Which Tube lines have problems right now?",
+        "Is the Central line running?",
+        "How many bikes are at Waterloo?",
+        "Which main roads are delayed?",
+        "Are there any serious road incidents right now?",
+    ],
+    "rail": [
+        "How does Tube waiting time change through the day?",
+        "Which lines were least reliable this week?",
+        "Show a pie chart of the reasons for rail disruption",
+        "Do weekends have less rail disruption than weekdays?",
+        "Which day of the week has the most rail disruption?",
+        "How accurate are Tube countdowns by hour?",
+        "Is bunching related to waiting time on the Tube?",
+        "Show planned versus unplanned rail disruption",
+    ],
+    "bus": [
+        "Is there a relationship between time of day and bus bunching?",
+        "Which bus routes bunch most?",
+        "Plot theoretical versus actual bus wait time and the passenger-hours lost",
+        "When is the best time to catch a bus?",
+        "Heatmap of bus bunching by hour and day of week",
+    ],
+    "bikes": [
+        "Chart how often bike stations are empty or full",
+        "Where in London do bike stations fill up during the morning rush?",
+        "Cluster bike stations by when they run empty",
+        "How many bike docks are out of use?",
+        "When are bike stations most likely to be empty?",
+    ],
+    "roads": [
+        "Do more road incidents make London's main roads more delayed?",
+        "How do road incidents change through the day?",
+        "Compare main road delays by road",
+        "Chart how long road incidents take to clear",
+        "Do roadworks overrun?",
+        "Give me traffic tips for driving in London",
+    ],
+    "statistics": [
+        "Forecast Tube waiting time for tomorrow",
+        "Is rail disruption getting worse over time?",
+        "Which line-days had unusual disruption?",
+        "Box plot of Tube waiting time by line",
+        "Control chart of bus bunching",
+    ],
+    "project": [
+        "What analyses can you do?",
+        "What data do you collect?",
+        "What does bunching mean?",
+        "Any travel tips for the Tube?",
+    ],
+}
+ALL_QUESTIONS = [q for questions in QUESTION_POOL.values() for q in questions]
+EXAMPLES = ALL_QUESTIONS   # kept for callers that list every example
+
+
+def starters(n=6, rng=random):
+    """n questions in random order, at most one per topic until every topic has had one, so the
+    mix spans live data, rail, buses, bikes, roads and statistics."""
+    topics = rng.sample(list(QUESTION_POOL), len(QUESTION_POOL))
+    picked = [rng.choice(QUESTION_POOL[t]) for t in topics][:n]
+    rest = [q for q in ALL_QUESTIONS if q not in picked]
+    return picked + rng.sample(rest, max(0, n - len(picked)))
+
+
+def suggest(n=4, rng=random):
+    """Suggestions for a greeting, an off-topic question or a miss: a fresh random mix each time."""
+    return starters(n, rng)
 
 WORDS = {
     "definition": r"\b(mean|means|meaning|define|definition|defined|measured|calculated|counted|explain)\b|"
@@ -70,15 +129,6 @@ TERMS = (r"\b(bunch\w*|headways?|headroom|delayed share|problem share|out of use
          r"transport|london|stations?|lifts?|step[- ]free|accessib\w*|waits?|gaps?|speed|reliab\w*)\b")
 GREETING = (r"^\s*(hi+|hello|hey+|hiya|howdy|yo|greetings|good (morning|afternoon|evening|day)|"
             r"thanks?|thank you|cheers|ok(ay)?|great|cool|bye|goodbye)\b")
-SUGGESTIONS = [
-    "Which Tube lines have problems right now?",
-    "How many bikes are at Waterloo?",
-    "Which main roads are delayed?",
-    "Is there a relationship between time of day and bus bunching?",
-    "Is bunching related to waiting time on the Tube?",
-    "What analyses can you do?",
-    "Any travel tips for the Tube?",
-]
 CAPABILITIES = (r"\b(what|which) (analys\w*|statistic\w*|charts?|kinds? of (analys\w*|charts?|questions?))\b|"
                 r"\bwhat can you (do|analy[sz]e|show|chart|answer)\b|\bcapabilit\w*|\bsuggest\w* (an )?analys\w*")
 
@@ -310,7 +360,7 @@ def answer(question, sources):
         "I can answer questions about London's transport from this platform's data. Try one of these:")
     if reply:
         return {"answer": reply, "source": None, "chart": None,
-                "suggestions": [] if "Goodbye" in reply else SUGGESTIONS}
+                "suggestions": [] if "Goodbye" in reply else suggest()}
     question, changes = read_misspellings(question)
     note = ("_Reading " + ", ".join(f"“{a}” as “{b}”" for a, b in changes) + "._\n\n") if changes else ""
     result = answer_read(question, sources)
@@ -366,12 +416,12 @@ def answer_read(question, sources):
             result["suggestions"] = analysis.follow_ups(chosen) if ran["chart"] else analysis.SUGGESTIONS[:4]
             return {**result, **ran, "source": source}
         if topic is None:
-            return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}
+            return {**result, "answer": OFF_TOPIC, "suggestions": suggest()}
         if topic == "definition":
             text = _definition(question, sources)
             found = not text.startswith("I couldn't find")
             return {**result, "answer": text, "source": "documentation search" if found else None,
-                    "suggestions": [] if found else SUGGESTIONS}
+                    "suggestions": [] if found else suggest()}
         if topic == "bus":   # no live bus tool here: live buses by route and stop are on the page
             return {**result, "answer": _history("bus", sources), "source": "bus recommendation figures"}
         if when == "history":

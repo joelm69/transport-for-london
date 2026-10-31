@@ -92,7 +92,7 @@ def test_a_failing_source_does_not_break_the_chat():
 def test_greetings_get_a_reply_and_suggestions():
     hello = assistant.answer("Hello!", Sources())
     assert hello["answer"].startswith("Hello! I can answer questions about London's transport")
-    assert hello["suggestions"] == assistant.SUGGESTIONS
+    assert len(hello["suggestions"]) == 4 and set(hello["suggestions"]) <= set(assistant.ALL_QUESTIONS)
     assert assistant.answer("good morning", Sources())["answer"].startswith("Hello!")
     assert assistant.answer("thanks", Sources())["answer"].startswith("You're welcome!")
     assert assistant.answer("bye", Sources())["suggestions"] == []
@@ -104,7 +104,7 @@ def test_off_topic_questions_are_declined_with_suggestions():
     for question in ("What's the weather like?", "Who won the football?", "Write me a poem", "What is love?"):
         result = assistant.answer(question, Sources())
         assert result["answer"].startswith("Sorry, I can only answer questions about this TfL project"), question
-        assert result["suggestions"] == assistant.SUGGESTIONS
+        assert len(result["suggestions"]) == 4 and set(result["suggestions"]) <= set(assistant.ALL_QUESTIONS)
 
 
 def test_questions_about_the_platform_are_in_scope():
@@ -112,3 +112,13 @@ def test_questions_about_the_platform_are_in_scope():
     assert route("What is a headway?")[0] == "definition"
     answered = assistant.answer("What does bunching mean?", Sources())
     assert answered["source"] == "documentation search" and answered["suggestions"] == []
+
+
+def test_starter_questions_are_a_random_mix_across_topics():
+    import random
+    first = assistant.starters(6, random.Random(1))
+    assert len(set(first)) == 6
+    topics = {t for q in first for t, qs in assistant.QUESTION_POOL.items() if q in qs}
+    assert len(topics) == 6   # one per topic before any topic repeats
+    assert first != assistant.starters(6, random.Random(2))   # another visit, another mix
+    assert len(assistant.starters(12, random.Random(3))) == 12
