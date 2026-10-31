@@ -8,6 +8,9 @@ documentation search (the retrieval half of RAG). It is rule-based: it answers g
 when a question is outside this project, and returns clickable suggestions (`suggestions`) of
 questions it can answer.
 
+Asked for a chart or an analysis ("chart disruption by hour"), it runs one of the fixed analyses
+in analysis.py on the history and returns the chart with the finding.
+
 Pure functions, shared by the portfolio and the TfL repository: the caller passes `sources`, an
 object that fetches the data (so the portfolio reuses its cached live feeds):
     sources.line_cards()          -> line cards (src/presentation/line_board.line_cards)
@@ -15,16 +18,22 @@ object that fetches the data (so the portfolio reuses its cached live feeds):
     sources.roads()               -> (disruptions, corridors) (src/presentation/road_live)
     sources.recommendation(area)  -> (figures row, text module) or None; area: rail, bus, bikes, roads
     sources.docs(query)           -> documentation chunks, best first
+    sources.query(sql)            -> rows of one of analysis.py's fixed queries
 Each may raise; the assistant then says that source couldn't be read.
 """
 
 import re
 
+from . import analysis
+
 EXAMPLES = [
     "Which Tube lines have problems right now?",
-    "Is the Central line running?",
     "How many bikes are at Waterloo?",
     "Which main roads are delayed?",
+    "Chart disruption by line this week",
+    "Graph disruption by hour of day",
+    "Plot Tube bunching by line",
+    "Is the Central line running?",
     "Which lines were least reliable this week?",
     "Which bus routes bunch most?",
     "What does bunching mean?",
@@ -57,7 +66,8 @@ SUGGESTIONS = [
     "Which Tube lines have problems right now?",
     "How many bikes are at Waterloo?",
     "Which main roads are delayed?",
-    "Which bus routes bunch most?",
+    "Chart disruption by line this week",
+    "Graph disruption by hour of day",
     "What does bunching mean?",
 ]
 OFF_TOPIC = ("Sorry, I can only answer questions about this TfL project: London's rail, buses, bikes "
@@ -224,17 +234,24 @@ def _definition(question, sources):
 
 
 def answer(question, sources):
-    """{"answer": markdown, "source": what was used, "suggestions": questions to offer as buttons}
-    for a typed question."""
+    """{"answer": markdown, "source": what was used, "suggestions": questions to offer as buttons,
+    "chart": a chart description from analysis.py or None} for a typed question."""
     question = (question or "").strip()
     reply = greeting(question) if question else (
         "I can answer questions about London's transport from this platform's data. Try one of these:")
     if reply:
-        return {"answer": reply, "source": None, "suggestions": [] if "Goodbye" in reply else SUGGESTIONS}
+        return {"answer": reply, "source": None, "chart": None,
+                "suggestions": [] if "Goodbye" in reply else SUGGESTIONS}
     topic, when = route(question)
     labels = {"rail": "live TfL line status", "bikes": "live TfL BikePoint feed", "roads": "live TfL road feeds"}
-    result = {"source": None, "suggestions": []}
+    result = {"source": None, "suggestions": [], "chart": None}
     try:
+        chosen = analysis.choose(question)
+        if chosen:
+            ran = analysis.run(chosen, sources)
+            source = ("BigQuery analysis of the last 7 complete days" if chosen in analysis.SQL
+                      else "business recommendation figures (last 7 complete days)")
+            return {**result, **ran, "source": source}
         if topic is None:
             return {**result, "answer": OFF_TOPIC, "suggestions": SUGGESTIONS}
         if topic == "definition":
