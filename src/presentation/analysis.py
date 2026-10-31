@@ -461,6 +461,12 @@ def _when_hour(value):
 
 def follow_ups(p):
     """Questions that take the same measure further, offered after an answer."""
+    if p and len(p["measures"]) == 2 and p["dimension"] != "cause":   # a relationship: each measure on its own
+        first, second = p["measures"]
+        options = [f"How does {_mid(first)} change through the day?", f"Is {_mid(second)} getting worse over time?"]
+        if MEASURES[second][5] != "network":
+            options.append(f"Compare {_mid(second)} by {MEASURES[second][5]}")
+        return options
     if not p or len(p["measures"]) != 1 or p["dimension"] == "cause":
         first = ("Show a pie chart of the reasons for rail disruption" if p and p.get("kind") == "stacked"
                  else "Show a stacked bar chart of disruption causes by line")

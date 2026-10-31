@@ -288,3 +288,9 @@ def test_road_questions():
     text = analysis.run(p, Pairs())["answer"]
     assert "for each extra incident reported in the hour" in text
     assert "TfL's main-road rating changes rarely" in text and "With only 30 hours" in text
+
+
+def test_relationship_follow_ups_stay_on_topic():
+    ups = analysis.follow_ups(plan("Do more road incidents make London's main roads more delayed?"))
+    assert ups and all("road" in q for q in ups)
+    assert all(plan(q) for q in ups)
