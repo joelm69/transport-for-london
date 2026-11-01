@@ -41,6 +41,7 @@ TABLES = {
     "bikes": ("bike_station_hourly", "station_name", "observed_minutes"),
     "corridors": ("road_corridor_hourly", "corridor_name", "observed_minutes"),
     "road_incidents": ("road_incident_hourly", "'London'", "1"),
+    "road_types": ("road_incident_type_hourly", "'London'", "1"),
     "routes": ("bus_route_bands", "route", "polls"),
 }
 # The all-routes bus table has time bands, not hours: hour_start is the band's start.
@@ -98,6 +99,10 @@ MEASURES = {
                      "pct", "Main roads at Serious or worse (share of time)", "road"),
     "road_incidents": ("road_incidents", "TRUE", "AVG(incidents)", "number", "Road incidents reported per hour",
                        "network"),
+    "road_collisions": ("road_types", "TRUE", "AVG(collisions)", "number", "Road collisions reported per hour",
+                        "network"),
+    "road_breakdowns": ("road_types", "TRUE", "AVG(breakdowns)", "number", "Vehicle breakdowns reported per hour",
+                        "network"),
     "bus_network_bunching": ("routes", "polls > 0 AND bunching_rate IS NOT NULL", _weighted("bunching_rate", "polls"),
                              "pct", "Bus bunching, all routes (share of gaps bunched)", "route"),
     "bus_network_wait": ("routes", "polls > 0 AND average_wait_minutes IS NOT NULL",
@@ -140,6 +145,8 @@ SUBJECTS = [
     ("regularity", r"\b(regular\w*|irregular\w*|evenly|spacing|headways?)\b"),
     ("dropped", r"\b(dropped|vanish\w*|disappear\w*|ghost)\b"),
     ("countdown", r"\b(countdowns?|predict\w*|accura\w*|arrival times?)\b"),
+    ("collisions", r"\b(accidents?|collisions?|crash\w*|smash\w*|pile[- ]?ups?)\b"),
+    ("breakdowns", r"\bbreak ?downs?\b|\bbroken[- ]down\b"),
     ("incidents", r"\bincidents?\b"),
     ("disruption", r"\b(disrupt\w*|delays?|reliab\w*|good service)\b"),
     ("accessibility", r"\b(lifts?|step[- ]free|accessib\w*)\b"),
@@ -151,7 +158,8 @@ SUBJECTS = [
     ("gap", r"\b(gaps? between|frequency|frequent)\b"),
 ]
 BIKE = r"\b(bikes?|bicycles?|cycling|cyclists?|cycle hire|docks?|docking|santander)\b"   # not "daily cycle"
-ROAD = r"\b(roads?|traffic|roadworks?|corridors?|congestion|a\d{1,3})\b"
+ROAD = (r"\b(roads?|traffic|roadworks?|corridors?|congestion|a\d{1,3}|accidents?|collisions?|crash\w*|"
+        r"break ?downs?|driv\w+)\b")
 ALL_ROUTES = (r"\b(all|every|each) (bus )?routes\b|\bnetwork[- ]wide\b|\bwhole (bus )?network\b|\b675\b|"
               r"\bby routes?\b|\bwhich routes?\b|\bper route\b|\btime bands?\b")
 BUS = r"\bbus(es)?\b|\broutes?\b"
@@ -168,6 +176,7 @@ KINDS = [("heatmap", r"\bheat ?maps?\b"), ("box", r"\bbox(es)?[- ]?(plots?|and w
          ("pie", r"\b(pie|donut|doughnut)\b"), ("scatter", r"\bscatter\w*"), ("line", r"\bline (chart|graph)\b"),
          ("bar", r"\b(bar|column) (chart|graph)s?\b|\bbars\b")]
 CAUSE = r"\b(reasons?|causes?|caused|why|because)\b"
+RANKING = r"\b(most|least|worst|best|highest|lowest|busiest|quietest|peak)\b|^when\b|\bwhat times?\b"
 TREND_WORDS = (r"\b(trend\w*|(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*|"
                r"over time)\b")
 
@@ -203,7 +212,7 @@ def _measure(subject, text, mode=None):
                 "availability": "bike_available", "disruption": "bike_empty"}.get(subject)
     if mode == "road":
         return {"congestion": "road_delayed", "disruption": "road_delayed", "incidents": "road_incidents",
-                "wait": "road_delayed"}.get(subject)
+                "wait": "road_delayed", "collisions": "road_collisions", "breakdowns": "road_breakdowns"}.get(subject)
     if mode == "bus" and _has(ALL_ROUTES, text) and subject in ("bunching", "wait", "gap"):
         return {"bunching": "bus_network_bunching", "wait": "bus_network_wait", "gap": "bus_network_gap"}[subject]
     if subject in ("empty", "full", "out_of_use", "availability", "congestion"):
@@ -246,7 +255,7 @@ def plan(question):
     return {**found, "kind": kind} if found else None
 
 
-ROAD_SUBJECTS = ("incidents", "disruption", "congestion")
+ROAD_SUBJECTS = ("incidents", "disruption", "congestion", "collisions", "breakdowns")
 
 
 def _cross_mode(text, subjects):
@@ -255,7 +264,8 @@ def _cross_mode(text, subjects):
     other = "bus" if _has(BUS, text) else "tube" if _has(TUBE, text) else None
     if not (other and _has(ROAD, text) and _has(RELATION, text)) or _has(BIKE, text):
         return None
-    road = "road_incidents" if "incidents" in subjects else "road_delayed"
+    road = ("road_collisions" if "collisions" in subjects else "road_incidents" if "incidents" in subjects
+            else "road_delayed")
     names = [_measure(s, text, other) for s in subjects if s not in ROAD_SUBJECTS]
     names = [n for n in names if n and not n.startswith("bus_network")]   # bands, not hours
     return [road, names[0] if names else ("bus_bunching" if other == "bus" else "tube_wait")]
@@ -272,7 +282,9 @@ def plan_without_kind(text):
         name = _measure(subject, text)
         if name and name not in measures:
             measures.append(name)
-    if not measures and _mode(text) in ("bike", "road") and (_has(CHART_WORDS, text) or _has(RELATION, text)):
+    if not measures and _mode(text) in ("bike", "road") and (_has(CHART_WORDS, text) or _has(RELATION, text) or (
+            _mode(text) == "road" and _has(r"\btraffic\b", text) and (
+                _has(RANKING, text) or _has(TREND_WORDS, text) or _has(r"\bweekends?\b", text)))):
         measures = ["bike_empty" if _mode(text) == "bike" else "road_delayed"]
     if not measures:
         return None
@@ -286,7 +298,8 @@ def plan_without_kind(text):
                 r"(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*)\b", text)
     entity = _has(r"\b(by line|each line|per line|which lines?|by route|each route|per route|which routes?|"
                   r"by station|which stations?|by road|each road|per road|which (main )?roads?)\b", text)
-    asks = _has(RELATION, text) or _has(CHART_WORDS, text)
+    asks = _has(RELATION, text) or _has(CHART_WORDS, text) or (_mode(text) in ("road", "bike") and _has(RANKING, text))
+    hour = hour or _has(r"^when\b|\bwhat times?\b", text)   # "when do most accidents happen?"
 
     if "rail_disruption" in measures and _has(CAUSE, text) and (asks or _has(r"\b(main|most|top)\b", text)):
         return {"measures": ["rail_disruption"], "dimension": "cause", "series": None}

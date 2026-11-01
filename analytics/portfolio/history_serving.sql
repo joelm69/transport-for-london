@@ -49,6 +49,42 @@ IF IFNULL((SELECT MAX(DATE(hour_start, 'Europe/London')) FROM `transport-for-lon
   SELECT h.hour_start, IFNULL(i.incidents, 0) AS incidents, IFNULL(i.serious_incidents, 0) AS serious_incidents,
          i.median_minutes_to_clear
   FROM hours AS h LEFT JOIN incidents AS i USING (hour_start);
+
+  -- Incidents first seen per hour by type (collisions, breakdowns...), zero when none, for the
+  -- chat's questions about accidents by hour, day and trend.
+  CREATE OR REPLACE TABLE `transport-for-london-511318.tfl_portfolio.road_incident_type_hourly`
+  OPTIONS (description = "Road incidents first seen per hour of collection by type, last 35 London days, rebuilt daily")
+  AS
+  WITH hours AS (
+    SELECT DISTINCT hour_start
+    FROM `transport-for-london-511318.tfl_transport_analytics.road_corridor_hourly`
+    WHERE DATE(hour_start, 'Europe/London') >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 35 DAY)
+  ),
+  types AS (
+    SELECT TIMESTAMP_TRUNC(first_seen, HOUR) AS hour_start,
+           COUNTIF(is_incident AND category = 'Collisions') AS collisions,
+           COUNTIF(is_incident AND category = 'Breakdowns') AS breakdowns,
+           COUNTIF(is_incident AND category = 'Asset issues') AS asset_faults,
+           COUNTIF(is_incident AND category = 'Planned events') AS events,
+           COUNTIF(NOT is_incident) AS works_started
+    FROM `transport-for-london-511318.tfl_transport_analytics.road_disruptions`
+    GROUP BY hour_start
+  )
+  SELECT h.hour_start, IFNULL(t.collisions, 0) AS collisions, IFNULL(t.breakdowns, 0) AS breakdowns,
+         IFNULL(t.asset_faults, 0) AS asset_faults, IFNULL(t.events, 0) AS events,
+         IFNULL(t.works_started, 0) AS works_started
+  FROM hours AS h LEFT JOIN types AS t USING (hour_start);
+
+  -- One row per road disruption (incidents and works), for types, areas, daily counts and clear
+  -- times. hour_start is when it was first seen.
+  CREATE OR REPLACE TABLE `transport-for-london-511318.tfl_portfolio.road_disruption_events`
+  OPTIONS (description = "Road disruptions first seen in the last 35 London days, one row each, rebuilt daily")
+  AS
+  SELECT disruption_id, category, sub_category, is_incident, worst_severity, worst_severity_rank, borough,
+         location, closes_street, first_seen AS hour_start, still_open,
+         IF(minutes_to_clear > 0, minutes_to_clear, NULL) AS minutes_to_clear
+  FROM `transport-for-london-511318.tfl_transport_analytics.road_disruptions`
+  WHERE DATE(first_seen, 'Europe/London') >= DATE_SUB(CURRENT_DATE('Europe/London'), INTERVAL 35 DAY);
 END IF;
 
 -- All bus routes: one row per route, direction, day and time band (analytics/bus_network). The

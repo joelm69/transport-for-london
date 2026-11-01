@@ -37,7 +37,8 @@ NOT_COLLECTED = ("air quality (TfL's feed is only a daily London-wide forecast),
                  "timetables (so no Excess Wait Time), car parks and taxi data")
 CHAT_TABLES = ("This chat queries the serving dataset tfl_portfolio (the last 28 complete days): "
                "line_disruption_hourly, station_accessibility_hourly, arrival_line_hourly, arrival_accuracy_hourly, "
-               "bike_station_hourly, road_corridor_hourly, road_incident_hourly, bus_route_bands (all routes by "
+               "bike_station_hourly, road_corridor_hourly, road_incident_hourly, road_incident_type_hourly, "
+               "road_disruption_events, bus_route_bands (all routes by "
                "time band) and the four recommendation tables, refreshed by the hourly scheduled query.")
 
 FEATURES = {

@@ -122,3 +122,25 @@ def test_starter_questions_are_a_random_mix_across_topics():
     assert len(topics) == 6   # one per topic before any topic repeats
     assert first != assistant.starters(6, random.Random(2))   # another visit, another mix
     assert len(assistant.starters(12, random.Random(3))) == 12
+
+
+def test_answers_never_show_json_or_code():
+    text = 'Intro text about the feed that is long enough.\n```json\n{"a": 1}\n```\n| `id` | `x` |\n|---|---|\nA flat JSON array.\nEnd.'
+    clean = assistant.readable(text)
+    assert "{" not in clean and "`" not in clean and "JSON" not in clean and "Intro text" in clean
+
+
+def test_follow_up_questions_use_the_previous_one():
+    assert analysis_plan(assistant.with_context("What about the Tube?", "Is bus bunching worse in the evening?")) == (
+        ["tube_bunching"], "hour")
+    assert analysis_plan(assistant.with_context("And by day of week?", "How does Tube waiting time change through the day?")) == (
+        ["tube_wait"], "weekday")
+    assert analysis_plan(assistant.with_context("What about breakdowns?", "When do most road accidents happen?")) == (
+        ["road_breakdowns"], "hour")
+    assert assistant.with_context("What about buses?", None) is None
+
+
+def analysis_plan(question):
+    from src.presentation import analysis
+    p = analysis.plan(question)
+    return p and (p["measures"], p["dimension"])

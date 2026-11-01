@@ -32,7 +32,7 @@ Each may raise; the assistant then says that source couldn't be read.
 import random
 import re
 
-from . import advice, analysis, catalogue, figures
+from . import advice, analysis, catalogue, figures, road_questions
 
 # Questions offered as buttons, by topic. starters() picks a random mix from these for each
 # visit, so returning visitors see different questions; every one is answered by the routes below.
@@ -75,6 +75,12 @@ QUESTION_POOL = {
         "Chart how long road incidents take to clear",
         "Do roadworks overrun?",
         "Give me traffic tips for driving in London",
+        "When do most road accidents happen?",
+        "What are the most common types of road incident?",
+        "Which areas have the most road accidents?",
+        "How many road accidents are there each day?",
+        "Is traffic worse at weekends?",
+        "Which main road is most congested?",
     ],
     "statistics": [
         "Forecast Tube waiting time for tomorrow",
@@ -170,7 +176,8 @@ correlation concentrated significant statistically anomalies unusual persistence
 accuracy accurate accessibility weekend weekends weekday weekdays morning evening regularity incidents
 compare chart graph scatter doughnut reliable reliability stations station bicycles bikes traffic
 roadworks underground overground elizabeth piccadilly metropolitan northern central victoria jubilee
-bakerloo district circle waterloo hammersmith analyses analysis waiting delayed delays""".split()))
+bakerloo district circle waterloo hammersmith analyses analysis waiting delayed delays incident accident
+accidents collision collisions breakdown breakdowns crashes congestion congested""".split()))
 
 
 def read_misspellings(question):
@@ -344,18 +351,82 @@ def _history(area, sources):
     return f"{text.summary(row)}\n\n{findings}{period}"
 
 
+def readable(text):
+    """Text with code blocks and JSON removed, so a visitor never sees raw data or code."""
+    text = re.sub(r"```.*?(```|$)", "", text, flags=re.S)
+    lines = [line for line in text.splitlines()
+             if not re.match(r'\s*([{}\[\]],?|"[^"]*"\s*:.*|`[^`]*`)\s*$', line)   # JSON lines
+             and not (line.lstrip().startswith("|") and "`" in line)   # tables of field names
+             and not re.search(r"json", line, re.I)]   # JSON formats and .json files
+    # A table left with only its header and separator goes too
+    kept = [line for i, line in enumerate(lines)
+            if not (line.lstrip().startswith("|") and not any(
+                n.lstrip().startswith("|") and not set(n.strip()) <= set("|-: ")
+                for n in lines[max(0, i - 2):i] + lines[i + 1:i + 3]
+                if n is not line) and set(line.strip()) <= set("|-: ") | set(line.strip()))]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip()
+
+
 def _definition(question, sources):
-    hits = sources.docs(question)
-    if not hits:
-        return "I couldn't find that in the platform's documentation. Try one of these:"
-    best = hits[0]
-    return f"**{best['title']}**\n\n{best['text']}\n\n_From the platform's documentation ({best['source']})._"
+    for hit in sources.docs(question):
+        text = readable(hit["text"])
+        if text and len(text) >= len(hit["text"]) / 2:   # skip chunks that were mostly code or JSON
+            return f"**{hit['title']}**\n\n{text}\n\n_From the platform's documentation._"
+    return "I couldn't find that in the platform's documentation. Try one of these:"
 
 
-def answer(question, sources):
+FOLLOW_ON = (r"^(and|but|also|so|ok(ay)?|then|now|what about|how about|same|instead|only|just|"
+             r"by|as|in|on|for|over|per|split|show|draw|plot|chart|make)\b|"
+             r"\b(it|that|this|those|these|them|same|instead|again)\b")
+MODE_WORDS = (r"\b(bus(es)?|routes?|tube|underground|trains?|rail|lines?|bikes?|cycles?|cycling|docks?|"
+              r"stations?|roads?|traffic|main roads?|accidents?|collisions?|incidents?|breakdowns?)\b")
+DIMENSION_WORDS = (r"\b(through(out)? the day|by hour|(at )?what time|time of (the )?day|in the (morning|evening|"
+                   r"afternoon|rush hours?)|at night|by day of (the )?week|day of (the )?week|which day|at weekends?|"
+                   r"weekends?|weekdays?|over time|each day|per day|by date|by line|by route|by road|by borough|"
+                   r"by area|(in|on) which (areas?|lines?|routes?|roads?)|which (areas?|boroughs?))\b|^when\b")
+CHART_KIND_WORDS = (r"\b(pie|donut|doughnut|bar|stacked|line|area|scatter|heat ?map|box|control|rolling)( bar)?"
+                    r"( charts?| graphs?| plots?)?\b|\bas an?\b")
+FAILED = ("Sorry, I can only answer", "I couldn't", "isn't responding", "aren't available", "There isn't enough")
+
+
+def with_context(question, previous):
+    """The question rewritten with the previous one, for a follow-up such as "what about buses?",
+    "show it as a pie chart" or "and by day of week?", else None."""
+    if not previous:
+        return None
+    text = question.strip().rstrip("?.!").strip()
+    rest = re.sub(r"^(and|but|also|so|ok(ay)?|then|now|what about|how about|instead)\b[ ,]*", "", text,
+                  flags=re.I)
+    earlier = previous.strip().rstrip("?.!")
+    # A different mode, breakdown or chart type replaces the earlier one
+    for words in (MODE_WORDS, DIMENSION_WORDS, CHART_KIND_WORDS):
+        if re.search(words, rest, re.I):
+            earlier = re.sub(words, "", earlier, flags=re.I)
+    rest = re.sub(r"\b(it|that|this|those|these|them)\b", "", rest, flags=re.I)
+    return re.sub(r"\s+", " ", f"{earlier} {rest}").strip() + "?"
+
+
+def answer(question, sources, history=None):
     """{"answer": markdown, "source": what was used, "suggestions": questions to offer as buttons,
-    "chart": a chart description from analysis.py or None} for a typed question."""
+    "chart": a chart description from analysis.py or None} for a typed question. `history` is the
+    visitor's earlier questions, oldest first, so a follow-up ("what about buses?") is read with the
+    one before it; "asked" in the result is the question actually answered, for the next history."""
     question = (question or "").strip()
+    previous = next((q for q in reversed(history or []) if q.strip() and not greeting(q)), None)
+    result = _answer_one(question, sources)
+    failed = result["answer"].startswith(FAILED) or not (result.get("chart") or result.get("charts"))
+    follow_on = re.search(FOLLOW_ON, question.lower()) and len(question.split()) <= 9
+    if previous and not greeting(question) and (follow_on or result["answer"].startswith(FAILED)):
+        combined = with_context(question, previous)
+        again = _answer_one(combined, sources)
+        if not again["answer"].startswith(FAILED) and (failed or follow_on):
+            return {**again, "asked": combined,
+                    "answer": "_Following on from your last question._\n\n" + again["answer"]}
+    return {**result, "asked": question}
+
+
+def _answer_one(question, sources):
+    """answer() for one question on its own."""
     reply = greeting(question) if question else (
         "I can answer questions about London's transport from this platform's data. Try one of these:")
     if reply:
@@ -364,7 +435,10 @@ def answer(question, sources):
     question, changes = read_misspellings(question)
     note = ("_Reading " + ", ".join(f"“{a}” as “{b}”" for a, b in changes) + "._\n\n") if changes else ""
     result = answer_read(question, sources)
-    return {**result, "answer": note + result["answer"]} if note else result
+    text = result["answer"]
+    if "```" in text or re.search(r'\{\s*"\w+"\s*:', text):   # never show raw JSON or code
+        text = readable(text)
+    return {**result, "answer": note + text}
 
 
 def answer_read(question, sources):
@@ -385,6 +459,9 @@ def answer_read(question, sources):
                     "suggestions": ["What analyses can you do?", "Suggest new features"]}
         if advice.asks_for_advice(question):
             return {**result, **advice.advise(question, sources)}
+        road = road_questions.choose(question)
+        if road:
+            return {**result, **road_questions.run(road, question, sources)}
         figure = figures.choose(question)
         if figure:
             ran = figures.run(figure, sources)
