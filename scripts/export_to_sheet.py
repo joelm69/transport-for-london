@@ -32,7 +32,7 @@ from google.cloud import bigquery
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.exports.budget import blank_columns, collapse_older, fit  # noqa: E402
+from src.exports.budget import BUDGET_BYTES, REAL_LIMIT, REAL_TARGET, blank_columns, collapse_older, fit  # noqa: E402
 from src.exports.sheets import MAX_FILE_CELLS, SCOPES, SheetsClient, cells_after_replace, to_values  # noqa: E402
 
 PROJECT_ID = "transport-for-london-511318"
@@ -107,16 +107,34 @@ def main():
         except Exception as exc:   # noqa: BLE001 - reported, then the run exits non-zero
             print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
             failed.append(tab)
+    budget = BUDGET_BYTES
     if args.all:   # the whole Sheet within Tableau's limit before anything is written
-        fit(tabs, config)
-    for tab, values in tabs.items():
-        if sheets is None:
-            continue
-        try:
-            write(sheets, tab, values)
-        except Exception as exc:   # noqa: BLE001
-            print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
-            failed.append(tab)
+        fit(tabs, config, budget)
+    to_write = list(tabs)
+    for attempt in range(3):
+        for tab in to_write:
+            if sheets is None:
+                continue
+            try:
+                write(sheets, tab, tabs[tab])
+            except Exception as exc:   # noqa: BLE001
+                print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
+                failed.append(tab)
+        if sheets is None or not args.all or failed:
+            break
+        # Check the file Tableau actually downloads; trim again if Google's export is too big.
+        real = sheets.excel_size()
+        print(f"Google's Excel export of the Sheet: {real / 1e6:.2f} MB (Tableau's limit 10 MB)", flush=True)
+        if real <= REAL_LIMIT:
+            break
+        budget = budget * REAL_TARGET / real
+        rows = {tab: len(values) for tab, values in tabs.items()}
+        fit(tabs, config, budget)
+        to_write = [tab for tab, values in tabs.items() if len(values) != rows[tab]]
+        print(f"Over {REAL_LIMIT / 1e6:.1f} MB: trimmed {', '.join(to_write)} to a {budget / 1e6:.1f} MB "
+              "estimate; writing them again", flush=True)
+    else:
+        sys.exit("The Sheet is still over the size limit after 3 attempts; see the log above.")
     if failed:
         sys.exit(f"{len(failed)} of {len(jobs)} tabs failed: {', '.join(failed)}")
 

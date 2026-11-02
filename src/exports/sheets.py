@@ -17,7 +17,9 @@ SHEETS_API = "https://sheets.googleapis.com/v4/spreadsheets"
 SCOPES = (
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/bigquery",
+    "https://www.googleapis.com/auth/drive.readonly",   # the Sheet's Excel export, to check its size
 )
+EXPORT_URL = "https://docs.google.com/spreadsheets/d/{id}/export?format=xlsx"
 MAX_FILE_CELLS = 7_000_000   # stop above this; Google's limit is 10 million per file
 CHUNK_ROWS = 10_000          # rows per write: one request must stay under Google's ~10 MB limit
 FORMULA_STARTS = ("=", "+", "-", "@")
@@ -89,6 +91,13 @@ class SheetsClient:
             message = response.json().get("error", {}).get("message", response.reason)
             raise RuntimeError(f"Sheets API {method} {path or '/'} failed ({response.status_code}): {message}")
         return response.json()
+
+    def excel_size(self):
+        """Bytes of the Sheet as Google exports it to Excel: the file Tableau Public downloads,
+        which must stay under 10 MB. Counted while streaming; nothing is kept."""
+        response = self.session.get(EXPORT_URL.format(id=self.spreadsheet_id), stream=True, timeout=300)
+        response.raise_for_status()
+        return sum(len(chunk) for chunk in response.iter_content(1024 * 1024))
 
     def spreadsheet(self):
         return self._call("GET", params={"fields": "properties.title,sheets.properties"})

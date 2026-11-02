@@ -11,13 +11,18 @@ export therefore prepares every tab before writing any of them:
 4. While it is over the budget, the oldest day is dropped from the tab with the lowest
    "trim" order that still has more than its minimum days, and the size is measured again.
 
-The budget is below 10 MB because Google's own Excel export carries some formatting the
-estimate doesn't. BigQuery keeps the full history; only the Sheet copy is trimmed.
+The estimate's budget is 7.5 MB because Google's own Excel export carries formatting the estimate
+doesn't (9.66 MB for an 8.4 MB estimate on 2 November 2026). After writing, the export downloads
+Google's Excel file and counts its bytes; above 9.5 MB it trims again with the budget scaled by the
+real size, rewrites the trimmed tabs and checks once more. BigQuery keeps the full history; only
+the Sheet copy is trimmed.
 """
 
 import io
 
-BUDGET_BYTES = 8_500_000
+BUDGET_BYTES = 7_500_000    # the estimate; Google's own export measured 15% larger (2 Nov 2026)
+REAL_LIMIT = 9_500_000      # Google's export above this after writing: trim more and write again
+REAL_TARGET = 8_800_000     # ...aiming for this
 
 
 def blank_columns(values, columns):
