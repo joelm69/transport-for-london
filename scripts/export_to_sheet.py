@@ -6,7 +6,10 @@
     python scripts/export_to_sheet.py --all --through-today      # include today so far (one-off, e.g.
                                                                  # to design charts before the first night)
 
-The nightly Cloud Run Job (deploy/sheet-export/) runs `--all`. The Sheet's ID comes from
+The nightly Cloud Run Job (deploy/sheet-export/) runs `--all`: it queries every tab first, blanks
+the columns no dashboard uses, merges the bus time bands of days older than a week and trims the oldest days of the detail tabs until the Sheet fits
+Tableau's 10 MB limit as an Excel file (src/exports/budget.py, rules in config/sheet_exports.json),
+then writes the tabs. The Sheet's ID comes from
 TFL_SHEET_ID (.env locally, an environment variable on Cloud Run). Credentials: Application
 Default Credentials, the export service account. Locally, impersonate it:
 
@@ -18,7 +21,9 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import google.auth
 from google.auth.transport.requests import AuthorizedSession
@@ -27,6 +32,7 @@ from google.cloud import bigquery
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from src.exports.budget import blank_columns, collapse_older, fit  # noqa: E402
 from src.exports.sheets import MAX_FILE_CELLS, SCOPES, SheetsClient, cells_after_replace, to_values  # noqa: E402
 
 PROJECT_ID = "transport-for-london-511318"
@@ -50,10 +56,7 @@ def query_values(client, sql_path, through_today=False):
     return values
 
 
-def export(bq, sheets, sql_path, tab, through_today=False):
-    values = query_values(bq, sql_path, through_today)
-    if sheets is None:
-        return
+def write(sheets, tab, values):
     spreadsheet = sheets.spreadsheet()
     total = cells_after_replace(spreadsheet, tab, values)
     if total > MAX_FILE_CELLS:
@@ -75,7 +78,8 @@ def main():
     if args.all == bool(args.sql and args.tab):
         parser.error("give either --all or both SQL and TAB")
 
-    jobs = ([(ROOT / t["sql"], t["tab"]) for t in json.loads(CONFIG.read_text())["tabs"]] if args.all
+    config = {t["tab"]: t for t in json.loads(CONFIG.read_text())["tabs"]}
+    jobs = ([(ROOT / t["sql"], t["tab"]) for t in config.values()] if args.all
             else [(args.sql.resolve(), args.tab)])
 
     credentials, _ = google.auth.default(scopes=SCOPES)
@@ -89,11 +93,28 @@ def main():
 
     # One failing tab doesn't stop the others; the run still fails at the end so the job retries
     # and Cloud Run marks the execution as failed.
-    failed = []
+    failed, tabs = [], {}
+    today = datetime.now(ZoneInfo("Europe/London")).date().isoformat()
     for sql_path, tab in jobs:
         try:
-            export(bq, sheets, sql_path, tab, args.through_today)
+            rules = config.get(tab, {})
+            values = blank_columns(query_values(bq, sql_path, args.through_today), set(rules.get("blank", [])))
+            if "collapse" in rules:
+                values = collapse_older(values, rules["collapse"], today)
+                print(f"  '{tab}': {len(values) - 1} rows after merging days older than "
+                      f"{rules['collapse']['keep_days']} into '{rules['collapse']['label']}'", flush=True)
+            tabs[tab] = values
         except Exception as exc:   # noqa: BLE001 - reported, then the run exits non-zero
+            print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
+            failed.append(tab)
+    if args.all:   # the whole Sheet within Tableau's limit before anything is written
+        fit(tabs, config)
+    for tab, values in tabs.items():
+        if sheets is None:
+            continue
+        try:
+            write(sheets, tab, values)
+        except Exception as exc:   # noqa: BLE001
             print(f"FAILED '{tab}': {exc}", file=sys.stderr, flush=True)
             failed.append(tab)
     if failed:

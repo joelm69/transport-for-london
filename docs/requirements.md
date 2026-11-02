@@ -36,6 +36,13 @@ accuracy by day), and **30 days** for the two detailed tabs (busiest 12 routes b
 by 4-hour band), which would otherwise exceed the limit on their own. Estimated total ~5.8M cells,
 leaving room for bikes, air quality and roads.
 
+Size budget (added 2026-11-02): Tableau reads the Sheet as an Excel file of at most 10 MB, which
+the bus tabs passed long before the cell limit. Every night the export now blanks the columns no
+live dashboard uses, merges bus route days older than a week into one '0 All day' row per route
+(weighted by polls, so the dashboard's KPIs don't change) and drops the oldest days of the bus
+detail tabs (then bikes, then roads) until the Sheet measures under 8.5 MB as Excel. Nothing is
+written if it can't fit (`src/exports/budget.py`, rules in `config/sheet_exports.json`).
+
 Daily export routine (automated, never manual deletion): write yesterday's rows; archive rows now
 outside a tab's window to GCS as gzip CSV (`exports/sheets/<tab>/date=YYYY-MM-DD/`, Nearline after
 30 days, deleted after 90 by a lifecycle rule, Nearline rather than Coldline: Coldline bills a

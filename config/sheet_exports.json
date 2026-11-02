@@ -1,16 +1,106 @@
 {
-  "_comment": "Tabs of the project Google Sheet (Tableau Public source), refreshed nightly by the tfl-sheets-export Cloud Run Job. Each query keeps its own window (6 months for summary tabs, 30 days for detail tabs), so a tab never outgrows the Sheet; BigQuery keeps the full history.",
+  "_comment": "Tabs of the project Google Sheet (Tableau Public source), refreshed nightly by the tfl-sheets-export Cloud Run Job. Each query keeps its own window; BigQuery keeps the full history. Tableau reads the Sheet as an Excel file of at most 10 MB, so the export blanks the columns no dashboard uses (\"blank\", checked against the live workbook on 2 November 2026), merges bus days older than a week into one '0 All day' row per route and direction (\"collapse\", weighted by polls as the Tableau formulas are) and drops the oldest days of the \"trim\" tabs, lowest order first and never below min_days, until the Sheet fits (src/exports/budget.py).",
   "tabs": [
-    {"tab": "line_reliability_daily", "sql": "analytics/exports/line_reliability_daily.sql"},
-    {"tab": "station_accessibility_daily", "sql": "analytics/exports/station_accessibility_daily.sql"},
-    {"tab": "arrival_accuracy_daily", "sql": "analytics/exports/arrival_accuracy_daily.sql"},
-    {"tab": "bus_routes_daily", "sql": "analytics/exports/bus_routes_daily.sql"},
-    {"tab": "bus_vehicles_daily", "sql": "analytics/exports/bus_vehicles_daily.sql"},
-    {"tab": "bus_vehicle_routes_daily", "sql": "analytics/exports/bus_vehicle_routes_daily.sql"},
-    {"tab": "bus_route_paths", "sql": "analytics/exports/bus_route_paths.sql"},
-    {"tab": "bike_stations_daily", "sql": "analytics/exports/bike_stations_daily.sql"},
-    {"tab": "bike_station_hours", "sql": "analytics/exports/bike_station_hours.sql"},
-    {"tab": "road_corridor_hours", "sql": "analytics/exports/road_corridor_hours.sql"},
-    {"tab": "road_disruptions", "sql": "analytics/exports/road_disruptions.sql"}
+    {
+      "tab": "line_reliability_daily",
+      "sql": "analytics/exports/line_reliability_daily.sql"
+    },
+    {
+      "tab": "station_accessibility_daily",
+      "sql": "analytics/exports/station_accessibility_daily.sql"
+    },
+    {
+      "tab": "arrival_accuracy_daily",
+      "sql": "analytics/exports/arrival_accuracy_daily.sql"
+    },
+    {
+      "tab": "bus_routes_daily",
+      "sql": "analytics/exports/bus_routes_daily.sql",
+      "blank": [
+        "longest_gap_minutes",
+        "median_wait_minutes"
+      ],
+      "trim": {
+        "order": 3,
+        "min_days": 7
+      },
+      "collapse": {
+        "keep_days": 7,
+        "keys": [
+          "day",
+          "route",
+          "direction",
+          "towards"
+        ],
+        "column": "time_band",
+        "label": "0 All day",
+        "weight": "polls",
+        "weighted": [
+          "buses",
+          "typical_gap_minutes",
+          "bunching_rate",
+          "average_wait_minutes"
+        ]
+      }
+    },
+    {
+      "tab": "bus_vehicles_daily",
+      "sql": "analytics/exports/bus_vehicles_daily.sql",
+      "blank": [
+        "route_count",
+        "first_seen",
+        "last_seen"
+      ],
+      "trim": {
+        "order": 2,
+        "min_days": 7
+      }
+    },
+    {
+      "tab": "bus_vehicle_routes_daily",
+      "sql": "analytics/exports/bus_vehicle_routes_daily.sql",
+      "blank": [
+        "direction"
+      ],
+      "trim": {
+        "order": 1,
+        "min_days": 1
+      }
+    },
+    {
+      "tab": "bus_route_paths",
+      "sql": "analytics/exports/bus_route_paths.sql",
+      "blank": [
+        "stop_name"
+      ]
+    },
+    {
+      "tab": "bike_stations_daily",
+      "sql": "analytics/exports/bike_stations_daily.sql",
+      "trim": {
+        "order": 4,
+        "min_days": 7
+      }
+    },
+    {
+      "tab": "bike_station_hours",
+      "sql": "analytics/exports/bike_station_hours.sql",
+      "blank": [
+        "station_name",
+        "days"
+      ]
+    },
+    {
+      "tab": "road_corridor_hours",
+      "sql": "analytics/exports/road_corridor_hours.sql",
+      "trim": {
+        "order": 5,
+        "min_days": 7
+      }
+    },
+    {
+      "tab": "road_disruptions",
+      "sql": "analytics/exports/road_disruptions.sql"
+    }
   ]
 }

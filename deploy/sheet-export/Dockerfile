@@ -6,7 +6,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 
-RUN pip install --no-cache-dir google-cloud-bigquery==3.46.2 google-auth==2.62.0 requests==2.34.2
+RUN pip install --no-cache-dir google-cloud-bigquery==3.46.2 google-auth==2.62.0 requests==2.34.2 openpyxl==3.1.5
 
 COPY src/exports src/exports
 COPY scripts/export_to_sheet.py scripts/export_to_sheet.py

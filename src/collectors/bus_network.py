@@ -4,7 +4,7 @@ One poll covers every bus route running (about 94,000 predictions, 5,300 buses, 
 19:00 on 2026-10-23), too large for the e2-micro VM, so a Cloud Run Job polls every 30
 minutes (scripts/bus_network_snapshot.py) and keeps:
 
-  - slim: the predictions with only the fields analysis uses (kept 30 days in GCS);
+  - slim: the predictions with only the fields analysis uses (kept 14 days in GCS);
   - vehicle rows: one per bus, where it is now (route, direction, next stop, destination);
   - route rows: one per route and direction, the predicted gaps between its buses.
 

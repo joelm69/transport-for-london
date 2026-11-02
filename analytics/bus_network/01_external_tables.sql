@@ -1,7 +1,7 @@
 -- External tables over the network-wide bus polls (scripts/bus_network_snapshot.py, every 30
 -- minutes): small summaries written to GCS as gzip NDJSON, one file per poll. `date` comes from
 -- the folder name (hive partitioning), so a query filtering on it reads only those days' files.
--- The slim raw polls (raw/bus_network/, deleted after 30 days) are not exposed here: they exist
+-- The slim raw polls (raw/bus_network/, deleted after 14 days) are not exposed here: they exist
 -- to recompute a summary if its logic changes.
 
 CREATE OR REPLACE EXTERNAL TABLE `transport-for-london-511318.tfl_transport_analytics.bus_network_vehicles` (

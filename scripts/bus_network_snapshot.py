@@ -3,13 +3,13 @@
 Run every 30 minutes by the tfl-bus-network Cloud Run Job (deploy/bus-network/). Writes, for
 a poll taken at e.g. 2026-10-23T18:00:12Z:
 
-  raw/bus_network/date=2026-10-23/180012.json.xz                      slim predictions (deleted after 30 days)
+  raw/bus_network/date=2026-10-23/180012.json.xz                      slim predictions (deleted after 14 days)
   processed/bus_network/vehicles/date=2026-10-23/180012.json.gz       one row per bus
   processed/bus_network/routes/date=2026-10-23/180012.json.gz         one row per route and direction
 
 Newline-delimited JSON. The processed files are gzip, which BigQuery reads as external tables
 (analytics/bus_network/). The raw file is xz (preset 6, about 85 MB of memory): nothing reads it
-back and it is about 56% smaller than gzip, which keeps 30 days of polls inside the 5 GB bucket. Uploads are create-only, so a retried run never overwrites a poll.
+back and it is about 56% smaller than gzip, which with a 14-day expiry keeps the polls well inside the 5 GB bucket. Uploads are create-only, so a retried run never overwrites a poll.
 The TfL key comes from TFL_API_KEY (Secret Manager on Cloud Run, .env locally).
 
     python scripts/bus_network_snapshot.py             # poll and upload

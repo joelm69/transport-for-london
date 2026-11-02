@@ -6,7 +6,7 @@
     },
     {
       "action": {"type": "Delete"},
-      "condition": {"age": 30, "matchesPrefix": ["raw/bus_network/"]}
+      "condition": {"age": 14, "matchesPrefix": ["raw/bus_network/"]}
     }
   ]
 }
