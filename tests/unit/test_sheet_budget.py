@@ -70,3 +70,9 @@ def test_older_bus_days_merge_bands_without_changing_the_dashboard_figures():
     assert row[4] == "0 All day" and row[5] == 26
     for column in ("typical_gap_minutes", "bunching_rate", "average_wait_minutes"):
         assert tableau([row], column) == pytest.approx(tableau(old, column), abs=1e-4)
+
+
+def test_rounding_keeps_integers_and_skips_blanks():
+    from src.exports.budget import round_columns
+    values = round_columns([["lat", "km", "name"], [51.497771, 140.7, "x"], ["", 3.2, "y"]], {"lat": 4, "km": 0})
+    assert values == [["lat", "km", "name"], [51.4978, 141, "x"], ["", 3, "y"]]

@@ -32,7 +32,8 @@ from google.cloud import bigquery
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.exports.budget import BUDGET_BYTES, REAL_LIMIT, REAL_TARGET, blank_columns, collapse_older, fit  # noqa: E402
+from src.exports.budget import (BUDGET_BYTES, REAL_LIMIT, REAL_TARGET, blank_columns,  # noqa: E402
+                                collapse_older, fit, round_columns)
 from src.exports.sheets import MAX_FILE_CELLS, SCOPES, SheetsClient, cells_after_replace, to_values  # noqa: E402
 
 PROJECT_ID = "transport-for-london-511318"
@@ -99,6 +100,7 @@ def main():
         try:
             rules = config.get(tab, {})
             values = blank_columns(query_values(bq, sql_path, args.through_today), set(rules.get("blank", [])))
+            values = round_columns(values, rules.get("round", {}))
             if "collapse" in rules:
                 values = collapse_older(values, rules["collapse"], today)
                 print(f"  '{tab}': {len(values) - 1} rows after merging days older than "

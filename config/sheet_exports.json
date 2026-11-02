@@ -41,6 +41,12 @@
           "bunching_rate",
           "average_wait_minutes"
         ]
+      },
+      "round": {
+        "typical_gap_minutes": 1,
+        "bunching_rate": 3,
+        "average_wait_minutes": 1,
+        "buses": 1
       }
     },
     {
@@ -54,6 +60,10 @@
       "trim": {
         "order": 2,
         "min_days": 7
+      },
+      "round": {
+        "km": 0,
+        "hours_seen": 1
       }
     },
     {
@@ -65,6 +75,9 @@
       "trim": {
         "order": 1,
         "min_days": 1
+      },
+      "round": {
+        "km": 0
       }
     },
     {
@@ -72,7 +85,11 @@
       "sql": "analytics/exports/bus_route_paths.sql",
       "blank": [
         "stop_name"
-      ]
+      ],
+      "round": {
+        "latitude": 4,
+        "longitude": 4
+      }
     },
     {
       "tab": "bike_stations_daily",
@@ -80,6 +97,13 @@
       "trim": {
         "order": 4,
         "min_days": 7
+      },
+      "round": {
+        "avg_bikes": 1,
+        "avg_e_bikes": 1,
+        "avg_out_of_use_docks": 1,
+        "lat": 4,
+        "lon": 4
       }
     },
     {

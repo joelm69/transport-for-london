@@ -4,14 +4,15 @@ Tableau reads a Google Sheet by downloading it as an Excel file, and refuses one
 export therefore prepares every tab before writing any of them:
 
 1. Columns no dashboard uses are left blank (config "blank"), so the Sheet keeps the same
-   columns and Tableau's data sources still find every field.
+   columns and Tableau's data sources still find every field; numbers are rounded to the
+   precision the dashboards show (config "round").
 2. Older detail is merged where a dashboard only needs it summed (config "collapse"): bus days
    older than a week become one '0 All day' row per route instead of six time bands.
 3. The Excel size of all tabs is measured (openpyxl builds the same .xlsx in memory).
 4. While it is over the budget, the oldest day is dropped from the tab with the lowest
    "trim" order that still has more than its minimum days, and the size is measured again.
 
-The estimate's budget is 7.5 MB because Google's own Excel export carries formatting the estimate
+The estimate's budget is 8 MB because Google's own Excel export carries formatting the estimate
 doesn't (9.66 MB for an 8.4 MB estimate on 2 November 2026). After writing, the export downloads
 Google's Excel file and counts its bytes; above 9.5 MB it trims again with the budget scaled by the
 real size, rewrites the trimmed tabs and checks once more. BigQuery keeps the full history; only
@@ -20,7 +21,7 @@ the Sheet copy is trimmed.
 
 import io
 
-BUDGET_BYTES = 7_500_000    # the estimate; Google's own export measured 15% larger (2 Nov 2026)
+BUDGET_BYTES = 8_000_000    # the estimate; Google's own export measured 15% larger (2 Nov 2026)
 REAL_LIMIT = 9_500_000      # Google's export above this after writing: trim more and write again
 REAL_TARGET = 8_800_000     # ...aiming for this
 
@@ -70,6 +71,19 @@ def collapse_older(values, rule, today):
         merged.append(out)
     merged.sort(key=lambda r: [r[at[k]] for k in rule["keys"]])
     return [header] + merged + keep
+
+
+def round_columns(values, digits):
+    """`values` with the named numeric columns rounded ({column: decimals}), in place: fewer
+    digits make a smaller file (coordinates to 4 decimals are about 11 m)."""
+    if not digits:
+        return values
+    positions = [(i, digits[name]) for i, name in enumerate(values[0]) if name in digits]
+    for row in values[1:]:
+        for i, d in positions:
+            if isinstance(row[i], float):
+                row[i] = round(row[i], d) if d else int(round(row[i]))
+    return values
 
 
 def xlsx_bytes(tabs):
