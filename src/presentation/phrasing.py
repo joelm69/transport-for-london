@@ -16,6 +16,9 @@ DIMENSION = (r"\b(hours?|hourly|time of (the )?day|through(out)? the day|all day
 
 # (pattern, replacement), applied in order, case-insensitively
 RULES = [
+    # "Break it down into trend and pattern" is a decomposition, not vehicle breakdowns
+    (r"\bbreak(ing)? (\w+ ){0,5}down (into|by)\b", "decompose into"),
+    (r"\bbreak(ing)? down\b(?=.{0,60}\b(into|trend|pattern|components?|cycle)\b)", "decompose"),
     # Lifts "breaking down" are lift failures, not vehicle breakdowns
     (r"\b(lifts?\b.{0,40}?)\bbreak(s|ing)? ?down\b", r"\1fail"),
     (r"\blifts? (out of order|broken|not working|out of service|failing|fail\w*)\b", "lifts out of service"),
@@ -71,6 +74,10 @@ def normalise(question):
         text = re.sub(pattern, replacement, text, flags=re.I)
     # "how long do I usually wait?" asks for the typical value and its spread (the distribution),
     # unless a time, day or place is named ("on average at weekends" compares weekends)
+    # How often lifts fail is best answered station by station
+    if re.search(r"\blifts?\b", text, re.I) and re.search(r"\bhow (often|common)\b", text, re.I) \
+            and not re.search(DIMENSION, text, re.I):
+        text += " (which stations most)"
     # "Stations" that run empty or full are bike docking stations (unless the Tube is named)
     if (re.search(r"\b(empty|full)\b", text, re.I)
             and not re.search(r"\b(tube|underground|rail|trains?|bikes?)\b", text, re.I)):

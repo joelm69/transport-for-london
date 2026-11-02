@@ -179,7 +179,8 @@ roadworks underground overground elizabeth piccadilly metropolitan northern cent
 bakerloo district circle waterloo hammersmith analyses analysis waiting delayed delays incident accident
 accidents collision collisions breakdown breakdowns crashes congestion congested analyse analyze
 analysing forecast predict prediction typical usually unusually normally
-unreliable reliably clumping clumped emptier fuller jammed gridlock tailbacks""".split()))
+unreliable reliably clumping clumped emptier fuller jammed gridlock tailbacks normal significantly
+average together typically confident certain chance coincidence""".split()))
 
 
 def read_misspellings(question):
@@ -414,6 +415,10 @@ def answer(question, sources, history=None):
     visitor's earlier questions, oldest first, so a follow-up ("what about buses?") is read with the
     one before it; "asked" in the result is the question actually answered, for the next history."""
     question = (question or "").strip()
+    if re.search(r"^is that statistically significant", phrasing.normalise(question)) and not history:
+        return {"answer": "Ask me a question about the data first (for example \"Is traffic worse at weekends?\"), "
+                          "then ask how confident I am: I'll test whether the difference could be chance.",
+                "source": None, "chart": None, "suggestions": suggest(), "asked": question}
     previous = next((q for q in reversed(history or []) if q.strip() and not greeting(q)), None)
     result = _answer_one(question, sources)
     failed = result["answer"].startswith(FAILED) or not (result.get("chart") or result.get("charts"))

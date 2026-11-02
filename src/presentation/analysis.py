@@ -894,7 +894,7 @@ def stat_plan(question):
         if _has(pattern, text):
             found = sorted((m.start(), subject) for subject, p in SUBJECTS for m in [re.search(p, text)] if m)
             measures = [m for m in (_measure(subject, text) for _, subject in found) if m]
-            named = next((m for m in ("bike", "road", "bus") if _has(MODES[m], text)), None)
+            named = next((m for m in ("bike", "road", "bus", "rail") if _has(MODES[m], text)), None)
             mode_default = MODE_DEFAULT.get(named, default)
             measure = measures[0] if measures else mode_default
             if name == "persistence" and measure != "rail_disruption":
