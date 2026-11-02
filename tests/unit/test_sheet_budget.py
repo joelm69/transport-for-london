@@ -37,8 +37,17 @@ def test_already_small_sheet_is_left_alone():
     assert len(tabs["routes"]) == 7
 
 
-def test_refuses_when_minimums_cannot_fit():
+def test_emergency_floor_goes_below_the_minimums_rather_than_exceed_the_budget():
     tabs = {"routes": tab(range(20, 30), 10)}
+    logs = []
+    size = fit(tabs, {"routes": {"trim": {"order": 1, "min_days": 5}}}, budget=2_500, measure=by_rows,
+               log=logs.append)
+    assert size <= 2_500 and sorted({r[0] for r in tabs["routes"][1:]}) == ["2026-10-28", "2026-10-29"]
+    assert any("emergency floor" in line for line in logs)
+
+
+def test_refuses_before_writing_when_even_one_day_cannot_fit():
+    tabs = {"routes": tab(range(20, 30), 10), "paths": tab([1], 50)}
     with pytest.raises(RuntimeError, match="even with every tab at its minimum"):
         fit(tabs, {"routes": {"trim": {"order": 1, "min_days": 5}}}, budget=1_000, measure=by_rows, log=lambda _: None)
 

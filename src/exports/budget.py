@@ -17,6 +17,11 @@ doesn't (9.66 MB for an 8.4 MB estimate on 2 November 2026). After writing, the 
 Google's Excel file and counts its bytes; above 9.5 MB it trims again with the budget scaled by the
 real size, rewrites the trimmed tabs and checks once more. BigQuery keeps the full history; only
 the Sheet copy is trimmed.
+
+Never over the limit: if the tabs can't fit even at their minimum days, the emergency floor lets
+every trimmed tab go down to its last day (a warning in the log) rather than leave the Sheet over
+10 MB. Only if even that can't fit does the export stop, before writing anything, so Tableau keeps
+the previous night's Sheet.
 """
 
 import io
@@ -106,6 +111,16 @@ def _days(values, column):
 
 
 def fit(tabs, rules, budget=BUDGET_BYTES, measure=xlsx_bytes, log=print):
+    """fit_days(), and if the minimum days can't fit, again with the emergency floor (one day per
+    trimmed tab) instead of failing."""
+    try:
+        return fit_days(tabs, rules, budget, measure, log)
+    except RuntimeError as exc:
+        log(f"WARNING: {exc} Using the emergency floor: trimmed tabs may keep as little as one day.")
+        return fit_days(tabs, rules, budget, measure, log, floor=1)
+
+
+def fit_days(tabs, rules, budget=BUDGET_BYTES, measure=xlsx_bytes, log=print, floor=None):
     """Drop the oldest days from trimmable tabs until `measure(tabs)` is within `budget`.
     `rules[tab]["trim"]` = {"order": n, "min_days": d, "column": "day"}. Each tab is measured
     once and scaled by the rows it keeps; the whole Sheet is measured again at the end (and
@@ -121,7 +136,7 @@ def fit(tabs, rules, budget=BUDGET_BYTES, measure=xlsx_bytes, log=print):
                 trim = rules[tab]["trim"]
                 column = trim.get("column", "day")
                 days = _days(tabs[tab], column)
-                if len(days) > trim["min_days"]:
+                if len(days) > (floor or trim["min_days"]):
                     i = tabs[tab][0].index(column)
                     before = len(tabs[tab])
                     tabs[tab] = [tabs[tab][0]] + [row for row in tabs[tab][1:] if row[i] != days[0]]

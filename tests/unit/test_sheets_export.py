@@ -100,3 +100,18 @@ def test_a_tab_with_only_its_header_keeps_one_empty_row():
 
     sheets.SheetsClient(Session(), "sheet-id").replace({"sheets": [_sheet("tab", 10, 3)]}, "tab", [["a", "b", "c"]])
     assert resizes == [{"rowCount": 2, "columnCount": 3, "frozenRowCount": 1}]
+
+
+def test_tabs_losing_rows_are_written_first():
+    import importlib.util
+    from pathlib import Path
+    spec = importlib.util.spec_from_file_location("export_to_sheet", Path("scripts/export_to_sheet.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    class Sheets:
+        def spreadsheet(self):
+            return {"sheets": [{"properties": {"title": t, "gridProperties": {"rowCount": n}}}
+                               for t, n in (("grows", 10), ("shrinks", 500), ("same", 5))]}
+    tabs = {"grows": [[0]] * 40, "same": [[0]] * 5, "shrinks": [[0]] * 100}
+    assert module.shrinking_first(Sheets(), tabs) == ["shrinks", "same", "grows"]
