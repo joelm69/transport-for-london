@@ -1,5 +1,6 @@
 import gzip
 import json
+import lzma
 from datetime import datetime, timezone
 
 from src.storage.lake import LocalLake
@@ -16,8 +17,9 @@ def arrival(n):
 
 def records(lake_root, zone):
     out = []
-    for path in sorted((lake_root / zone).rglob("*.jsonl.gz")):
-        out += [json.loads(line) for line in gzip.decompress(path.read_bytes()).splitlines()]
+    for path in sorted((lake_root / zone).rglob("*.jsonl.[gx]z")):   # predictions are xz, the rest gzip
+        unpack = lzma.decompress if path.suffix == ".xz" else gzip.decompress
+        out += [json.loads(line) for line in unpack(path.read_bytes()).splitlines()]
     return out
 
 

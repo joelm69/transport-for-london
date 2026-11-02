@@ -192,7 +192,7 @@ Snapshot lag (TfL `timestamp` to detector) was a median 14 s with parallel fetch
 | Events | `processed/arrival_events/date=YYYY-MM-DD/arrival_events_{batch_start}.jsonl.gz` + manifest | One row per arrival, nested `checkpoints` |
 | Drops | `processed/arrival_drops/date=YYYY-MM-DD/arrival_drops_{batch_start}.jsonl.gz` + manifest | Visits that ended without an arrival, with `reason` |
 | Coverage | `coverage/arrivals/date=YYYY-MM-DD/coverage_{batch_start}.jsonl.gz` | One row per processed line snapshot (`snapshot` event from the detector): `mode`, `line_id`, `snapshot_at`, `predictions`, `visits_tracked`, `arrivals`, `dropped`. Waits and rates use observed time only |
-| Raw (7 days) | `raw/arrival_predictions/date=YYYY-MM-DD/hour=HH/arrival_predictions_{batch_start}.jsonl.gz` + manifest | Every accepted line snapshot of **slimmed** predictions (one message per line), ~350 MB/day. Kept 7 days by a GCS lifecycle rule on this prefix, so detection can be re-run on the last week. Written by `StreamBatchWriter` (compresses each record as it arrives; never holds the batch in memory). Decided 2026-10-22: an hourly checkpoint was rejected because it cannot rebuild arrivals (detection needs consecutive snapshots) |
+| Raw (7 days) | `raw/arrival_predictions/date=YYYY-MM-DD/hour=HH/arrival_predictions_{batch_start}.jsonl.xz` + manifest (`.jsonl.gz` before 2 November 2026) | Every accepted line snapshot of **slimmed** predictions (one message per line), ~350 MB/day in gzip, ~130 MB/day in xz. Kept 7 days by a GCS lifecycle rule on this prefix, so detection can be re-run on the last week. Written by `StreamBatchWriter` in xz mode: each record is appended to a plain fsynced tmp file and the hour is compressed with xz preset 3 (about 32 MB of memory, 1 MB at a time) when it is published, about 62% smaller than the earlier per-record gzip; never holds the batch in memory. Decided 2026-10-22: an hourly checkpoint was rejected because it cannot rebuild arrivals (detection needs consecutive snapshots) |
 
 Batch files are cut by `archived_at_utc` (processing time) so a late event never reopens a
 published hour; event times (`arrived_at`, `last_snapshot_at`) are columns.
@@ -209,7 +209,7 @@ with memory limits that match the VM; `docker/kafka_test/measure.sh` records the
 | Kafka topics | 2 h / 250 MB | A buffer, not the archive |
 | `processed/arrival_events`, `processed/arrival_drops` | Indefinitely | ~4 GB a year |
 | `coverage/arrivals` | Indefinitely | Proves observation time |
-| `raw/arrival_predictions` | **7 days** (lifecycle rule) | Re-run detection on the last week; ~2.5 GB steady |
+| `raw/arrival_predictions` | **7 days** (lifecycle rule) | Re-run detection on the last week; ~0.9 GB steady in xz (~2.5 GB in gzip) |
 | `tmp/arrivals` | Until published | Recovered on restart |
 
 ## 4. Data-quality rules

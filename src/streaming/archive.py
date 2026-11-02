@@ -22,7 +22,8 @@ ZONES = {
     "snapshot": ("coverage/arrivals", "coverage"),
 }
 # Every accepted line snapshot of predictions, kept 7 days (GCS lifecycle rule on this prefix)
-# so detection can be re-run on the last week. Large, so written by the streaming writer.
+# so detection can be re-run on the last week. Large, so written by the streaming writer and
+# compressed with xz (about 60% smaller than gzip).
 PREDICTIONS_ZONE = ("raw/arrival_predictions", "arrival_predictions")
 
 
@@ -33,7 +34,8 @@ def make_archive_writers(lake, tmp_dir, dataset="arrivals"):
     }
     zone_dir, prefix = PREDICTIONS_ZONE
     writers["predictions"] = StreamBatchWriter(lake, tmp_dir, dataset, zone_dir, prefix,
-                                               time_field="archived_at_utc", hour_partition=True)
+                                               time_field="archived_at_utc", hour_partition=True,
+                                               compression="xz")
     return writers
 
 

@@ -64,3 +64,40 @@ def test_recover_after_publish_before_cleanup(lake, tmp_path):
     restarted.recover()
     assert restarted.published[0]["record_count"] == 1
     assert not tmp.exists()
+
+
+def xz_writer(lake, tmp_path):
+    return StreamBatchWriter(lake, tmp_path / "tmp", "arrivals", "raw/arrival_predictions",
+                             "arrival_predictions", hour_partition=True, compression="xz")
+
+
+def read_xz(lake, manifest):
+    import lzma
+    return [json.loads(line) for line in lzma.decompress(lake.read(manifest["object_path"])).splitlines()]
+
+
+def test_xz_publishes_a_smaller_file_and_cleans_up(lake, tmp_path):
+    w = xz_writer(lake, tmp_path)
+    for minute in range(30):
+        w.append(record(f"2026-10-22T08:{minute:02d}:00+00:00", 2000))
+    w.roll_over("2026-10-22T09:00:00+00:00")
+    [manifest] = w.published
+    assert manifest["object_path"].endswith(".jsonl.xz") and manifest["content_encoding"] == "xz"
+    assert len(read_xz(lake, manifest)) == 30 and lake.sha256(manifest["object_path"]) == manifest["sha256"]
+    assert not list((tmp_path / "tmp").rglob("*.jsonl*"))
+
+
+def test_xz_recover_drops_a_torn_line_and_old_gzip_tmp_still_publishes(lake, tmp_path):
+    old = writer(lake, tmp_path)                       # a gzip batch left from before the switch
+    old.append(record("2026-10-22T07:10:00+00:00"))
+    w = xz_writer(lake, tmp_path)
+    w.append(record("2026-10-22T08:10:00+00:00"))
+    w.append(record("2026-10-22T08:11:00+00:00"))
+    [plain] = list((tmp_path / "tmp").rglob("*.jsonl"))
+    with plain.open("ab") as file:
+        file.write(b'{"collected_at_utc": "2026-10-22T08:1')   # a crash mid-write
+    restarted = xz_writer(lake, tmp_path)
+    restarted.recover()
+    gz, xz = restarted.published
+    assert gz["content_encoding"] == "gzip" and gz["record_count"] == 1
+    assert xz["record_count"] == 2 and [r["collected_at_utc"][11:16] for r in read_xz(lake, xz)] == ["08:10", "08:11"]

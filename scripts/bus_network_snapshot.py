@@ -3,12 +3,13 @@
 Run every 30 minutes by the tfl-bus-network Cloud Run Job (deploy/bus-network/). Writes, for
 a poll taken at e.g. 2026-10-23T18:00:12Z:
 
-  raw/bus_network/date=2026-10-23/180012.json.gz                      slim predictions (deleted after 30 days)
+  raw/bus_network/date=2026-10-23/180012.json.xz                      slim predictions (deleted after 30 days)
   processed/bus_network/vehicles/date=2026-10-23/180012.json.gz       one row per bus
   processed/bus_network/routes/date=2026-10-23/180012.json.gz         one row per route and direction
 
-Newline-delimited JSON, gzip; BigQuery reads the processed files as external tables
-(analytics/bus_network/). Uploads are create-only, so a retried run never overwrites a poll.
+Newline-delimited JSON. The processed files are gzip, which BigQuery reads as external tables
+(analytics/bus_network/). The raw file is xz (preset 6, about 85 MB of memory): nothing reads it
+back and it is about 56% smaller than gzip, which keeps 30 days of polls inside the 5 GB bucket. Uploads are create-only, so a retried run never overwrites a poll.
 The TfL key comes from TFL_API_KEY (Secret Manager on Cloud Run, .env locally).
 
     python scripts/bus_network_snapshot.py             # poll and upload
@@ -18,6 +19,7 @@ The TfL key comes from TFL_API_KEY (Secret Manager on Cloud Run, .env locally).
 import argparse
 import gzip
 import json
+import lzma
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -33,17 +35,18 @@ BUCKET = "transport_for_london_bucket"
 UPLOAD = "https://storage.googleapis.com/upload/storage/v1/b/{bucket}/o"
 
 
-def ndjson_gz(rows):
-    return gzip.compress("\n".join(json.dumps(r, separators=(",", ":")) for r in rows).encode())
+def ndjson(rows, xz=False):
+    data = "\n".join(json.dumps(r, separators=(",", ":")) for r in rows).encode()
+    return lzma.compress(data, preset=6) if xz else gzip.compress(data)
 
 
 def upload(session, name, body):
     response = session.post(
         UPLOAD.format(bucket=BUCKET),
         params={"uploadType": "media", "name": name, "ifGenerationMatch": "0"},
-        # Stored as a .gz file, not with Content-Encoding: gzip: GCS decompresses such a body on
-        # arrival, so the .json.gz would hold plain JSON and BigQuery fails ("Invalid gzip file").
-        headers={"Content-Type": "application/gzip"},
+        # Stored as a .gz (or .xz) file, not with Content-Encoding: gzip: GCS decompresses such a
+        # body on arrival, so the .json.gz would hold plain JSON and BigQuery fails ("Invalid gzip file").
+        headers={"Content-Type": "application/x-xz" if name.endswith(".xz") else "application/gzip"},
         data=body, timeout=60,
     )
     if response.status_code == 412:
@@ -75,13 +78,13 @@ def main():
     session = AuthorizedSession(credentials)
     stamp, day = taken.strftime("%H%M%S"), taken.strftime("%Y-%m-%d")
     files = {
-        f"raw/bus_network/date={day}/{stamp}.json.gz": slim(predictions),
+        f"raw/bus_network/date={day}/{stamp}.json.xz": slim(predictions),
         f"processed/bus_network/vehicles/date={day}/{stamp}.json.gz": vehicles,
         f"processed/bus_network/routes/date={day}/{stamp}.json.gz": routes,
     }
     del predictions, response   # the parsed poll is the largest thing in memory
     for name, rows in files.items():
-        body = ndjson_gz(rows)
+        body = ndjson(rows, xz=name.endswith(".xz"))
         upload(session, name, body)
         print(f"Stored {quote(name)} ({len(body) / 1e6:.2f} MB)", flush=True)
 
