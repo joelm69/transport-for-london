@@ -18,7 +18,7 @@ CHART_ASK = (r"\b(chart|graph|plot|visuali[sz]\w*|draw|show|display|compare|comp
 # name: (area, question words, needs chart words too?)
 FIGURES = {
     "bus_excess_wait": ("bus", r"\b(theoretical|even(ly)?[- ]spaced|even spacing|actual( experienced)? wait|"
-                               r"experienced wait|extra wait|excess wait|uneven spacing|passenger[- ]hours|hidden cost|"
+                               r"experienced wait|extra wait\w*|excess wait\w*|uneven spacing|passenger[- ]hours|hidden cost|"
                                r"wait(ing)? penalty|cost of (bunching|uneven))\b", False),
     "bus_most_bunched": ("bus", r"\b(most bunched|bunch\w* most|worst bunching)\b", True),
     "bus_slowest": ("bus", r"\b(slowest|slow routes?|speeds? (of|by) routes?)\b", True),

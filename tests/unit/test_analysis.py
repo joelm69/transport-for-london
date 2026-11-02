@@ -306,6 +306,31 @@ def test_roads_and_buses_are_compared_across_london():
 
     class Pairs(Sources):
         def query(self, sql):
-            return [{"x": 0.3 + 0.01 * (i % 5), "y": 0.1 + 0.02 * (i % 5) + 0.001 * (i % 3)} for i in range(30)]
+            # Both follow the hour of day; within each hour they are unrelated
+            return [{"x": 0.3 + 0.01 * (i % 6) + 0.001 * (i % 7), "y": 0.1 + 0.02 * (i % 6) + 0.001 * ((i * 3) % 5),
+                     "hour_start": f"2026-10-30T{i % 6:02d}:00:00+00:00"} for i in range(30)]
     text = analysis.run(p, Pairs())["answer"]
-    assert "over 30 hours" in text and "time of day rather than" in text and "a weak link" not in text
+    assert "over 30 hours" in text and "a weak link" not in text
+    assert "**Allowing for the time of day**" in text and "mostly the daily rhythm" in text
+
+
+def test_forecast_method_is_learned_from_the_data():
+    from datetime import datetime, timedelta, timezone
+    start = datetime(2026, 10, 5, tzinfo=timezone.utc)
+    # Mondays are twice as busy: only the same-weekday method can see that
+    weekly = [(start + timedelta(hours=h), (2.0 if (start + timedelta(hours=h)).weekday() == 0 else 1.0)
+               * (1 + (h % 24) / 24)) for h in range(24 * 28)]
+    scores = analysis.backtest(weekly)
+    assert min(scores, key=lambda m: scores[m][0]) == "weekday"
+    # A steady daily cycle with no weekly pattern: averaging the same hour beats repeating yesterday's noise
+    steady = [(start + timedelta(hours=h), 1 + (h % 24) / 24 + (0.3 if (h // 24) % 2 else -0.3))
+              for h in range(24 * 6)]
+    scores = analysis.backtest(steady)
+    assert "weekday" not in scores   # needs more than a week of history first
+    assert scores["hour_mean"][0] < scores["yesterday"][0]
+
+
+def test_correlation_p_value():
+    assert analysis.correlation_p(0.0, 100) == 1.0
+    assert analysis.correlation_p(0.5, 100) < 0.001
+    assert analysis.correlation_p(0.1, 20) > 0.05

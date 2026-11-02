@@ -177,7 +177,7 @@ KINDS = [("heatmap", r"\bheat ?maps?\b"), ("box", r"\bbox(es)?[- ]?(plots?|and w
          ("bar", r"\b(bar|column) (chart|graph)s?\b|\bbars\b")]
 CAUSE = r"\b(reasons?|causes?|caused|why|because)\b"
 RANKING = r"\b(most|least|worst|best|highest|lowest|busiest|quietest|peak)\b|^when\b|\bwhat times?\b"
-TREND_WORDS = (r"\b(trend\w*|(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*|"
+TREND_WORDS = (r"\b(trend\w*|(becoming|getting|growing) (more|less|worse|better|longer|shorter|higher|lower)|improv\w*|deteriorat\w*|worsen\w*|"
                r"over time)\b")
 
 SUGGESTIONS = [
@@ -258,23 +258,59 @@ def plan(question):
 ROAD_SUBJECTS = ("incidents", "disruption", "congestion", "collisions", "breakdowns")
 
 
-def _cross_mode(text, subjects):
-    """[road measure, bus or Tube measure] when a question relates the roads to buses or the Tube
-    (e.g. "do road incidents make buses bunch?"), else None. Compared hour by hour across London."""
-    other = "bus" if _has(BUS, text) else "tube" if _has(TUBE, text) else None
-    if not (other and _has(ROAD, text) and _has(RELATION, text)) or _has(BIKE, text):
+RAIL = r"\b(tube|underground|trains?|rail|lines?|overground|dlr|elizabeth|metro)\b"
+MODES = {"road": ROAD, "bus": BUS, "rail": RAIL, "bike": BIKE}
+MODE_SUBJECTS = {   # the subjects each mode has a measure for
+    "road": {"incidents", "disruption", "congestion", "collisions", "breakdowns"},
+    "bus": {"bunching", "wait", "regularity", "countdown", "gap"},
+    "rail": {"bunching", "wait", "regularity", "dropped", "countdown", "incidents", "disruption", "accessibility",
+             "gap"},
+    "bike": {"empty", "full", "out_of_use", "availability"},
+}
+MODE_DEFAULT = {"road": "road_delayed", "bus": "bus_bunching", "rail": "rail_disruption", "bike": "bike_empty"}
+QUALITY = (r"\b(better|worse|worst|best|bad|good|reliable|quiet(er|est)?|bus(ier|iest)|hard(er|est)|easier|"
+           r"smooth(er|est)?|slow(er|est)|fast(er|est))\b")
+
+
+def _mode_measure(mode, subject, text):
+    measure = _measure(subject, text, {"rail": "tube"}.get(mode, mode))
+    return None if measure is None or measure.startswith("bus_network") else measure   # bands, not hours
+
+
+def _cross_mode(text, found):
+    """[measure, measure] when a question relates two modes ("do road incidents make buses bunch?",
+    "does rail disruption push up bus bunching?", "bike shortages and Tube disruption"), else
+    None. Each subject goes to the nearest mode mentioned that has a measure for it; a mode with
+    no subject gets its main measure. Compared hour by hour across London."""
+    if not _has(RELATION, text):
         return None
-    road = ("road_collisions" if "collisions" in subjects else "road_incidents" if "incidents" in subjects
-            else "road_delayed")
-    names = [_measure(s, text, other) for s in subjects if s not in ROAD_SUBJECTS]
-    names = [n for n in names if n and not n.startswith("bus_network")]   # bands, not hours
-    return [road, names[0] if names else ("bus_bunching" if other == "bus" else "tube_wait")]
+    mentions = {mode: [m.start() for m in re.finditer(pattern, text)] for mode, pattern in MODES.items()}
+    mentions = {mode: spots for mode, spots in mentions.items() if spots}
+    if "bus" in mentions and "rail" in mentions and not _has(RAIL.replace("lines?|", ""), text):
+        mentions.pop("rail")   # "bus lines" or "routes and lines": still buses
+    if len(mentions) < 2:
+        return None
+    picked = {}
+    for at, subject in found:
+        modes = [m for m in mentions if subject in MODE_SUBJECTS[m] and m not in picked]
+        if not modes:
+            continue
+        mode = min(modes, key=lambda m: min(abs(at - spot) for spot in mentions[m]))
+        measure = _mode_measure(mode, subject, text)
+        if measure:
+            picked[mode] = measure
+    # The likely driver first, as the scatter's x axis: roads, then rail, then bikes, then buses
+    order = sorted(sorted(mentions, key=lambda m: min(mentions[m]))[:2], key=["road", "rail", "bike", "bus"].index)
+    pair = [picked.get(mode, MODE_DEFAULT[mode]) for mode in order]
+    if pair[0] == pair[1]:
+        return None
+    return pair
 
 
 def plan_without_kind(text):
     """The measures and dimension a (lower-case) question asks about, or None."""
     found = sorted((m.start(), subject) for subject, pattern in SUBJECTS for m in [re.search(pattern, text)] if m)
-    cross = _cross_mode(text, [subject for _, subject in found])
+    cross = _cross_mode(text, found)
     if cross:
         return {"measures": cross, "dimension": None, "series": None}
     measures = []
@@ -282,10 +318,14 @@ def plan_without_kind(text):
         name = _measure(subject, text)
         if name and name not in measures:
             measures.append(name)
-    if not measures and _mode(text) in ("bike", "road") and (_has(CHART_WORDS, text) or _has(RELATION, text) or (
-            _mode(text) == "road" and _has(r"\btraffic\b", text) and (
-                _has(RANKING, text) or _has(TREND_WORDS, text) or _has(r"\bweekends?\b", text)))):
-        measures = ["bike_empty" if _mode(text) == "bike" else "road_delayed"]
+    if not measures:   # a mode named with a time, ranking or quality word: its main measure
+        from .phrasing import DIMENSION
+        named = next((mode for mode in ("bike", "road", "bus", "rail") if _has(MODES[mode], text)), None)
+        if named == "rail" and _has(BUS, text):
+            named = "bus"
+        if named and (_has(CHART_WORDS, text) or _has(RELATION, text) or _has(RANKING, text)
+                      or _has(QUALITY, text) or _has(DIMENSION, text)):
+            measures = [MODE_DEFAULT[named]]
     if not measures:
         return None
 
@@ -295,13 +335,16 @@ def plan_without_kind(text):
     weekday = _has(r"\b(day of (the )?week|which day|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b",
                    text)
     date = _has(r"\b(over time|trend\w*|daily|each day|per day|by date|day by day|last \d+ days|this month|"
-                r"(becoming|getting|growing) (more|less|worse|better)|improv\w*|deteriorat\w*|worsen\w*)\b", text)
+                r"(becoming|getting|growing) (more|less|worse|better|longer|shorter|higher|lower|bigger|smaller)|improv\w*|deteriorat\w*|worsen\w*)\b", text)
     entity = _has(r"\b(by line|each line|per line|which lines?|by route|each route|per route|which routes?|"
-                  r"by station|which stations?|by road|each road|per road|which (main )?roads?)\b", text)
-    asks = _has(RELATION, text) or _has(CHART_WORDS, text) or (_mode(text) in ("road", "bike") and _has(RANKING, text))
+                  r"by station|which (bike )?stations?|by road|each road|per road|which (main )?roads?)\b", text)
+    # A ranking ("which line is worst?") asks for a chart, unless it is about this week: the weekly
+    # recommendation figures answer those
+    asks = _has(RELATION, text) or _has(CHART_WORDS, text) or (
+        _has(RANKING, text) and not _has(r"\b(this|last|past) week\b", text))
     hour = hour or _has(r"^when\b|\bwhat times?\b", text)   # "when do most accidents happen?"
 
-    if "rail_disruption" in measures and _has(CAUSE, text) and (asks or _has(r"\b(main|most|top)\b", text)):
+    if "rail_disruption" in measures and _has(CAUSE, text) and (asks or _has(r"\b(main|most|top|why|what)\b", text)):
         return {"measures": ["rail_disruption"], "dimension": "cause", "series": None}
     if len(measures) >= 2 and asks:
         return {"measures": measures[:2], "dimension": None, "series": None}
@@ -713,6 +756,39 @@ def unit_word(rows, first, second):
     return "hours" if london_wide(first, second) else f"{MEASURES[first][5]}-hours"
 
 
+def correlation_p(r, n):
+    """Two-sided p-value for a correlation r over n pairs (t-test, normal approximation), or None."""
+    if r is None or n < 5 or abs(r) >= 1:
+        return 0.0 if r is not None and abs(r) >= 1 and n >= 5 else None
+    t = r * math.sqrt((n - 2) / (1 - r * r))
+    return math.erfc(abs(t) / math.sqrt(2))
+
+
+def hour_adjusted(rows):
+    """(r, n) between x and y after subtracting each London hour's average from both (a partial
+    correlation controlling for time of day), or None without enough hours to do it."""
+    by = {}
+    for row in rows:
+        when = row.get("hour_start")
+        if when is None:
+            return None
+        try:
+            hour = _london(when).hour
+        except (TypeError, ValueError):
+            return None
+        by.setdefault(hour, []).append((float(row["x"]), float(row["y"])))
+    groups = [g for g in by.values() if len(g) >= 2]
+    if len(groups) < 4 or sum(len(g) for g in groups) < 20:
+        return None
+    xs, ys = [], []
+    for g in groups:
+        mx, my = sum(x for x, _ in g) / len(g), sum(y for _, y in g) / len(g)
+        xs += [x - mx for x, _ in g]
+        ys += [y - my for _, y in g]
+    r = pearson(xs, ys)
+    return (r, len(xs)) if r is not None else None
+
+
 def _relationship(p, rows):
     first, second = p["measures"]
     xs, ys = [r["x"] for r in rows], [r["y"] for r in rows]
@@ -740,9 +816,26 @@ def _relationship(p, rows):
         text += " Bear in mind TfL's main-road rating changes rarely (it is often set by long-running roadworks)"
         text += (", so short incidents barely move it: a weak link here doesn't mean incidents don't slow traffic."
                  if abs(r) < 0.3 else ".")
-    if MEASURES[first][0] != MEASURES[second][0] and abs(r) >= 0.3:
-        text += (" Both follow the daily rush hours, so part of this link may be the time of day rather than one "
-                 "driving the other: compare the two by hour to check.")
+    adjusted = hour_adjusted(rows)
+    if adjusted is not None:
+        ar, n = adjusted
+        text += (f"\n\n**Allowing for the time of day** (comparing each hour with that hour's usual level, so the "
+                 f"shared rush-hour rhythm is taken out), r = {ar:.2f}: ")
+        if abs(r) >= 0.2 and abs(ar) < 0.1:
+            text += "the link is mostly the daily rhythm both follow, not one driving the other."
+        elif abs(ar) >= 0.6 * abs(r) and abs(ar) >= 0.1:
+            text += "the link holds beyond the rush hours they share."
+        elif abs(ar) >= 0.1:
+            text += "part of the link is the shared daily rhythm and part goes beyond it."
+        else:
+            text += "there is no link once the time of day is allowed for."
+        pv = correlation_p(ar, n)
+    else:
+        pv = correlation_p(r, len(rows))
+    if pv is not None:
+        text += (f" {'This is statistically significant' if pv < 0.05 else 'This could be chance'} "
+                 f"(p {'< 0.001' if pv < 0.001 else f'= {pv:.3f}'}); neighbouring hours are alike, so treat the "
+                 "p-value as a little optimistic.")
     if len(rows) < 100:
         text += f" With only {len(rows)} {unit_word(rows, first, second)} so far, treat this as provisional."
     chart = {"kind": "scatter", "title": f"{_name(second)} against {_mid(first)}", "x": "x", "y": "y",
@@ -801,7 +894,8 @@ def stat_plan(question):
         if _has(pattern, text):
             found = sorted((m.start(), subject) for subject, p in SUBJECTS for m in [re.search(p, text)] if m)
             measures = [m for m in (_measure(subject, text) for _, subject in found) if m]
-            mode_default = {"bike": "bike_empty", "road": "road_delayed"}.get(_mode(text), default)
+            named = next((m for m in ("bike", "road", "bus") if _has(MODES[m], text)), None)
+            mode_default = MODE_DEFAULT.get(named, default)
             measure = measures[0] if measures else mode_default
             if name == "persistence" and measure != "rail_disruption":
                 measure = default
@@ -1162,8 +1256,8 @@ def cannot_analyse(question):
     can't analyse, or for no measure at all; None when the question isn't asking for one or can
     be answered."""
     text = question.lower()
-    if not _has(ASKS_ANALYSIS, text):
-        return None
+    if not _has(ASKS_ANALYSIS, text) or (stat_plan(question) and not _requested_kind(text)):
+        return None   # a statistic with a default measure answers it
     kind = _requested_kind(text)
     rail_or_bus = _has(r"\b(tube|underground|trains?|rail|lines?|bus(es)?|routes?|dlr|overground|elizabeth)\b", text)
     measures = [subject for subject, pattern in SUBJECTS if _has(pattern, text)]
@@ -1393,7 +1487,65 @@ def _hourly(rows):
     return [(_london(r["d0"]), r["y"]) for r in keep]
 
 
+FORECAST_METHODS = {   # name: (description, minimum days of history before the forecast day)
+    "yesterday": ("repeating the day before", 1),
+    "hour_mean": ("the average of the same hour over the last 7 days", 2),
+    "recent_weighted": ("the same hour, weighting recent days more (each day back counts half as much)", 2),
+    "day_type": ("the same hour on the same kind of day (weekday or weekend)", 2),
+    "weekday": ("the same hour on the same day of the week", 7),
+}
+
+
+def _method_forecast(method, history, day):
+    """{hour: value} for `day` from `history` [(time, value)] before it, or None when the method
+    hasn't enough history yet."""
+    from datetime import timedelta
+    days = sorted({t.date() for t, _ in history})
+    if len(days) < FORECAST_METHODS[method][1]:
+        return None
+    by = {}
+    for t, v in history:
+        age = (day - t.date()).days
+        if method == "yesterday" and age != 1:
+            continue
+        if method in ("hour_mean", "recent_weighted") and age > 7:
+            continue
+        if method == "day_type" and ((t.weekday() >= 5) != (day.weekday() >= 5) or age > 28):
+            continue
+        if method == "weekday" and (t.weekday() != day.weekday() or age > 28):
+            continue
+        weight = 0.5 ** (age - 1) if method == "recent_weighted" else 1.0
+        by.setdefault(t.hour, []).append((v, weight))
+    if not by:
+        return None
+    return {h: sum(v * w for v, w in vw) / sum(w for _, w in vw) for h, vw in by.items()}
+
+
+def backtest(series, test_days=7):
+    """Each method's mean absolute error and its errors, forecasting each of the last `test_days`
+    days from only the days before it (a rolling-origin test). {method: (mae, errors, days)}."""
+    from datetime import timedelta  # noqa: F401
+    days = sorted({t.date() for t, _ in series})
+    scores = {}
+    for method in FORECAST_METHODS:
+        errors, tested = [], 0
+        for day in days[-test_days:]:
+            history = [(t, v) for t, v in series if t.date() < day]
+            guess = _method_forecast(method, history, day)
+            if guess is None:
+                continue
+            actual = [(t.hour, v) for t, v in series if t.date() == day and t.hour in guess]
+            errors += [v - guess[h] for h, v in actual]
+            tested += 1
+        if errors:
+            scores[method] = (sum(abs(e) for e in errors) / len(errors), errors, tested)
+    return scores
+
+
 def _stat_forecast(p, rows):
+    """A 24-hour forecast that learns from the data: every method is backtested on the recent days
+    and the most accurate one is used, so the choice changes as history accumulates (e.g. the
+    weekday method takes over once there are enough weeks)."""
     from datetime import timedelta
     name = p["measures"][0] if "measures" in p else p["measure"]
     fmt = MEASURES[name][3]
@@ -1401,53 +1553,50 @@ def _stat_forecast(p, rows):
     days = sorted({t.date() for t, _ in series})
     if len(days) < 3:
         return {"answer": "A forecast needs at least three days of history; there isn't enough yet.", "chart": None}
-
-    def profile(points):
-        by = {}
-        for t, v in points:
-            by.setdefault(t.hour, []).append(v)
-        return {h: sum(v) / len(v) for h, v in by.items()}
-
-    # Backtest: forecast the last complete day from the days before it, against "same as the day before".
-    last, before = days[-1], days[-2]
-    past = [(t, v) for t, v in series if t.date() < last and t.date() >= last - timedelta(days=7)]
-    seasonal = profile(past)
-    actual = {t.hour: v for t, v in series if t.date() == last}
-    yesterday = {t.hour: v for t, v in series if t.date() == before}
-    hours = [h for h in actual if h in seasonal and h in yesterday]
-    mae = sum(abs(actual[h] - seasonal[h]) for h in hours) / len(hours) if hours else None
-    naive = sum(abs(actual[h] - yesterday[h]) for h in hours) / len(hours) if hours else None
-
-    recent = [(t, v) for t, v in series if t.date() > last - timedelta(days=7)]
-    forecast = profile(recent)
-    residuals = [v - forecast[t.hour] for t, v in recent if t.hour in forecast]
-    sd = math.sqrt(sum(e * e for e in residuals) / max(len(residuals) - 1, 1))
+    scores = backtest(series)
+    fair = {m: s for m, s in scores.items() if s[2] >= 1}
+    best = min(fair, key=lambda m: fair[m][0])
+    mae, errors, tested = fair[best]
+    sd = math.sqrt(sum(e * e for e in errors) / max(len(errors) - 1, 1))
     start = max(t for t, _ in series) + timedelta(hours=1)
     data = []
     for t, v in [x for x in series if x[0] >= start - timedelta(hours=48)]:
         data.append({"x": f"{t:%a} {t.day} {t:%b}, {t:%H}:00", "y": v, "series": "Recent hours"})
+    forecasts = {}
+    for i in range(24):
+        t = start + timedelta(hours=i)
+        if t.date() not in forecasts:
+            forecasts[t.date()] = _method_forecast(best, [x for x in series if x[0].date() < t.date()], t.date()) or {}
     future = []
     for i in range(24):
         t = start + timedelta(hours=i)
-        if t.hour in forecast:
-            label = f"{t:%a} {t.day} {t:%b}, {t:%H}:00"
-            future.append((t, forecast[t.hour]))
-            data.append({"x": label, "y": forecast[t.hour], "series": "Forecast"})
-            data.append({"x": label, "y": forecast[t.hour] + 1.96 * sd, "series": "95% range (high)"})
-            data.append({"x": label, "y": max(forecast[t.hour] - 1.96 * sd, 0), "series": "95% range (low)"})
+        value = forecasts[t.date()].get(t.hour)
+        if value is None:
+            continue
+        label = f"{t:%a} {t.day} {t:%b}, {t:%H}:00"
+        future.append((t, value))
+        data.append({"x": label, "y": value, "series": "Forecast"})
+        data.append({"x": label, "y": value + 1.96 * sd, "series": "95% range (high)"})
+        data.append({"x": label, "y": max(value - 1.96 * sd, 0), "series": "95% range (low)"})
+    if not future:
+        return {"answer": "There isn't enough recent history to forecast the next 24 hours yet.", "chart": None}
     peak = max(future, key=lambda f: f[1])
     low = min(future, key=lambda f: f[1])
-    text = (f"Forecast for the 24 hours after the latest complete day ({start:%a %d %b}): {_mid(name)} should peak "
-            f"around **{peak[0]:%H}:00** (about {_fmt(peak[1], fmt)}) and be lowest around {low[0]:%H}:00 (about "
-            f"{_fmt(low[1], fmt)}), give or take {_fmt(1.96 * sd, fmt)} (95% range). Method: a seasonal average, "
-            f"each hour forecast from the same hour on the last {min(len(days), 7)} days.")
-    if mae is not None:
-        better = mae < naive
-        text += (f" Tested on {last:%a %d %b}, it was off by {_fmt(mae, fmt)} on average, against {_fmt(naive, fmt)} "
-                 f"for simply repeating the day before: {'better' if better else 'not yet better'} than that "
-                 "baseline.")
-    text += (f" Built on {len(days)} days; it will learn weekday-weekend differences once there are a few weeks "
-             "of history.")
+    text = (f"Forecast for the 24 hours from {start:%a %d %b, %H}:00: {_mid(name)} should peak around "
+            f"**{peak[0]:%H}:00** (about {_fmt(peak[1], fmt)}) and be lowest around {low[0]:%H}:00 (about "
+            f"{_fmt(low[1], fmt)}), give or take {_fmt(1.96 * sd, fmt)} (95% range, from the method's real errors).")
+    ranked = sorted(fair.items(), key=lambda kv: kv[1][0])
+    text += (f"\n\n**How it chose:** I tested {len(fair)} methods by forecasting each of the last {tested} days "
+             "from only the days before it. Most accurate: **" + FORECAST_METHODS[best][0] + f"** (off by "
+             f"{_fmt(mae, fmt)} an hour on average)")
+    if len(ranked) > 1:
+        text += "; then " + "; ".join(f"{FORECAST_METHODS[m][0]} ({_fmt(s[0], fmt)})" for m, s in ranked[1:3])
+    text += "."
+    waiting = [FORECAST_METHODS[m][0] for m in FORECAST_METHODS if m not in fair]
+    text += (f" The test is rerun with every new day of data, so the method changes when another starts doing "
+             f"better. Built on {len(days)} days")
+    text += (f"; {', '.join(waiting)} joins once there are {FORECAST_METHODS['weekday'][1] + 1} days." if waiting
+             else ".")
     chart = {"kind": "line", "title": f"{_name(name)}: recent hours and 24-hour forecast", "x": "x", "y": "y",
              "data": data, "format": fmt, "series": "series", "horizontal": False, "x_title": "Hour (London time)",
              "y_title": _label(name), "temporal_labels": True}
@@ -1576,7 +1725,7 @@ def _stat_clusters(p, rows):
 # id. Two spatial measures: how much of the problem lies near the centre (Charing Cross), and
 # Moran's I, whether stations with the problem sit next to each other (spatial autocorrelation).
 
-MAP_WORDS = (r"\b(maps?|where in london|which (areas?|parts?) of london|geograph\w*|spatial\w*|neighbou?rhoods?|"
+MAP_WORDS = (r"\b(maps?|where in london|where (do|does|are|is)|which (areas?|parts?) of london|geograph\w*|spatial\w*|neighbou?rhoods?|"
              r"concentrated in the (centre|center)|where are)\b")
 CENTRE = (51.5074, -0.1278)   # Charing Cross, the traditional centre of London
 PERIODS = [   # question words, label, SQL filter on London time

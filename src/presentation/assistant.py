@@ -32,7 +32,7 @@ Each may raise; the assistant then says that source couldn't be read.
 import random
 import re
 
-from . import advice, analysis, catalogue, figures, road_questions
+from . import advice, analysis, catalogue, figures, phrasing, road_questions
 
 # Questions offered as buttons, by topic. starters() picks a random mix from these for each
 # visit, so returning visitors see different questions; every one is answered by the routes below.
@@ -177,7 +177,9 @@ accuracy accurate accessibility weekend weekends weekday weekdays morning evenin
 compare chart graph scatter doughnut reliable reliability stations station bicycles bikes traffic
 roadworks underground overground elizabeth piccadilly metropolitan northern central victoria jubilee
 bakerloo district circle waterloo hammersmith analyses analysis waiting delayed delays incident accident
-accidents collision collisions breakdown breakdowns crashes congestion congested""".split()))
+accidents collision collisions breakdown breakdowns crashes congestion congested analyse analyze
+analysing forecast predict prediction typical usually unusually normally
+unreliable reliably clumping clumped emptier fuller jammed gridlock tailbacks""".split()))
 
 
 def read_misspellings(question):
@@ -433,6 +435,7 @@ def _answer_one(question, sources):
         return {"answer": reply, "source": None, "chart": None,
                 "suggestions": [] if "Goodbye" in reply else suggest()}
     question, changes = read_misspellings(question)
+    question = phrasing.normalise(question)   # everyday wording read as the assistant's terms
     note = ("_Reading " + ", ".join(f"“{a}” as “{b}”" for a, b in changes) + "._\n\n") if changes else ""
     result = answer_read(question, sources)
     text = result["answer"]
