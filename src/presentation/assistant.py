@@ -420,11 +420,20 @@ def answer(question, sources, history=None):
                           "then ask how confident I am: I'll test whether the difference could be chance.",
                 "source": None, "chart": None, "suggestions": suggest(), "asked": question}
     previous = next((q for q in reversed(history or []) if q.strip() and not greeting(q)), None)
+    if previous and re.search(r"^is that statistically significant", phrasing.normalise(question)):
+        earlier = analysis.plan(phrasing.normalise(previous))
+        if earlier and len(earlier["measures"]) == 2:   # how sure a relationship is
+            try:
+                rows = [dict(r) for r in sources.query(analysis.build_sql(earlier))]
+                return {**analysis.relationship_confidence(earlier, rows), "asked": previous,
+                        "source": f"BigQuery analysis of the last {analysis.DAYS} days", "suggestions": []}
+            except Exception:   # noqa: BLE001
+                pass
     result = _answer_one(question, sources)
     failed = result["answer"].startswith(FAILED) or not (result.get("chart") or result.get("charts"))
     follow_on = re.search(FOLLOW_ON, question.lower()) and len(question.split()) <= 9
     if previous and not greeting(question) and (follow_on or result["answer"].startswith(FAILED)):
-        combined = with_context(question, previous)
+        combined = with_context(phrasing.normalise(question), previous)
         again = _answer_one(combined, sources)
         if not again["answer"].startswith(FAILED) and (failed or follow_on):
             return {**again, "asked": combined,

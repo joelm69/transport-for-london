@@ -756,6 +756,57 @@ def unit_word(rows, first, second):
     return "hours" if london_wide(first, second) else f"{MEASURES[first][5]}-hours"
 
 
+def correlation_interval(xs, ys, draws=400, seed=7):
+    """A bootstrap 95% interval for the correlation: the pairs resampled with replacement `draws`
+    times (fixed seed, so the same data gives the same interval)."""
+    import random
+    rng = random.Random(seed)
+    pairs = list(zip(xs, ys))
+    rs = []
+    for _ in range(draws):
+        sample = [pairs[rng.randrange(len(pairs))] for _ in pairs]
+        r = pearson([x for x, _ in sample], [y for _, y in sample])
+        if r is not None:
+            rs.append(r)
+    rs.sort()
+    return (rs[int(0.025 * len(rs))], rs[int(0.975 * len(rs)) - 1]) if len(rs) >= 50 else None
+
+
+def relationship_confidence(p, rows):
+    """How sure the relationship between two measures is: the correlation with a bootstrap 95%
+    interval, its p-value, how much of it survives allowing for the time of day, and the sample."""
+    first, second = p["measures"]
+    xs, ys = [float(r["x"]) for r in rows], [float(r["y"]) for r in rows]
+    r = pearson(xs, ys)
+    if r is None or len(rows) < 10:
+        return {"answer": "There isn't enough overlapping data to say how sure the relationship is yet.", "chart": None}
+    low, high = correlation_interval(xs, ys) or (None, None)
+    pv = correlation_p(r, len(rows))
+    unit = unit_word(rows, first, second)
+    text = f"**How sure I am about the link between {_mid(first)} and {_mid(second)}:**\n\n"
+    text += f"- **Strength:** r = {r:.2f} over {len(rows):,} {unit}"
+    if low is not None:
+        text += (f"; a bootstrap 95% interval (resampling the {unit} 400 times) runs from {low:.2f} to {high:.2f}"
+                 + (", so the direction is clear." if low * high > 0 else ", which includes zero: the direction "
+                    "itself isn't settled yet."))
+    else:
+        text += "."
+    if pv is not None:
+        text += f"\n- **Chance:** p {'< 0.001' if pv < 0.001 else f'= {pv:.3f}'}: " + (
+            "unlikely to be chance." if pv < 0.05 else "it could be chance.")
+    adjusted = hour_adjusted(rows)
+    if adjusted is not None:
+        ar, n = adjusted
+        text += (f"\n- **Beyond the rush hours:** r = {ar:.2f} once each hour is compared with its usual level "
+                 + ("(the link holds)." if abs(ar) >= 0.6 * abs(r) and abs(ar) >= 0.1 else
+                    "(most of it is the shared daily rhythm)." if abs(ar) < 0.1 else "(part of it holds)."))
+    text += ("\n- **Caveats:** neighbouring hours are alike, so the effective sample is smaller than it looks; "
+             "a correlation doesn't show which causes which; "
+             + (f"with only {len(rows)} {unit}, this will firm up as more data arrives." if len(rows) < 200
+                else "the sample is large enough that the estimate is stable."))
+    return {"answer": text, "chart": None}
+
+
 def correlation_p(r, n):
     """Two-sided p-value for a correlation r over n pairs (t-test, normal approximation), or None."""
     if r is None or n < 5 or abs(r) >= 1:
@@ -1075,7 +1126,7 @@ def _stat_significance(p, rows):
     boot.sort()
     ci = (boot[int(0.025 * len(boot))], boot[int(0.975 * len(boot)) - 1])
     verdict = ("**unlikely to be chance**" if p_value < 0.05 else
-               "**could well be chance**: more weeks of data are needed to be sure")
+               "**small enough to be chance**: more weeks of data are needed to be sure")
     higher = "weekends" if observed > 0 else "weekdays"
     text = (f"{_name(measure)} averaged {_fmt(mean_we, fmt)} on weekend days and {_fmt(mean_wd, fmt)} on weekdays: "
             f"higher on {higher}. A permutation test (re-splitting the same {len(values)} days at random) gives "

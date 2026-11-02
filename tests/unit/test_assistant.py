@@ -144,3 +144,18 @@ def analysis_plan(question):
     from src.presentation import analysis
     p = analysis.plan(question)
     return p and (p["measures"], p["dimension"])
+
+
+def test_confidence_follow_ups():
+    class Pairs(Sources):
+        def query(self, sql):
+            return [{"x": 0.3 + 0.01 * (i % 7), "y": 0.1 + 0.02 * (i % 7) + 0.003 * (i % 3),
+                     "hour_start": f"2026-10-30T{i % 12:02d}:00:00+00:00"} for i in range(60)]
+    sure = assistant.answer("How confident are you in that?", Pairs(), ["If the roads are jammed, do buses suffer?"])
+    assert sure["answer"].startswith("**How sure I am about the link between main roads")
+    assert "bootstrap 95% interval" in sure["answer"] and "Beyond the rush hours" in sure["answer"]
+    alone = assistant.answer("How confident are you in that?", Sources())
+    assert alone["answer"].startswith("Ask me a question about the data first")
+    assert assistant.with_context(assistant.phrasing.normalise("Can I trust that?"),
+                                  "Do weekends have less rail disruption than weekdays?").endswith(
+        "is statistically significant?")

@@ -119,7 +119,7 @@ def test_significance_permutation_test():
     assert "higher on weekends" in result["answer"] and "**unlikely to be chance**" in result["answer"]
     assert result["chart"]["kind"] == "strip"
     same = [{**r, "v": 0.3} for r in rows]
-    assert "could well be chance" in run_stat({"stat": "significance", "measure": "rail_disruption"},
+    assert "small enough to be chance" in run_stat({"stat": "significance", "measure": "rail_disruption"},
                                               Stats(same))["answer"]
 
 
