@@ -5,7 +5,7 @@ It collects live data on London's Tube, buses, Santander Cycles and main roads, 
 history that TfL's API doesn't and turns it into dashboards, business recommendations and a chat
 assistant that answers questions with charts and statistics.
 
-**[See it live](https://joeldataportfolio.streamlit.app/~/+/transport_for_london)** ·
+**[See it live](https://joeldataportfolio.streamlit.app/transport_for_london)** ·
 [Tableau dashboards](https://public.tableau.com/views/Transport_for_london/LineReliabilityDashboard) ·
 Runs 24/7 on Google Cloud's free tier
 
