@@ -11,7 +11,7 @@ SEVERITY_WEIGHT = {"No impact": 0, "Minimal": 1, "Moderate": 2, "Serious": 3, "S
 
 
 def _point(record):
-    """(lat, lon) from TfL's "[lon,lat]" text, or None."""
+    """(lat, lon) from TfL's "[lon,lat]" text or None."""
     try:
         lon, lat = json.loads(record.get("point") or "")
         return float(lat), float(lon)

@@ -30,7 +30,7 @@ def station_state(bikes, empty_docks):
 
 def stations(data):
     """One row per readable docking station, sorted by name. Stations with a missing or
-    non-numeric count, or without a location, are skipped."""
+    non-numeric count or without a location, are skipped."""
     rows = []
     for record in data if isinstance(data, list) else []:
         if not isinstance(record, dict):

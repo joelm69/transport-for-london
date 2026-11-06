@@ -61,7 +61,7 @@ is part of `disruption_key`; deduplicating on (station, description) would delet
 |---|---|---|
 | `fromDate` | Event time (TfL-reported start) | Unchanged for all 55 matched disruptions across both calls |
 | `toDate`, PlannedWork | Planned end date; usable | Real dates (Nov 2026 – May 2027) |
-| `toDate`, RealTime | Stored as `to_date_raw` with `to_date_kind`; **never used** in fingerprints or metrics | Mixed meaning (step 4, all 36 RealTime records): rolling call time + 3 h (2 records, moved 23:58 → 00:00 between calls), end of service day 00:29 UTC (most), or a real future date (a few) |
+| `toDate`, RealTime | Stored as `to_date_raw` with `to_date_kind`; **never used** in fingerprints or metrics | Mixed meaning (step 4, all 36 RealTime records): rolling call time + 3 h (2 records, moved 23:58 → 00:00 between calls), end of service day 00:29 UTC (most) or a real future date (a few) |
 | Record order | Ignored | Shuffled between calls with identical content |
 
 ## 3. Storage layout and retention

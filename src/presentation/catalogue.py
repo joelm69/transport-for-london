@@ -84,7 +84,7 @@ def asks_about_features(question):
 
 
 def describe(question=""):
-    """The datasets, or just those the question names (e.g. "how often is BikePoint collected?")."""
+    """The datasets or just those the question names (e.g. "how often is BikePoint collected?")."""
     text = question.lower()
     chosen = [d for d in DATASETS if any(w in text for w in re.findall(r"[a-z]{4,}", d[0].lower() + " " + d[1].lower())
                                        if w not in ("line", "mode", "status", "route", "routes", "every"))]

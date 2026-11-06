@@ -54,7 +54,7 @@ def _has(pattern, text):
 
 
 def choose(question):
-    """The figure a question asks for, or None."""
+    """The figure a question asks for or None."""
     text = question.lower()
     if _has(r"\b(right now|now|currently|at the moment)\b", text):
         return None   # the live answers cover "now"
@@ -167,7 +167,7 @@ def _rail_train_vs_track(row):
     other = max(0.0, 1 - train - infra)
     text = (f"Of the unplanned disruption, **{_pct(train)}** came from trains (cancellations and faults, i.e. "
             f"fleet and crew) and **{_pct(infra)}** from infrastructure (signals, points, track, power); the rest "
-            f"({_pct(other)}) had other causes, such as customer incidents, or none stated.")
+            f"({_pct(other)}) had other causes, such as customer incidents or none stated.")
     data = [{"x": "Trains (cancellations, faults)", "y": train}, {"x": "Infrastructure (signals, track, power)",
                                                                   "y": infra}, {"x": "Other or not stated", "y": other}]
     return {"answer": text, "charts": [_bar("Unplanned disruption by kind of cause", data, "pct",

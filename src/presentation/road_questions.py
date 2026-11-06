@@ -1,5 +1,5 @@
 """Questions about individual road disruptions for the "Ask the data" chat: which types are most
-common (collisions, breakdowns, signal faults...), which areas have the most, and how many a
+common (collisions, breakdowns, signal faults...), which areas have the most and how many a
 day. Read from tfl_portfolio.road_disruption_events (one row per disruption, rebuilt daily);
 the SQL is fixed here, never built from the question's words.
 
@@ -34,7 +34,7 @@ def choose(question):
 
 
 def _filter(text):
-    """The rows a question is about, and what to call them."""
+    """The rows a question is about and what to call them."""
     if re.search(r"\b(accidents?|collisions?|crash\w*)\b", text):
         return "category = 'Collisions'", "collisions"
     if re.search(r"\bbreak ?downs?\b", text):

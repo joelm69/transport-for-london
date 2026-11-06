@@ -4,7 +4,7 @@
 -- the recommendations themselves stay as written.
 --
 -- Planned works (rule agreed for the 22-28 Oct recommendation): TfL status Part Closure or
--- Planned Closure, cause "Planned works or changes", or a reason that announces dated works
+-- Planned Closure, cause "Planned works or changes" or a reason that announces dated works
 -- ("Saturday 24 October ...", "until 1200", "from 1930", "operates ... only"). Everything else
 -- disrupted is unplanned. Periods are clipped to the window, so a disruption crossing midnight
 -- counts only the part inside it.

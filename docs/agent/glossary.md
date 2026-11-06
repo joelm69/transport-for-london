@@ -28,7 +28,7 @@ An incident is one disruption on a line, identified by TfL's reason; it is count
 even when it spans several hours. Each disruption's cause is read from TfL's reason text: for
 example Signal failure, Points failure, Power failure, Train fault, Track fault, Staff shortage,
 Customer incident (a person taken ill or on the track), Trespasser, Fire alert, Security alert,
-Weather, Industrial action, or Planned works or changes. The main cause of a line is the one with
+Weather, Industrial action or Planned works or changes. The main cause of a line is the one with
 the most disrupted minutes. Train causes are train faults and staff shortages; infrastructure
 causes are signal, points, power and track failures.
 

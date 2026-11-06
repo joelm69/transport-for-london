@@ -252,7 +252,7 @@ skipped and counted), WARN (kept and flagged), CHECK (BigQuery, across records).
 | C3 | Two arrivals of the same vehicle at the same stop less than 2 minutes apart | Should not happen (double detection) |
 | C4 | Dropped visits / (arrivals + dropped) per line per hour | Measured 16–21% in the morning peak (18% replay, 21% in Docker); investigate above 35% |
 | C5 | Headway under 30 s at the same platform | Suspect (two trains cannot share a platform) |
-| C6 | Hours with arrivals but no coverage rows, or coverage with no arrivals during service | Pipeline fault |
+| C6 | Hours with arrivals but no coverage rows or coverage with no arrivals during service | Pipeline fault |
 
 ## 5. Hot and cold use
 

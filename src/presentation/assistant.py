@@ -1,7 +1,7 @@
 """The "Ask the data" assistant: answers a typed question from the platform's own data, without a
 paid AI model.
 
-It reads the question for what it is about (rail, buses, bikes, roads, or what a figure means)
+It reads the question for what it is about (rail, buses, bikes, roads or what a figure means)
 and whether it asks about now or about the past week, then answers from the matching source:
 the live TfL feeds, the business recommendation figures (last 7 complete London days) or the
 documentation search (the retrieval half of RAG). It is rule-based: it answers greetings, says
@@ -9,7 +9,7 @@ when a question is outside this project and returns clickable suggestions (`sugg
 questions it can answer.
 
 Asked "what analyses can you do?", it lists them with clickable examples. Asked for a chart or a
-statistic it can't produce (bike or road history, weather, or no measure named), it says why and
+statistic it can't produce (bike or road history, weather or no measure named), it says why and
 suggests the same kind of analysis it can do. Misspelt words are read as the closest known word
 ("histgram" as "histogram") and the answer says so. Asked a statistical
 question (a distribution, a significance test, anomalies, persistence, early warning,

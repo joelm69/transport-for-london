@@ -4,7 +4,7 @@ Pure functions (no Streamlit, no network), shared by the portfolio panel and fut
 MCP tools.
 
 Display grouping differs from data identity on purpose. The data keeps the same message
-published under two types (e.g. "Information" and "Interchange Message"), or under two
+published under two types (e.g. "Information" and "Interchange Message") or under two
 station codes (NaPTAN codes are per network, so an interchange such as Willesden Junction
 has a 910G rail code and a 940G Underground code), as separate records. A panel shows each
 (station name, message) once, listing every type and mode.

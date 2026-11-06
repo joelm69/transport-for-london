@@ -11,7 +11,7 @@ route). The chart follows from that:
 - two measures ("is bunching related to waiting time?"): a scatter plot of line-hours with a
   trend line and the correlation coefficient;
 - rail disruption by cause ("why are the lines disrupted?"): the disrupted hours each reason
-  accounts for, as bars, or as a pie when asked (a pie suits parts of a whole).
+  accounts for, as bars or as a pie when asked (a pie suits parts of a whole).
 A chart type the visitor asks for (pie, bar, line, scatter) is used when it suits the data;
 otherwise the answer says why another chart was drawn.
 
@@ -308,7 +308,7 @@ def _cross_mode(text, found):
 
 
 def plan_without_kind(text):
-    """The measures and dimension a (lower-case) question asks about, or None."""
+    """The measures and dimension a (lower-case) question asks about or None."""
     found = sorted((m.start(), subject) for subject, pattern in SUBJECTS for m in [re.search(pattern, text)] if m)
     cross = _cross_mode(text, found)
     if cross:
@@ -586,7 +586,7 @@ def _apply_kind(kind, result, p):
                      data=[{"x": int(d["x"][:2]), "y": d["y"]} for d in chart["data"]])
         note = "Each dot is one hour of the day; the line shows the overall trend."
     elif kind == "scatter":
-        note = ("A scatter plot needs two numbers per point, such as hour and bunching, or bunching and waiting "
+        note = ("A scatter plot needs two numbers per point, such as hour and bunching or bunching and waiting "
                 "time; these groups suit a bar chart better.")
     elif kind in ("bar", "line") and chart["kind"] in ("bar", "line"):
         if kind == "line" and p["dimension"] in ("entity", "cause", "day_type"):
@@ -774,7 +774,7 @@ def correlation_interval(xs, ys, draws=400, seed=7):
 
 def relationship_confidence(p, rows):
     """How sure the relationship between two measures is: the correlation with a bootstrap 95%
-    interval, its p-value, how much of it survives allowing for the time of day, and the sample."""
+    interval, its p-value, how much of it survives allowing for the time of day and the sample."""
     first, second = p["measures"]
     xs, ys = [float(r["x"]) for r in rows], [float(r["y"]) for r in rows]
     r = pearson(xs, ys)
@@ -808,7 +808,7 @@ def relationship_confidence(p, rows):
 
 
 def correlation_p(r, n):
-    """Two-sided p-value for a correlation r over n pairs (t-test, normal approximation), or None."""
+    """Two-sided p-value for a correlation r over n pairs (t-test, normal approximation) or None."""
     if r is None or n < 5 or abs(r) >= 1:
         return 0.0 if r is not None and abs(r) >= 1 and n >= 5 else None
     t = r * math.sqrt((n - 2) / (1 - r * r))
@@ -817,7 +817,7 @@ def correlation_p(r, n):
 
 def hour_adjusted(rows):
     """(r, n) between x and y after subtracting each London hour's average from both (a partial
-    correlation controlling for time of day), or None without enough hours to do it."""
+    correlation controlling for time of day) or None without enough hours to do it."""
     by = {}
     for row in rows:
         when = row.get("hour_start")
@@ -966,7 +966,7 @@ def stat_plan(question):
 
 
 def _values_sql(measure, group):
-    """One value of a measure per group (entity-hour, day, or entity-day)."""
+    """One value of a measure per group (entity-hour, day or entity-day)."""
     table_key, where, expr, *_ = MEASURES[measure]
     table, entity, weight = TABLES[table_key]
     cols = {"entity_hour": f"{entity} AS e, hour_start AS t",
@@ -1304,7 +1304,7 @@ def _requested_kind(text):
 
 def cannot_analyse(question):
     """{"answer", "suggestions"} when a chart or statistic is asked for something this engine
-    can't analyse, or for no measure at all; None when the question isn't asking for one or can
+    can't analyse or for no measure at all; None when the question isn't asking for one or can
     be answered."""
     text = question.lower()
     if not _has(ASKS_ANALYSIS, text) or (stat_plan(question) and not _requested_kind(text)):
@@ -1548,7 +1548,7 @@ FORECAST_METHODS = {   # name: (description, minimum days of history before the 
 
 
 def _method_forecast(method, history, day):
-    """{hour: value} for `day` from `history` [(time, value)] before it, or None when the method
+    """{hour: value} for `day` from `history` [(time, value)] before it or None when the method
     hasn't enough history yet."""
     from datetime import timedelta
     days = sorted({t.date() for t, _ in history})

@@ -170,7 +170,7 @@ TITLES = {"rail": "Tube and rail", "bus": "Buses", "bikes": "Santander Cycles", 
 
 def advise(question, sources):
     """{"answer": markdown, "source", "suggestions"} with tips for the transport the question
-    names, or a few for each when it names none."""
+    names or a few for each when it names none."""
     text = question.lower()
     topics = [name for name, pattern in TOPICS if re.search(pattern, text)] or list(BUILDERS)
     sections = []

@@ -22,7 +22,7 @@ def _one_in(share):
 
 
 def _station(name, figure=None):
-    """'Mudchute DLR, Cubitt Town' -> 'Mudchute DLR (Cubitt Town)', or with a figure
+    """'Mudchute DLR, Cubitt Town' -> 'Mudchute DLR (Cubitt Town)' or with a figure
     'Mudchute DLR (Cubitt Town, 89%)', so lists read clearly when names contain commas."""
     place, _, area = name.partition(", ")
     inside = ", ".join(part for part in (area.strip(), figure) if part)
